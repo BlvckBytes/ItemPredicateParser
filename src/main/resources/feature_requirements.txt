@@ -1,0 +1,17 @@
+Search through items based on the following properties:
+- Free text ("...", ignoring control sequences)
+  - Display Name
+  - Lore Lines
+  - Written Book Contents
+  - Written Book Author
+  - Skull Owner Name
+  - Map Location Name
+- Suggested text (replace " " with "-")
+  - Material: <name>
+  - Potion Effects: <name> [level] [duration_ticks]
+  - Enchantments: <name> [level]
+
+Numeric arguments are optional and if omitted, act as a wildcard.
+
+====== think about ======
+- Durability: <unused/used/...>

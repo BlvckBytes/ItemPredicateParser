@@ -36,6 +36,7 @@ public class TranslationRegistry {
       createEntries(Registry.ENCHANTMENT, unsortedEntries);
       createEntries(Registry.MATERIAL, unsortedEntries);
       createEntries(Registry.EFFECT, unsortedEntries);
+      createEntries(List.of(DeteriorationKey.INSTANCE), unsortedEntries);
     }
 
     this.entries = unsortedEntries

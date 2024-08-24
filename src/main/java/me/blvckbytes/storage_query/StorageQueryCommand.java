@@ -8,6 +8,7 @@ import me.blvckbytes.storage_query.argument.UnquotedStringArgument;
 import me.blvckbytes.storage_query.parse.ArgumentParseException;
 import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.predicate.*;
+import me.blvckbytes.storage_query.translation.DeteriorationKey;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import org.bukkit.Material;
@@ -196,6 +197,23 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         IntegerArgument potionEffectAmplifier = tryConsumeIntegerArgument(remainingTokens);
         IntegerArgument potionEffectDuration = tryConsumeIntegerArgument(remainingTokens);
         result.add(new PotionEffectPredicate(shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
+        continue;
+      }
+
+      if (shortestMatch.translatable() instanceof DeteriorationKey) {
+        IntegerArgument deteriorationPercentageMin = tryConsumeIntegerArgument(remainingTokens);
+        IntegerArgument deteriorationPercentageMax = tryConsumeIntegerArgument(remainingTokens);
+
+        // I think that it'll be friendlier to act out on a no-op, rather than to throw an error
+        // By falling back to a wildcard, the user is also shown that there are parameters, in the expanded form
+
+        if (deteriorationPercentageMin == null)
+          deteriorationPercentageMin = new IntegerArgument(currentToken.getCommandArgumentIndex(), null);
+
+        if (deteriorationPercentageMax == null)
+          deteriorationPercentageMax = new IntegerArgument(currentToken.getCommandArgumentIndex(), null);
+
+        result.add(new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
       }
 

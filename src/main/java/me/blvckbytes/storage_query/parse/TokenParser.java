@@ -14,7 +14,7 @@ public class TokenParser {
   public static List<Token> parseTokens(String[] args) {
     var result = new ArrayList<Token>();
 
-    var stringBeginArgumentIndex = 0;
+    var stringBeginArgumentIndex = -1;
     var stringContents = new StringBuilder();
 
     for (var argumentIndex = 0; argumentIndex < args.length; ++argumentIndex) {
@@ -43,12 +43,13 @@ public class TokenParser {
         // Contains only one double-quote, which is leading
 
         // Terminated a string which contains a trailing whitespace (valid use-case)
-        if (!stringContents.isEmpty()) {
+        if (stringBeginArgumentIndex != -1) {
           if (argLength != 1)
             throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
 
           stringContents.append(' ');
           result.add(new QuotedStringToken(stringBeginArgumentIndex, stringContents.toString()));
+          stringBeginArgumentIndex = -1;
           stringContents.setLength(0);
           continue;
         }
@@ -56,7 +57,6 @@ public class TokenParser {
         // Started a string which contains a leading whitespace (valid use-case)
         if (argLength == 1) {
           stringBeginArgumentIndex = argumentIndex;
-          stringContents.append(' ');
           continue;
         }
 
@@ -67,18 +67,19 @@ public class TokenParser {
       }
 
       if (arg.charAt(argLength - 1) == '"') {
-        if (stringContents.isEmpty())
+        if (stringBeginArgumentIndex == -1)
           throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
 
         // Multi-arg string termination
         stringContents.append(' ').append(arg, 0, argLength - 1);
         result.add(new QuotedStringToken(stringBeginArgumentIndex, stringContents.toString()));
+        stringBeginArgumentIndex = -1;
         stringContents.setLength(0);
         continue;
       }
 
       // Within string
-      if (!stringContents.isEmpty()) {
+      if (stringBeginArgumentIndex >= 0) {
         stringContents.append(' ').append(arg);
         continue;
       }
@@ -100,7 +101,8 @@ public class TokenParser {
       }
 
       // Ensure that there are no quotes wedged into search-terms
-      for (var argIndex = 0; argIndex < argLength; ++argIndex) {
+      // At this point, first and last char have been checked against, so skip them
+      for (var argIndex = 1; argIndex < argLength - 1; ++argIndex) {
         if (arg.charAt(argIndex) == '"')
           throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
       }
@@ -108,8 +110,8 @@ public class TokenParser {
       result.add(new UnquotedStringToken(argumentIndex, arg));
     }
 
-    if (!stringContents.isEmpty())
-      throw new ArgumentParseException(args.length - 1, ParseConflict.MISSING_STRING_TERMINATION);
+    if (stringBeginArgumentIndex != -1)
+      throw new ArgumentParseException(stringBeginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
     return result;
   }

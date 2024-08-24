@@ -5,8 +5,9 @@ import java.util.List;
 
 public record SubstringIndices(int start, int end) {
 
-  public static final char[] LANGUAGE_FILE_DELIMITERS = {'-', ' ', '_'};
-  public static final char[] INPUT_DELIMITERS = { '-' };
+  public static final char[] LANGUAGE_FILE_DELIMITERS = { '-', ' ', '_' };
+  public static final char[] SEARCH_PATTERN_DELIMITERS = { '-' };
+  public static final char[] FREE_TEXT_DELIMITERS = { ' ' };
 
   public int length() {
     return (end - start) + 1;
@@ -17,6 +18,7 @@ public record SubstringIndices(int start, int end) {
     var inputLength = input.length();
 
     int nextPartBeginning = 0;
+    boolean encounteredNonDelimiter = false;
 
     for (int i = 0; i < inputLength; ++i) {
       var currentChar = input.charAt(i);
@@ -30,12 +32,16 @@ public record SubstringIndices(int start, int end) {
       }
 
       if (isDelimiter) {
-        if (i != 0)
+        if (i != 0 && encounteredNonDelimiter)
           result.add(new SubstringIndices(nextPartBeginning, i - 1));
 
         nextPartBeginning = i + 1;
+        encounteredNonDelimiter = false;
         continue;
       }
+
+      else
+        encounteredNonDelimiter = true;
 
       if (i == inputLength - 1)
         result.add(new SubstringIndices(nextPartBeginning, i));
@@ -44,7 +50,7 @@ public record SubstringIndices(int start, int end) {
     return result;
   }
 
-  public static int relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
+  private static int relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
     var containerIndicesLength = containerIndices.length();
     var containedIndicesLength = containedIndices.length();
 
@@ -77,5 +83,70 @@ public record SubstringIndices(int start, int end) {
     }
 
     return -1;
+  }
+
+  public static void matchQuerySubstrings(
+    String query,
+    ArrayList<SubstringIndices> pendingQuerySubstrings,
+    String text,
+    ArrayList<SubstringIndices> remainingTextSubstrings
+  ) {
+    for (var pendingQuerySubstringsIterator = pendingQuerySubstrings.iterator(); pendingQuerySubstringsIterator.hasNext();) {
+      var pendingQuerySubstring = pendingQuerySubstringsIterator.next();
+      boolean didQuerySubstringMatch = false;
+
+      for (var remainingTextSubstringIndex = 0; remainingTextSubstringIndex < remainingTextSubstrings.size(); ++remainingTextSubstringIndex) {
+        var remainingTextSubstring = remainingTextSubstrings.get(remainingTextSubstringIndex);
+        var relativeIndex = SubstringIndices.relativeIndexOf(query, pendingQuerySubstring, text, remainingTextSubstring);
+
+        if (relativeIndex < 0)
+          continue;
+
+        remainingTextSubstrings.remove(remainingTextSubstringIndex);
+
+        /*
+          Cases:
+          vvv-----
+          ABCDEFGH
+
+          ---vvv--
+          ABCDEFGH
+
+          -----vvv
+          ABCDEFGH
+         */
+
+        var remainingTextSubstringLength = remainingTextSubstring.length();
+        var pendingQuerySubstringLength = pendingQuerySubstring.length();
+
+        // Remainder after match
+        if (relativeIndex != remainingTextSubstringLength - pendingQuerySubstringLength) {
+          remainingTextSubstrings.add(
+            remainingTextSubstringIndex,
+            new SubstringIndices(
+              remainingTextSubstring.start() + relativeIndex + pendingQuerySubstringLength,
+              remainingTextSubstring.end()
+            )
+          );
+        }
+
+        // Remainder previous to match (add afterwards to ensure proper order)
+        if (relativeIndex != 0) {
+          remainingTextSubstrings.add(
+            remainingTextSubstringIndex,
+            new SubstringIndices(
+              remainingTextSubstring.start(),
+              remainingTextSubstring.start() + relativeIndex - 1
+            )
+          );
+        }
+
+        didQuerySubstringMatch = true;
+        break;
+      } // Remaining text substrings
+
+      if (didQuerySubstringMatch)
+        pendingQuerySubstringsIterator.remove();
+    } // Pending query substrings
   }
 }

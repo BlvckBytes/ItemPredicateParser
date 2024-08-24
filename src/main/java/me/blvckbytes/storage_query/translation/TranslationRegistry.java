@@ -54,67 +54,17 @@ public class TranslationRegistry {
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
-    var textParts = SubstringIndices.forString(text, SubstringIndices.INPUT_DELIMITERS);
+    var textParts = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
     var textLower = text.toLowerCase(locale);
 
     for (var entry : entries) {
-      boolean didEntryMatch = true;
+      var pendingTextParts = new ArrayList<>(textParts);
 
-      var translationLower = entry.translationLower();
-      var translationParts = new ArrayList<>(entry.partIndices());
-      var textPartsSize = textParts.size();
+      SubstringIndices.matchQuerySubstrings(textLower, pendingTextParts, entry.translationLower(), new ArrayList<>(entry.partIndices()));
 
-      for (var textPartIndex = 0; textPartIndex < textPartsSize; ++textPartIndex) {
-        var textPart = textParts.get(textPartIndex);
-        boolean didTextPartMatch = false;
-
-        for (var translationPartIndex = 0; translationPartIndex < translationParts.size(); ++translationPartIndex) {
-          var translationPart = translationParts.get(translationPartIndex);
-          var relativeIndex = SubstringIndices.relativeIndexOf(textLower, textPart, translationLower, translationPart);
-
-          if (relativeIndex < 0)
-            continue;
-
-          if (textPartIndex != textPartsSize - 1) {
-            translationParts.remove(translationPartIndex);
-
-            /*
-              Cases:
-              vvv-----
-              ABCDEFGH
-
-              ---vvv--
-              ABCDEFGH
-
-              -----vvv
-              ABCDEFGH
-             */
-
-            var translationPartLength = translationPart.length();
-            var textPartLength = textPart.length();
-
-            // Remainder after match
-            if (relativeIndex != translationPartLength - textPartLength)
-              translationParts.add(translationPartIndex, new SubstringIndices(translationPart.start() + relativeIndex + textPartLength, translationPart.end()));
-
-            // Remainder previous to match (add afterwards to ensure proper order)
-            if (relativeIndex != 0)
-              translationParts.add(translationPartIndex, new SubstringIndices(translationPart.start(), translationPart.start() + relativeIndex - 1));
-          }
-
-          didTextPartMatch = true;
-          break;
-        } // for translationParts
-
-        if (!didTextPartMatch) {
-          didEntryMatch = false;
-          break;
-        }
-      } // for textParts
-
-      if (didEntryMatch)
+      if (pendingTextParts.isEmpty())
         result.add(entry);
-    } // for entries
+    }
 
     return result;
   }

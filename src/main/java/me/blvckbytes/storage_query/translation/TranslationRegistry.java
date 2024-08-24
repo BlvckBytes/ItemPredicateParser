@@ -1,4 +1,4 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.translation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,13 +41,13 @@ public class TranslationRegistry {
     }
 
     this.entries = unsortedEntries
-            .stream()
-            .sorted(Comparator.comparing(TranslatedTranslatable::translationLower))
-            .toArray(TranslatedTranslatable[]::new);
+      .stream()
+      .sorted(Comparator.comparing(TranslatedTranslatable::translationLower))
+      .toArray(TranslatedTranslatable[]::new);
 
   }
 
-  public List<TranslatedTranslatable> search(String text, int maxResults) {
+  public List<TranslatedTranslatable> search(String text) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
       return new ArrayList<>();
@@ -112,12 +112,8 @@ public class TranslationRegistry {
         }
       } // for textParts
 
-      if (didEntryMatch) {
+      if (didEntryMatch)
         result.add(entry);
-
-        if (result.size() == maxResults)
-          break;
-      }
     } // for entries
 
     return result;

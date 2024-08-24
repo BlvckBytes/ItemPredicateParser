@@ -1,8 +1,8 @@
 name: StorageQuery
-main: me.blvckbytes.storage_query.StorageQuery
+main: me.blvckbytes.storage_query.StorageQueryPlugin
 version: 0.1
 author: BlvckBytes
 api-version: 1.21
 commands:
   lagersuche:
-    aliases: [storagequery]
+    aliases: [ storagequery ]

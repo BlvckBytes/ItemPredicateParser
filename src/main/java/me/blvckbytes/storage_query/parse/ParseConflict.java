@@ -1,0 +1,31 @@
+package me.blvckbytes.storage_query.parse;
+
+public enum ParseConflict {
+  /**
+   * Expected an integer as an argument to the preceding search-pattern, but got something else
+   */
+  EXPECTED_INTEGER,
+  /**
+   * Expected an unquoted search-pattern, but got something else
+   */
+  EXPECTED_SEARCH_PATTERN,
+  /**
+   * The specified pattern did not fully apply to any existing translatable
+   */
+  NO_SEARCH_MATCH,
+  /**
+   * Either tried to put two or more strings into a single argument or began yet
+   * another string within the same argument that terminated a previous multi-arg string,
+   * or closed a string that has not been previously begun
+   */
+  MALFORMED_STRING_ARGUMENT,
+  /**
+   * Didn't close a previously began string until the very end
+   */
+  MISSING_STRING_TERMINATION,
+  /**
+   * The search-pattern matched on an instance of a translatable that is not yet
+   * implemented; this should never happen in production.
+   */
+  UNIMPLEMENTED_TRANSLATABLE
+}

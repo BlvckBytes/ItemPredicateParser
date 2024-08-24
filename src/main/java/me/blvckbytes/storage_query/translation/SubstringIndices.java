@@ -1,11 +1,11 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.translation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public record SubstringIndices(int start, int end) {
 
-  public static final char[] LANGUAGE_FILE_DELIMITERS = { '-', ' ', '_' };
+  public static final char[] LANGUAGE_FILE_DELIMITERS = {'-', ' ', '_'};
   public static final char[] INPUT_DELIMITERS = { '-' };
 
   public int length() {
@@ -13,33 +13,33 @@ public record SubstringIndices(int start, int end) {
   }
 
   public static List<SubstringIndices> forString(String input, char[] delimiters) {
-   var result = new ArrayList<SubstringIndices>();
-   var inputLength = input.length();
+    var result = new ArrayList<SubstringIndices>();
+    var inputLength = input.length();
 
-   int nextPartBeginning = 0;
+    int nextPartBeginning = 0;
 
-   for (int i = 0; i < inputLength; ++i) {
-     var currentChar = input.charAt(i);
-     boolean isDelimiter = false;
+    for (int i = 0; i < inputLength; ++i) {
+      var currentChar = input.charAt(i);
+      boolean isDelimiter = false;
 
-     for (char delimiter : delimiters) {
-       if (currentChar == delimiter) {
-         isDelimiter = true;
-         break;
-       }
-     }
+      for (char delimiter : delimiters) {
+        if (currentChar == delimiter) {
+          isDelimiter = true;
+          break;
+        }
+      }
 
-     if (isDelimiter) {
-       if (i != 0)
-         result.add(new SubstringIndices(nextPartBeginning, i - 1));
+      if (isDelimiter) {
+        if (i != 0)
+          result.add(new SubstringIndices(nextPartBeginning, i - 1));
 
-       nextPartBeginning = i + 1;
-       continue;
-     }
+        nextPartBeginning = i + 1;
+        continue;
+      }
 
-     if (i == inputLength - 1)
-       result.add(new SubstringIndices(nextPartBeginning, i));
-   }
+      if (i == inputLength - 1)
+        result.add(new SubstringIndices(nextPartBeginning, i));
+    }
 
     return result;
   }

@@ -1,4 +1,4 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.translation;
 
 import org.bukkit.Translatable;
 
@@ -14,14 +14,14 @@ public record TranslatedTranslatable(
 ) {
   public TranslatedTranslatable(Translatable translatable, Locale locale, String translation) {
     this(
-            translatable,
-            translation,
-            translation.toLowerCase(locale),
-            translation
-                    .replace(' ', '-')
-                    .replace('_', '-')
-            ,
-            SubstringIndices.forString(translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
+      translatable,
+      translation,
+      translation.toLowerCase(locale),
+      translation
+        .replace(' ', '-')
+        .replace('_', '-')
+      ,
+      SubstringIndices.forString(translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
     );
   }
 }

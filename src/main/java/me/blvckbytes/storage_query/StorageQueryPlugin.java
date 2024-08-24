@@ -1,12 +1,13 @@
 package me.blvckbytes.storage_query;
 
+import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Locale;
 import java.util.Objects;
 
-public class StorageQuery extends JavaPlugin {
+public class StorageQueryPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {

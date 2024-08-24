@@ -13,7 +13,7 @@ public record SubstringIndices(int start, int end) {
     return (end - start) + 1;
   }
 
-  public static List<SubstringIndices> forString(String input, char[] delimiters) {
+  public static ArrayList<SubstringIndices> forString(String input, char[] delimiters) {
     var result = new ArrayList<SubstringIndices>();
     var inputLength = input.length();
 
@@ -72,7 +72,7 @@ public record SubstringIndices(int start, int end) {
         var containerIndex = containerIndices.start + containedOffset + containerOffset;
         var containedIndex = containedIndices.start + containedOffset;
 
-        if (container.charAt(containerIndex) != contained.charAt(containedIndex)) {
+        if (Character.toLowerCase(container.charAt(containerIndex)) != Character.toLowerCase(contained.charAt(containedIndex))) {
           didMatch = false;
           break;
         }

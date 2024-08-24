@@ -94,7 +94,7 @@ public class SubstringIndicesTests {
     var pendingQueryIndices = new ArrayList<>(queryIndices);
     var remainingTextIndices = new ArrayList<>(textIndices);
 
-    SubstringIndices.matchQuerySubstrings(query.toLowerCase(), pendingQueryIndices, text.toLowerCase(), remainingTextIndices);
+    SubstringIndices.matchQuerySubstrings(query, pendingQueryIndices, text, remainingTextIndices);
 
     assertEquals(expectedPendingQuery, joinIndices(query, pendingQueryIndices));
     assertEquals(expectedRemainingText, joinIndices(text, remainingTextIndices));

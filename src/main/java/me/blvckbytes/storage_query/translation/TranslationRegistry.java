@@ -18,13 +18,11 @@ public class TranslationRegistry {
   private static final Gson GSON = new GsonBuilder().create();
 
   private final JsonObject languageFile;
-  private final Locale locale;
   private final Logger logger;
   private TranslatedTranslatable[] entries;
 
-  public TranslationRegistry(JsonObject languageFile, Locale locale, Logger logger) {
+  public TranslationRegistry(JsonObject languageFile, Logger logger) {
     this.languageFile = languageFile;
-    this.locale = locale;
     this.logger = logger;
   }
 
@@ -42,9 +40,8 @@ public class TranslationRegistry {
 
     this.entries = unsortedEntries
       .stream()
-      .sorted(Comparator.comparing(TranslatedTranslatable::translationLower))
+      .sorted(Comparator.comparing(TranslatedTranslatable::translation))
       .toArray(TranslatedTranslatable[]::new);
-
   }
 
   public List<TranslatedTranslatable> search(String text) {
@@ -55,12 +52,11 @@ public class TranslationRegistry {
 
     var result = new ArrayList<TranslatedTranslatable>();
     var textParts = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
-    var textLower = text.toLowerCase(locale);
 
     for (var entry : entries) {
       var pendingTextParts = new ArrayList<>(textParts);
 
-      SubstringIndices.matchQuerySubstrings(textLower, pendingTextParts, entry.translationLower(), new ArrayList<>(entry.partIndices()));
+      SubstringIndices.matchQuerySubstrings(text, pendingTextParts, entry.translation(), new ArrayList<>(entry.partIndices()));
 
       if (pendingTextParts.isEmpty())
         result.add(entry);
@@ -79,7 +75,7 @@ public class TranslationRegistry {
         continue;
       }
 
-      output.add(new TranslatedTranslatable(translatable, locale, translationValue));
+      output.add(new TranslatedTranslatable(translatable, translationValue));
     }
   }
 
@@ -95,14 +91,14 @@ public class TranslationRegistry {
     return translationValue.getAsString();
   }
 
-  public static @Nullable TranslationRegistry load(String absoluteLanguageFilePath, Locale locale, Logger logger) {
+  public static @Nullable TranslationRegistry load(String absoluteLanguageFilePath, Logger logger) {
     try (var inputStream = TranslationRegistry.class.getResourceAsStream(absoluteLanguageFilePath)) {
       if (inputStream == null)
         throw new IllegalStateException("Resource stream was null");
 
       var languageJson = GSON.fromJson(new InputStreamReader(inputStream), JsonObject.class);
 
-      var registry = new TranslationRegistry(languageJson, locale, logger);
+      var registry = new TranslationRegistry(languageJson, logger);
       registry.initialize(null);
 
       logger.info("Loaded registry for translation-file " + absoluteLanguageFilePath);

@@ -3,20 +3,17 @@ package me.blvckbytes.storage_query.translation;
 import org.bukkit.Translatable;
 
 import java.util.List;
-import java.util.Locale;
 
 public record TranslatedTranslatable(
   Translatable translatable,
   String translation,
-  String translationLower,
   String normalizedName,
   List<SubstringIndices> partIndices
 ) {
-  public TranslatedTranslatable(Translatable translatable, Locale locale, String translation) {
+  public TranslatedTranslatable(Translatable translatable, String translation) {
     this(
       translatable,
       translation,
-      translation.toLowerCase(locale),
       translation
         .replace(' ', '-')
         .replace('_', '-')

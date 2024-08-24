@@ -46,7 +46,43 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
     if (!(sender instanceof Player player))
       return false;
 
-    player.sendMessage("§aIt works.");
+    TranslationRegistry registry;
+
+    if (label.equals("lagersuche"))
+      registry = registryGerman;
+    else if (label.equals("storagequery"))
+      registry = registryEnglish;
+    else
+      return false;
+
+    var mainHandItem = player.getInventory().getItemInMainHand();
+
+    if (mainHandItem.getType() == Material.AIR) {
+      player.sendMessage("§cNot holding anything in your hand!");
+      return true;
+    }
+
+    try {
+      var parsedArgs = parseArguments(args);
+
+      try {
+        var predicates = parseTokens(parsedArgs, registry);
+
+        for (var predicate : predicates) {
+          if (!predicate.test(mainHandItem)) {
+            player.sendMessage("§cItem does not match!");
+            return true;
+          }
+        }
+
+        player.sendMessage("§aItem does match!");
+      } catch (ArgumentParseException e) {
+        player.sendMessage(generateParseExceptionMessage(args, e));
+      }
+    } catch (ArgumentParseException e) {
+      player.sendMessage(generateParseExceptionMessage(args, e));
+    }
+
     return true;
   }
 

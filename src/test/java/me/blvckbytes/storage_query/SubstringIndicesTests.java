@@ -1,6 +1,6 @@
 package me.blvckbytes.storage_query;
 
-import me.blvckbytes.storage_query.translation.SubstringIndices;
+import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package me.blvckbytes.storage_query.translation;
 
+import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.bukkit.Translatable;
 
 import java.util.List;

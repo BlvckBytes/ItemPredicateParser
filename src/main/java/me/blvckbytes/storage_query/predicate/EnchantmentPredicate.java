@@ -1,6 +1,6 @@
 package me.blvckbytes.storage_query.predicate;
 
-import me.blvckbytes.storage_query.argument.IntegerArgument;
+import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 public record EnchantmentPredicate(
   TranslatedTranslatable translatedTranslatable,
   Enchantment enchantment,
-  @Nullable IntegerArgument levelArgument
+  @Nullable IntegerToken levelArgument
 ) implements ItemPredicate {
 
   @Override

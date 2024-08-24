@@ -1,7 +1,6 @@
-package me.blvckbytes.storage_query.translation;
+package me.blvckbytes.storage_query.parse;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public record SubstringIndices(int start, int end) {
 

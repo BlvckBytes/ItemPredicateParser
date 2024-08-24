@@ -1,6 +1,6 @@
 package me.blvckbytes.storage_query.predicate;
 
-import me.blvckbytes.storage_query.translation.SubstringIndices;
+import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;

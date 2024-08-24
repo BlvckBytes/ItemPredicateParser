@@ -1,14 +1,14 @@
-package me.blvckbytes.storage_query.argument;
+package me.blvckbytes.storage_query.token;
 
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @param value The null-value represents a wildcard
  */
-public record IntegerArgument(
+public record IntegerToken(
   int commandArgumentIndex,
   @Nullable Integer value
-) implements Argument {
+) implements Token {
 
   @Override
   public int getCommandArgumentIndex() {

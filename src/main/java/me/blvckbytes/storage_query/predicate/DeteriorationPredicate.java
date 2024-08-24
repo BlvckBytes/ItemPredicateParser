@@ -1,14 +1,14 @@
 package me.blvckbytes.storage_query.predicate;
 
-import me.blvckbytes.storage_query.argument.IntegerArgument;
+import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
 public record DeteriorationPredicate(
   TranslatedTranslatable translatedTranslatable,
-  IntegerArgument deteriorationPercentageMin,
-  IntegerArgument deteriorationPercentageMax
+  IntegerToken deteriorationPercentageMin,
+  IntegerToken deteriorationPercentageMax
 ) implements ItemPredicate {
 
   @Override

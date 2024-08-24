@@ -1,6 +1,6 @@
 package me.blvckbytes.storage_query.predicate;
 
-import me.blvckbytes.storage_query.argument.IntegerArgument;
+import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -12,8 +12,8 @@ import java.util.StringJoiner;
 public record PotionEffectPredicate(
   TranslatedTranslatable translatedTranslatable,
   PotionEffectType type,
-  @Nullable IntegerArgument amplifierArgument,
-  @Nullable IntegerArgument durationArgument
+  @Nullable IntegerToken amplifierArgument,
+  @Nullable IntegerToken durationArgument
 ) implements ItemPredicate {
 
   @Override

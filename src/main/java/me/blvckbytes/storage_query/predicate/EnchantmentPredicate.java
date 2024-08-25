@@ -4,9 +4,11 @@ import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.StringJoiner;
 
 public record EnchantmentPredicate(
@@ -22,7 +24,14 @@ public record EnchantmentPredicate(
     if (meta == null)
       return false;
 
-    for (var enchant : meta.getEnchants().entrySet()) {
+    Map<Enchantment, Integer> enchantments;
+
+    if (meta instanceof EnchantmentStorageMeta enchantmentStorage)
+      enchantments = enchantmentStorage.getStoredEnchants();
+    else
+      enchantments = meta.getEnchants();
+
+    for (var enchant : enchantments.entrySet()) {
       if (!enchant.getKey().equals(this.enchantment))
         continue;
 

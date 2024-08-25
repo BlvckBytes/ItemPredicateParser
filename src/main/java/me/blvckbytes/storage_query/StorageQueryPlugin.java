@@ -27,7 +27,11 @@ public class StorageQueryPlugin extends JavaPlugin {
       return;
     }
 
-    var commandExecutor = new StorageQueryCommand(registryGerman, registryEnglish);
+    var resultDisplay = new ResultDisplayHandler();
+
+    getServer().getPluginManager().registerEvents(resultDisplay, this);
+
+    var commandExecutor = new StorageQueryCommand(registryGerman, registryEnglish, resultDisplay);
     var pluginCommand = Objects.requireNonNull(getCommand("lagersuche"));
 
     pluginCommand.setExecutor(commandExecutor);

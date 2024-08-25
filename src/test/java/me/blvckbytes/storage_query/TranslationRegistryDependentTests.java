@@ -1,6 +1,8 @@
 package me.blvckbytes.storage_query;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import me.blvckbytes.storage_query.translation.DeteriorationKey;
+import me.blvckbytes.storage_query.translation.TranslatableSource;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import org.bukkit.Keyed;
 import org.bukkit.Registry;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,11 +39,18 @@ public abstract class TranslationRegistryDependentTests {
     For whatever odd reason, MockBukkit does not implement getTranslationKey() on Enchantments and Effects.
    */
 
-  private static Iterable<Iterable<? extends Translatable>> makeSources() {
+  private static Iterable<TranslatableSource> makeSources() {
     return Arrays.asList(
-      Registry.ENCHANTMENT.stream().map(x -> patchTranslatable(x, "enchantment.minecraft.")).toList(),
-      Registry.MATERIAL,
-      Registry.EFFECT.stream().map(x -> patchTranslatable(x, "effect.minecraft.")).toList()
+      new TranslatableSource(
+        Registry.ENCHANTMENT.stream().map(x -> patchTranslatable(x, "enchantment.minecraft.")).toList(),
+        "(Enchantment) "
+      ),
+      new TranslatableSource(
+        Registry.EFFECT.stream().map(x -> patchTranslatable(x, "effect.minecraft.")).toList(),
+        "(Effect) "
+      ),
+      new TranslatableSource(Registry.MATERIAL, "(Material) "),
+      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), "")
     );
   }
 

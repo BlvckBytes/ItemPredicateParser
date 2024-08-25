@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
-import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
@@ -26,13 +25,11 @@ public class TranslationRegistry {
     this.logger = logger;
   }
 
-  public void initialize(Iterable<Iterable<? extends Translatable>> sources) {
+  public void initialize(Iterable<TranslatableSource> sources) {
     var unsortedEntries = new ArrayList<TranslatedTranslatable>();
 
     for (var source : sources)
       createEntries(source, unsortedEntries);
-
-    createEntries(List.of(DeteriorationKey.INSTANCE), unsortedEntries);
 
     this.entries = unsortedEntries
       .stream()
@@ -61,8 +58,8 @@ public class TranslationRegistry {
     return result;
   }
 
-  private void createEntries(Iterable<? extends Translatable> items, ArrayList<TranslatedTranslatable> output) {
-    for (var translatable : items) {
+  private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) {
+    for (var translatable : source.items()) {
       var translationKey = translatable.getTranslationKey();
       var translationValue = getTranslationOrNull(languageFile, translationKey);
 
@@ -71,7 +68,36 @@ public class TranslationRegistry {
         continue;
       }
 
-      output.add(new TranslatedTranslatable(translatable, translationValue));
+      var entry = new TranslatedTranslatable(source, translatable, translationValue);
+      boolean hadCollision = false;
+
+      for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
+        var existingEntry = output.get(outputIndex);
+
+        if (!(
+          existingEntry.normalizedName().equalsIgnoreCase(entry.normalizedName()) &&
+          existingEntry.source() != entry.source() // Do not prefix within the same source - useless
+        ))
+          continue;
+
+        output.set(outputIndex, new TranslatedTranslatable(
+          existingEntry.source(),
+          existingEntry.translatable(),
+          existingEntry.source().collisionPrefix() + existingEntry.translation()
+        ));
+
+        output.add(new TranslatedTranslatable(
+          source,
+          translatable,
+          source.collisionPrefix() + translationValue
+        ));
+
+        hadCollision = true;
+        break;
+      }
+
+      if (!hadCollision)
+        output.add(entry);
     }
   }
 
@@ -89,7 +115,7 @@ public class TranslationRegistry {
 
   public static @Nullable TranslationRegistry load(
     String absoluteLanguageFilePath,
-    Iterable<Iterable<? extends Translatable>> translatableSources,
+    Iterable<TranslatableSource> translatableSources,
     Logger logger
   ) {
     try (var inputStream = TranslationRegistry.class.getResourceAsStream(absoluteLanguageFilePath)) {

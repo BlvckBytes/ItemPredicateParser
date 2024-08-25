@@ -4,11 +4,14 @@ import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.StringJoiner;
 
 public record DeteriorationPredicate(
   TranslatedTranslatable translatedTranslatable,
-  IntegerToken deteriorationPercentageMin,
-  IntegerToken deteriorationPercentageMax
+  @Nullable IntegerToken deteriorationPercentageMin,
+  @Nullable IntegerToken deteriorationPercentageMax
 ) implements ItemPredicate {
 
   @Override
@@ -22,16 +25,17 @@ public record DeteriorationPredicate(
 
       var deteriorationPercentage = Math.round(((double) damage / maxDamage) * 100.0);
 
-      var percentageMin = deteriorationPercentageMin.value();
-      var percentageMax = deteriorationPercentageMax.value();
-
-      if (percentageMin != null) {
-        if (!(deteriorationPercentage >= percentageMin))
-          return false;
+      if (this.deteriorationPercentageMin != null) {
+        if (deteriorationPercentageMin.value() != null) {
+          if (!(deteriorationPercentage >= deteriorationPercentageMin.value()))
+            return false;
+        }
       }
 
-      if (percentageMax != null)
-        return deteriorationPercentage <= percentageMax;
+      if (this.deteriorationPercentageMax != null) {
+        if (deteriorationPercentageMax.value() != null)
+          return deteriorationPercentage <= deteriorationPercentageMax.value();
+      }
 
       return true;
     }
@@ -41,6 +45,16 @@ public record DeteriorationPredicate(
 
   @Override
   public String stringify() {
-    return translatedTranslatable.normalizedName() + " " + deteriorationPercentageMin.stringify() + " " + deteriorationPercentageMax.stringify();
+    var result = new StringJoiner(" ");
+
+    result.add(translatedTranslatable.normalizedName());
+
+    if (deteriorationPercentageMin != null)
+      result.add(deteriorationPercentageMin.stringify());
+
+    if (deteriorationPercentageMax != null)
+      result.add(deteriorationPercentageMax.stringify());
+
+    return result.toString();
   }
 }

@@ -65,16 +65,6 @@ public class PredicateParser {
       if (shortestMatch.translatable() instanceof DeteriorationKey) {
         IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(remainingTokens);
         IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(remainingTokens);
-
-        // I think that it'll be friendlier to act out on a no-op, rather than to throw an error
-        // By falling back to a wildcard, the user is also shown that there are parameters, in the expanded form
-
-        if (deteriorationPercentageMin == null)
-          deteriorationPercentageMin = new IntegerToken(currentToken.getCommandArgumentIndex(), null);
-
-        if (deteriorationPercentageMax == null)
-          deteriorationPercentageMax = new IntegerToken(currentToken.getCommandArgumentIndex(), null);
-
         result.add(new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
       }

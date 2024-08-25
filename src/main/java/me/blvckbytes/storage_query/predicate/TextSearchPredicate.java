@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class TextSearchPredicate implements ItemPredicate {
 
-  private final String text;
+  public final String text;
   private final List<SubstringIndices> textIndices;
 
   public TextSearchPredicate(String text) {

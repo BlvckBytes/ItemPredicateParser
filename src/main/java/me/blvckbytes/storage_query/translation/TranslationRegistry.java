@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
-import org.bukkit.Registry;
 import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,18 +26,13 @@ public class TranslationRegistry {
     this.logger = logger;
   }
 
-  public void initialize(@Nullable List<TranslatedTranslatable> items) {
+  public void initialize(Iterable<Iterable<? extends Translatable>> sources) {
     var unsortedEntries = new ArrayList<TranslatedTranslatable>();
 
-    if (items != null)
-      unsortedEntries.addAll(items);
+    for (var source : sources)
+      createEntries(source, unsortedEntries);
 
-    else {
-      createEntries(Registry.ENCHANTMENT, unsortedEntries);
-      createEntries(Registry.MATERIAL, unsortedEntries);
-      createEntries(Registry.EFFECT, unsortedEntries);
-      createEntries(List.of(DeteriorationKey.INSTANCE), unsortedEntries);
-    }
+    createEntries(List.of(DeteriorationKey.INSTANCE), unsortedEntries);
 
     this.entries = unsortedEntries
       .stream()
@@ -93,7 +87,11 @@ public class TranslationRegistry {
     return translationValue.getAsString();
   }
 
-  public static @Nullable TranslationRegistry load(String absoluteLanguageFilePath, Logger logger) {
+  public static @Nullable TranslationRegistry load(
+    String absoluteLanguageFilePath,
+    Iterable<Iterable<? extends Translatable>> translatableSources,
+    Logger logger
+  ) {
     try (var inputStream = TranslationRegistry.class.getResourceAsStream(absoluteLanguageFilePath)) {
       if (inputStream == null)
         throw new IllegalStateException("Resource stream was null");
@@ -101,7 +99,8 @@ public class TranslationRegistry {
       var languageJson = GSON.fromJson(new InputStreamReader(inputStream), JsonObject.class);
 
       var registry = new TranslationRegistry(languageJson, logger);
-      registry.initialize(null);
+
+      registry.initialize(translatableSources);
 
       logger.info("Loaded registry for translation-file " + absoluteLanguageFilePath);
       return registry;

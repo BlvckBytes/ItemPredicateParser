@@ -65,7 +65,7 @@ public class TokenParserTests {
     makeExceptionCase(new String[] { "\"hello" }, 0, ParseConflict.MISSING_STRING_TERMINATION);
     makeExceptionCase(new String[] { "hello", "\"world", "22" }, 1, ParseConflict.MISSING_STRING_TERMINATION);
     makeExceptionCase(new String[] { "\"hel\"lo\"" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);
-    makeExceptionCase(new String[] { "\"hello", "\"a" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);
+    makeExceptionCase(new String[] { "\"hello", "\"a" }, 1, ParseConflict.MALFORMED_STRING_ARGUMENT);
     makeExceptionCase(new String[] { "hello\"" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);
     makeExceptionCase(new String[] { "h\"ello" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);
   }

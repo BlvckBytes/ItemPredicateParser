@@ -30,10 +30,10 @@ public record PotionEffectPredicate(
         if (!baseEffect.getType().equals(this.type))
           continue;
 
-        if (this.amplifierArgument != null && this.amplifierArgument.matches(baseEffect.getAmplifier()))
+        if (this.amplifierArgument != null && !this.amplifierArgument.matches(baseEffect.getAmplifier() + 1))
           continue;
 
-        if (this.durationArgument != null && this.durationArgument.matches(baseEffect.getAmplifier()))
+        if (this.durationArgument != null && !this.durationArgument.matches(baseEffect.getDuration() / 20))
           continue;
 
         return true;
@@ -44,10 +44,10 @@ public record PotionEffectPredicate(
       if (!customEffect.getType().equals(this.type))
         continue;
 
-      if (this.amplifierArgument != null && this.amplifierArgument.matches(customEffect.getAmplifier()))
+      if (this.amplifierArgument != null && !this.amplifierArgument.matches(customEffect.getAmplifier() + 1))
         continue;
 
-      if (this.durationArgument != null && this.durationArgument.matches(customEffect.getAmplifier()))
+      if (this.durationArgument != null && !this.durationArgument.matches(customEffect.getDuration() / 20))
         continue;
 
       return true;

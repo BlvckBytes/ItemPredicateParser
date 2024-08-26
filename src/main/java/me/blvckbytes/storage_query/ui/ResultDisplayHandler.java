@@ -94,7 +94,7 @@ public class ResultDisplayHandler implements Listener {
 
     var slot = event.getRawSlot();
 
-    if (slot >= INVENTORY_N_ROWS * 9)
+    if (slot < 0 || slot >= INVENTORY_N_ROWS * 9)
       return;
 
     var clickType = event.getClick();

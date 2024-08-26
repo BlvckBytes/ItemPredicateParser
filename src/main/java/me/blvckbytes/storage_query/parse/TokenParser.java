@@ -1,10 +1,10 @@
 package me.blvckbytes.storage_query.parse;
 
-import com.google.common.primitives.Ints;
 import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.token.QuotedStringToken;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,12 +93,12 @@ public class TokenParser {
 
       // No names will have a leading digit; expect integer
       if (Character.isDigit(firstChar)) {
-        var numericArgument = Ints.tryParse(arg);
+        var integerArgument = parseIntegerToken(arg, argumentIndex);
 
-        if (numericArgument == null)
+        if (integerArgument == null)
           throw new ArgumentParseException(argumentIndex, ParseConflict.EXPECTED_INTEGER);
 
-        result.add(new IntegerToken(argumentIndex, numericArgument));
+        result.add(integerArgument);
         continue;
       }
 
@@ -116,5 +116,37 @@ public class TokenParser {
       throw new ArgumentParseException(stringBeginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
     return result;
+  }
+
+  private static @Nullable IntegerToken parseIntegerToken(String arg, int argumentIndex) {
+    var argLength = arg.length();
+
+    var radixPower = 0;
+    var blockCounter = 0;
+    var currentNumber = 0;
+    var resultingNumber = 0;
+
+    for (var argIndex = argLength - 1; argIndex >= 0; --argIndex) {
+      var argChar = arg.charAt(argIndex);
+
+      if (argChar == ':') {
+        radixPower = 0;
+        resultingNumber += currentNumber * (int) Math.pow(60, blockCounter);
+        currentNumber = 0;
+        ++blockCounter;
+        continue;
+      }
+
+      if (!(argChar >= '0' && argChar <= '9'))
+        return null;
+
+      currentNumber += (argChar - '0') * (int) Math.pow(10, radixPower);
+
+      ++radixPower;
+    }
+
+    resultingNumber += currentNumber * (int) Math.pow(60, blockCounter);
+
+    return new IntegerToken(argumentIndex, resultingNumber, blockCounter != 0);
   }
 }

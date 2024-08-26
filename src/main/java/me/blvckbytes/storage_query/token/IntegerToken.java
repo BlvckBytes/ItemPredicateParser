@@ -7,8 +7,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public record IntegerToken(
   int commandArgumentIndex,
-  @Nullable Integer value
+  @Nullable Integer value,
+  boolean wasTimeNotation
 ) implements Token {
+
+  public IntegerToken(int commandArgumentIndex, @Nullable Integer value) {
+    this(commandArgumentIndex, value, false);
+  }
 
   @Override
   public int getCommandArgumentIndex() {

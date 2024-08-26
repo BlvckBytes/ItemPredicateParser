@@ -241,6 +241,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       case MISSING_STRING_TERMINATION -> "String has not been terminated";
       case UNIMPLEMENTED_TRANSLATABLE -> "Unimplemented translatable; please report this";
       case MULTIPLE_SEARCH_PATTERN_WILDCARDS -> "Used multiple ? within one argument";
+      case DOES_NOT_ACCEPT_TIME_NOTATION -> "This argument does not accept time notation";
     };
 
     return "§c" + conflictMessage + "§7: §4" + faultyArgument;

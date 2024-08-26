@@ -31,5 +31,10 @@ public enum ParseConflict {
   /**
    * Provided more than one search pattern wildcard (?) within a single argument
    */
-  MULTIPLE_SEARCH_PATTERN_WILDCARDS
+  MULTIPLE_SEARCH_PATTERN_WILDCARDS,
+  /**
+   * An integer token with time notation has been passed to a predicate which has
+   * nothing to do with time.
+   */
+  DOES_NOT_ACCEPT_TIME_NOTATION
 }

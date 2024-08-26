@@ -1,16 +1,23 @@
 package me.blvckbytes.storage_query;
 
+import me.blvckbytes.storage_query.parse.ArgumentParseException;
+import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.parse.PredicateParser;
 import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PredicateParserTests extends TranslationRegistryDependentTests {
@@ -177,6 +184,98 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       .validate(5, TextSearchPredicate.class, it -> {
         assertEquals("multi arg text b ", it.text);
       });
+  }
+
+  @Test
+  public void onlyEffectDurationShouldAcceptTimeNotation() {
+    parse(new String[] { "regen", "2", "2:30" }, 1)
+      .validate(0, PotionEffectPredicate.class, it -> {
+        assertEquals(PotionEffectType.REGENERATION, it.type());
+        assertEquals(2, it.amplifierArgument().value());
+        assertEquals(60*2 + 30, it.durationArgument().value());
+      });
+
+    parse(new String[] { "regen", "*", "2:30" }, 1)
+      .validate(0, PotionEffectPredicate.class, it -> {
+        assertEquals(PotionEffectType.REGENERATION, it.type());
+        assertNull(it.amplifierArgument().value());
+        assertEquals(60*2 + 30, it.durationArgument().value());
+      });
+
+    makeExceptionCase(new String[] { "effi", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "deterio", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "deterio", "*", "2:30" }, 2, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "deterio", "2:30", "*" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "deterio", "2:30", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "regen", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "regen", "2:30", "*" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "regen", "2:30", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+  }
+
+  @Test
+  public void shouldThrowOnInvalidBeginning() {
+    makeExceptionCase(new String[] { "5" }, 0, ParseConflict.EXPECTED_SEARCH_PATTERN);
+    makeExceptionCase(new String[] { "2:30" }, 0, ParseConflict.EXPECTED_SEARCH_PATTERN);
+  }
+
+  @Test
+  public void shouldThrowOnMultiplePatternWildcards() {
+    makeExceptionCase(new String[] { "sign-?-?" }, 0, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+    makeExceptionCase(new String[] { "?-sign-?-oak" }, 0, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+  }
+
+  @Test
+  public void shouldThrowOnNoMatches() {
+    makeExceptionCase(new String[] { "gibberish-gobbledygook" }, 0, ParseConflict.NO_SEARCH_MATCH);
+  }
+
+  @Test
+  public void shouldHandleMaterialWildcards() {
+    parse(new String[] { "pickax-?" }, 1)
+      .validate(0, MaterialPredicate.class, it -> {
+        assertThat(it.materials(), Matchers.containsInAnyOrder(Tag.ITEMS_PICKAXES.getValues().toArray()));
+      });
+
+    parse(new String[] { "hoe-?" }, 1)
+      .validate(0, MaterialPredicate.class, it -> {
+        assertThat(it.materials(), Matchers.containsInAnyOrder(Tag.ITEMS_HOES.getValues().toArray()));
+      });
+
+    parse(new String[] { "boots-?" }, 1)
+      .validate(0, MaterialPredicate.class, it -> {
+        assertThat(it.materials(), Matchers.containsInAnyOrder(Tag.ITEMS_FOOT_ARMOR.getValues().toArray()));
+      });
+
+    parse(new String[] { "fen-gat-?" }, 1)
+      .validate(0, MaterialPredicate.class, it -> {
+        assertThat(it.materials(), Matchers.containsInAnyOrder(Tag.FENCE_GATES.getValues().toArray()));
+      });
+  }
+
+  @Test
+  public void textSearchShouldMatchColoredStrings() {
+    assertTrue(
+      parse(new String[] { "\"hello world\"" }, 1)
+        .validate(0, TextSearchPredicate.class, it -> {
+          assertEquals(it.text, "hello world");
+        })
+        .items.getFirst()
+        .test(makeItemWithName("§aH§be§cl§dl§eo §fW§0o§1r§2l§3d"))
+    );
+  }
+
+  private ItemStack makeItemWithName(String name) {
+    var item = new ItemStack(Material.STICK, 1);
+    var meta = Objects.requireNonNull(item.getItemMeta());
+    meta.setDisplayName(name);
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
+    var exception = assertThrows(ArgumentParseException.class, () -> parse(args, -1));
+    assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
+    assertEquals(expectedConflict, exception.getConflict());
   }
 
   private record PredicateListValidationBuilder (List<ItemPredicate> items) {

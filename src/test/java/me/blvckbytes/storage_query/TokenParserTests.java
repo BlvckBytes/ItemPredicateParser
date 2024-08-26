@@ -70,6 +70,13 @@ public class TokenParserTests {
     makeExceptionCase(new String[] { "h\"ello" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);
   }
 
+  @Test
+  public void shouldParseTimeNotation() {
+    makeCase(new String[]{ "2:30" }, new Token[] { new IntegerToken(0, 2*60 + 30, true) });
+    makeCase(new String[]{ "12:23" }, new Token[] { new IntegerToken(0, 12*60 + 23, true) });
+    makeCase(new String[]{ "12:34:56" }, new Token[] { new IntegerToken(0, 12*60*60 + 34*60 + 56, true) });
+  }
+
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var exception = assertThrows(ArgumentParseException.class, () -> TokenParser.parseTokens(args));
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());

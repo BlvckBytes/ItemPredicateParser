@@ -74,12 +74,16 @@ public class PredicateParser {
 
       if (shortestMatch.translatable() instanceof Enchantment predicateEnchantment) {
         IntegerToken enchantmentLevel = tryConsumeIntegerArgument(remainingTokens);
+        throwOnTimeNotation(enchantmentLevel);
+
         result.add(new EnchantmentPredicate(shortestMatch, predicateEnchantment, enchantmentLevel));
         continue;
       }
 
       if (shortestMatch.translatable() instanceof PotionEffectType predicatePotionEffect) {
         IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(remainingTokens);
+        throwOnTimeNotation(potionEffectAmplifier);
+
         IntegerToken potionEffectDuration = tryConsumeIntegerArgument(remainingTokens);
         result.add(new PotionEffectPredicate(shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
         continue;
@@ -87,7 +91,11 @@ public class PredicateParser {
 
       if (shortestMatch.translatable() instanceof DeteriorationKey) {
         IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(remainingTokens);
+        throwOnTimeNotation(deteriorationPercentageMin);
+
         IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(remainingTokens);
+        throwOnTimeNotation(deteriorationPercentageMax);
+
         result.add(new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
       }
@@ -96,6 +104,16 @@ public class PredicateParser {
     }
 
     return result;
+  }
+
+  private static void throwOnTimeNotation(@Nullable IntegerToken token) {
+    if (token == null)
+      return;
+
+    if (!token.wasTimeNotation())
+      return;
+
+    throw new ArgumentParseException(token.getCommandArgumentIndex(), ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
   }
 
   private static @Nullable IntegerToken tryConsumeIntegerArgument(List<Token> tokens) {

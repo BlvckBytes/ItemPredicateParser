@@ -54,6 +54,7 @@ public record SubstringIndices(int start, int end) {
   private static int relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
     var containerIndicesLength = containerIndices.length();
     var containedIndicesLength = containedIndices.length();
+    var containerLength = container.length();
 
     if (containerIndicesLength < containedIndicesLength)
       return -1;
@@ -73,7 +74,22 @@ public record SubstringIndices(int start, int end) {
         var containerIndex = containerIndices.start + containedOffset + containerOffset;
         var containedIndex = containedIndices.start + containedOffset;
 
-        if (Character.toLowerCase(container.charAt(containerIndex)) != Character.toLowerCase(contained.charAt(containedIndex))) {
+        var containerChar = container.charAt(containerIndex);
+
+        // Skip color-sequence of §<color_char>
+        if (containerChar == '§' && containerIndex < containerLength - 1) {
+          var nextCharLower = container.charAt(containerIndex + 1);
+
+          if (
+            (nextCharLower >= 'a' && nextCharLower <= 'f') ||
+            (nextCharLower >= '0' && nextCharLower <= '9')
+          ) {
+            ++containedOffset;
+            continue;
+          }
+        }
+
+        if (Character.toLowerCase(containerChar) != Character.toLowerCase(contained.charAt(containedIndex))) {
           didMatch = false;
           break;
         }

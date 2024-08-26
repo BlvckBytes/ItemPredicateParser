@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,25 +38,33 @@ public class TranslationRegistry {
       .toArray(TranslatedTranslatable[]::new);
   }
 
-  public List<TranslatedTranslatable> search(String text) {
+  public SearchResult search(String text) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
-      return new ArrayList<>();
+      return new SearchResult();
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
     var textParts = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
+    var wildcardPresence = SearchWildcardPresence.ABSENT;
+
     for (var entry : entries) {
       var pendingTextParts = new ArrayList<>(textParts);
 
-      SubstringIndices.matchQuerySubstrings(text, pendingTextParts, entry.translation(), new ArrayList<>(entry.partIndices()));
+      wildcardPresence = SubstringIndices.matchQuerySubstrings(
+        text, pendingTextParts,
+        entry.translation(), new ArrayList<>(entry.partIndices())
+      );
+
+      if (wildcardPresence == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
+        return new SearchResult(List.of(), wildcardPresence);
 
       if (pendingTextParts.isEmpty())
         result.add(entry);
     }
 
-    return result;
+    return new SearchResult(result, wildcardPresence);
   }
 
   private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) {

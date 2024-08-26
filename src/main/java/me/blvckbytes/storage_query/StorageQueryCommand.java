@@ -1,10 +1,12 @@
 package me.blvckbytes.storage_query;
 
+import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
 import me.blvckbytes.storage_query.parse.ArgumentParseException;
 import me.blvckbytes.storage_query.parse.PredicateParser;
 import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
+import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import net.md_5.bungee.api.ChatMessageType;
@@ -26,8 +28,8 @@ import java.util.stream.Collectors;
 
 public class StorageQueryCommand implements CommandExecutor, TabCompleter {
 
-  private static final int MAX_COMPLETER_RESULTS = 10;
-  private static final int CHEST_SEARCH_DISTANCE_HALF = 30;
+  private static final int MAX_COMPLETER_RESULTS = 15;
+  private static final int CHEST_SEARCH_DISTANCE_HALF = 50;
 
   private final TranslationRegistry registryGerman;
   private final TranslationRegistry registryEnglish;
@@ -56,6 +58,12 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
     try {
       var tokens = TokenParser.parseTokens(args);
       var predicates = PredicateParser.parsePredicates(tokens, registry);
+
+      if (predicates.isEmpty()) {
+        player.sendMessage("§cStorageQuery | Please enter at least one criterion");
+        return true;
+      }
+
       var nearChests = findNearChestBlocks(player.getLocation());
       var items = applyPredicates(nearChests, predicates);
 
@@ -102,7 +110,8 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       if (parsedArgsCount == 0)
         return null;
 
-      var lastArg = tokens.get(parsedArgsCount - 1);
+      var argumentIndex = parsedArgsCount - 1;
+      var lastArg = tokens.get(argumentIndex);
 
       if (!(lastArg instanceof UnquotedStringToken stringArg))
         return null;
@@ -112,7 +121,12 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       if (searchText.isEmpty())
         return List.of();
 
-      return registry.search(searchText)
+      var searchResult = registry.search(searchText);
+
+      if (searchResult.wildcardPresence() == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
+        throw new ArgumentParseException(argumentIndex, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+
+      return searchResult.result()
         .stream()
         .map(TranslatedTranslatable::normalizedName)
         .sorted(Comparator.comparing(String::length))
@@ -216,6 +230,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       case MALFORMED_STRING_ARGUMENT -> "Malformed string notation";
       case MISSING_STRING_TERMINATION -> "String has not been terminated";
       case UNIMPLEMENTED_TRANSLATABLE -> "Unimplemented translatable; please report this";
+      case MULTIPLE_SEARCH_PATTERN_WILDCARDS -> "Used multiple ? within one argument";
     };
 
     return "§c" + conflictMessage + "§7: §4" + faultyArgument;

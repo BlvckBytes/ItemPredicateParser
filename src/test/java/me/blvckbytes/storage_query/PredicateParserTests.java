@@ -24,7 +24,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
 
     parse(new String[]{ "dia-ches" }, 1)
       .validate(0, MaterialPredicate.class, it -> {
-        assertEquals(Material.DIAMOND_CHESTPLATE, it.material());
+        assertEquals(Material.DIAMOND_CHESTPLATE, it.materials().getFirst());
       });
 
     // ================================================================================
@@ -172,7 +172,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         assertNull(it.durationArgument().value());
       })
       .validate(4, MaterialPredicate.class, it -> {
-        assertEquals(Material.DIAMOND_PICKAXE, it.material());
+        assertEquals(Material.DIAMOND_PICKAXE, it.materials().getFirst());
       })
       .validate(5, TextSearchPredicate.class, it -> {
         assertEquals("multi arg text b ", it.text);

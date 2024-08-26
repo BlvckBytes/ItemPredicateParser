@@ -11,6 +11,8 @@ import java.util.List;
 
 public class TokenParser {
 
+  private static final char INTEGER_WILDCARD_CHAR = '*';
+
   public static List<Token> parseTokens(String[] args) {
     var result = new ArrayList<Token>();
 
@@ -84,7 +86,7 @@ public class TokenParser {
         continue;
       }
 
-      if (firstChar == '*' && argLength == 1) {
+      if (firstChar == INTEGER_WILDCARD_CHAR && argLength == 1) {
         result.add(new IntegerToken(argumentIndex, null));
         continue;
       }

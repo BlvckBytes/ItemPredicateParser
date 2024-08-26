@@ -38,14 +38,37 @@ public class PredicateParser {
       if (searchString.isEmpty())
         continue;
 
-      var searchResults = registry.search(searchString);
-      var shortestMatch = getShortestMatch(searchResults);
+      var searchResult = registry.search(searchString);
+
+      if (searchResult.wildcardPresence() == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
+        throw new ArgumentParseException(currentToken.getCommandArgumentIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+
+      var searchResultEntries = searchResult.result();
+
+      // Wildcards may only apply to materials, not only because that's the only place where they make sense, but
+      // because otherwise, predicate-ambiguity would arise.
+      if (searchResult.wildcardPresence() == SearchWildcardPresence.PRESENT) {
+        var materials = new ArrayList<Material>();
+
+        for (var resultEntry : searchResultEntries) {
+          if (resultEntry.translatable() instanceof Material material)
+            materials.add(material);
+        }
+
+        if (materials.isEmpty())
+          throw new ArgumentParseException(((UnquotedStringToken) currentToken).commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
+
+        result.add(new MaterialPredicate(null, translationSearch, materials));
+        continue;
+      }
+
+      var shortestMatch = getShortestMatch(searchResultEntries);
 
       if (shortestMatch == null)
         throw new ArgumentParseException(((UnquotedStringToken) currentToken).commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
       if (shortestMatch.translatable() instanceof Material predicateMaterial) {
-        result.add(new MaterialPredicate(shortestMatch, predicateMaterial));
+        result.add(new MaterialPredicate(shortestMatch, translationSearch, List.of(predicateMaterial)));
         continue;
       }
 

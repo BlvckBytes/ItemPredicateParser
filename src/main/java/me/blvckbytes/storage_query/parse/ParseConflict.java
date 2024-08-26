@@ -27,5 +27,9 @@ public enum ParseConflict {
    * The search-pattern matched on an instance of a translatable that is not yet
    * implemented; this should never happen in production.
    */
-  UNIMPLEMENTED_TRANSLATABLE
+  UNIMPLEMENTED_TRANSLATABLE,
+  /**
+   * Provided more than one search pattern wildcard (?) within a single argument
+   */
+  MULTIPLE_SEARCH_PATTERN_WILDCARDS
 }

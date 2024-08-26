@@ -8,6 +8,8 @@ public record SubstringIndices(int start, int end) {
   public static final char[] SEARCH_PATTERN_DELIMITERS = { '-' };
   public static final char[] FREE_TEXT_DELIMITERS = { ' ' };
 
+  private static final char PATTERN_WILDCARD_CHAR = '?';
+
   public int length() {
     return (end - start) + 1;
   }
@@ -84,14 +86,27 @@ public record SubstringIndices(int start, int end) {
     return -1;
   }
 
-  public static void matchQuerySubstrings(
+  public static SearchWildcardPresence matchQuerySubstrings(
     String query,
     ArrayList<SubstringIndices> pendingQuerySubstrings,
     String text,
     ArrayList<SubstringIndices> remainingTextSubstrings
   ) {
+    boolean hasSearchPatternWildcard = false;
+
     for (var pendingQuerySubstringsIterator = pendingQuerySubstrings.iterator(); pendingQuerySubstringsIterator.hasNext();) {
       var pendingQuerySubstring = pendingQuerySubstringsIterator.next();
+
+      if (pendingQuerySubstring.length() == 1 && query.charAt(pendingQuerySubstring.start()) == PATTERN_WILDCARD_CHAR) {
+        if (!hasSearchPatternWildcard) {
+          hasSearchPatternWildcard = true;
+          pendingQuerySubstringsIterator.remove();
+          continue;
+        }
+
+        return SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY;
+      }
+
       boolean didQuerySubstringMatch = false;
 
       for (var remainingTextSubstringIndex = 0; remainingTextSubstringIndex < remainingTextSubstrings.size(); ++remainingTextSubstringIndex) {
@@ -147,5 +162,7 @@ public record SubstringIndices(int start, int end) {
       if (didQuerySubstringMatch)
         pendingQuerySubstringsIterator.remove();
     } // Pending query substrings
+
+    return hasSearchPatternWildcard ? SearchWildcardPresence.PRESENT : SearchWildcardPresence.ABSENT;
   }
 }

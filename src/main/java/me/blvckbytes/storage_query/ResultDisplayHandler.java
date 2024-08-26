@@ -1,15 +1,22 @@
 package me.blvckbytes.storage_query;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -28,8 +35,12 @@ public class ResultDisplayHandler implements Listener {
 
   private final Map<UUID, DisplayState> stateByPlayerId;
 
-  public ResultDisplayHandler() {
+  public ResultDisplayHandler(Plugin plugin) {
     this.stateByPlayerId = new HashMap<>();
+
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+      stateByPlayerId.values().forEach(DisplayState::tickSelectionBlink);
+    }, 0, 7);
   }
 
   public void displayItems(Player player, List<ChestItem> items) {
@@ -39,8 +50,8 @@ public class ResultDisplayHandler implements Listener {
     slots.remove(FORWARDS_SLOT_ID);
 
     var state = new DisplayState(player, items, INVENTORY_N_ROWS, slots, inv -> {
-      inv.setItem(BACKWARDS_SLOT_ID, makeHead(ARROW_LEFT_TEXTURES_URL, "§aBackwards"));
-      inv.setItem(FORWARDS_SLOT_ID, makeHead(ARROW_RIGHT_TEXTURES_URL, "§aForwards"));
+      inv.setItem(BACKWARDS_SLOT_ID, makeHead(ARROW_LEFT_TEXTURES_URL, "§8» §5Vorherige Seite §8«"));
+      inv.setItem(FORWARDS_SLOT_ID, makeHead(ARROW_RIGHT_TEXTURES_URL, "§8» §5Nächste Seite §8«"));
     });
 
     stateByPlayerId.put(player.getUniqueId(), state);
@@ -50,12 +61,26 @@ public class ResultDisplayHandler implements Listener {
 
   @EventHandler
   public void onClose(InventoryCloseEvent event) {
-    var playerId = event.getPlayer().getUniqueId();
+    if (!(event.getPlayer() instanceof Player player))
+      return;
+
+    var playerId = player.getUniqueId();
     var state = stateByPlayerId.get(playerId);
 
     // Only remove on inventory match, as to prevent removal on title update
-    if (state != null && state.isInventory(event.getInventory()))
+    if (state != null && state.isInventory(event.getInventory())) {
       stateByPlayerId.remove(playerId);
+      state.forEachSelection(selectedItem -> handOutItem(player, selectedItem));
+      state.clearItems();
+    }
+  }
+
+  @EventHandler
+  public void onQuit(PlayerQuitEvent event) {
+    var state = stateByPlayerId.remove(event.getPlayer().getUniqueId());
+
+    if (state != null)
+      state.clearItems();
   }
 
   @EventHandler
@@ -71,30 +96,48 @@ public class ResultDisplayHandler implements Listener {
     event.setCancelled(true);
 
     var slot = event.getSlot();
+    var clickType = event.getClick();
 
-    if (slot == BACKWARDS_SLOT_ID) {
-      state.previousPage();
-      return;
-    }
-
-    if (slot == FORWARDS_SLOT_ID) {
-      state.nextPage();
+    if (clickType == ClickType.DROP) {
+      state.toggleSlotSelection(slot);
       return;
     }
 
     var chestItem = state.getItemCorrespondingToSlot(slot);
 
-    if (chestItem == null)
+    if (clickType == ClickType.LEFT) {
+      // Since dropping on an empty slot does not register, and the item is blinking,
+      // un-selecting it may be hard, so left-clicking serves as an alternative in this mode
+      if (state.isSlotSelected(slot)) {
+        state.toggleSlotSelection(slot);
+        return;
+      }
+
+      if (slot == BACKWARDS_SLOT_ID) {
+        state.previousPage();
+        return;
+      }
+
+      if (slot == FORWARDS_SLOT_ID) {
+        state.nextPage();
+        return;
+      }
+
+      if (chestItem == null)
+        return;
+
+      if (handOutItem(player, chestItem))
+        player.closeInventory();
+
       return;
+    }
 
-    player.closeInventory();
+    if (clickType == ClickType.RIGHT) {
+      if (chestItem == null)
+        return;
 
-    var item = chestItem.access();
-
-    if (item != null) {
-      chestItem.chest().getInventory().setItem(chestItem.slot(), null);
-      player.getWorld().dropItem(player.getEyeLocation(), item);
-      player.sendMessage("§aStorageQuery | Handed out item " + item.getType().name());
+      if (teleportToChest(player, chestItem))
+        player.closeInventory();
     }
   }
 
@@ -111,6 +154,60 @@ public class ResultDisplayHandler implements Listener {
     event.setCancelled(true);
   }
 
+  private boolean teleportToChest(Player player, ChestItem chestItem) {
+    var chest = chestItem.chest();
+
+    var teleportFaces = new BlockFace[] { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
+
+    Location[] blockLocations;
+
+    if (chest.getInventory() instanceof DoubleChestInventory doubleChest)
+      blockLocations = new Location[] { doubleChest.getLeftSide().getLocation(), doubleChest.getRightSide().getLocation() };
+    else
+      blockLocations = new Location[] { chest.getLocation() };
+
+    Location destination;
+
+    for (var blockLocation : blockLocations) {
+      for (var teleportFace : teleportFaces) {
+        if ((destination = returnDestinationIfPassable(blockLocation, teleportFace)) != null) {
+          player.teleport(destination);
+          return true;
+        }
+      }
+    }
+
+    player.sendMessage("§cStorageQuery | This chest is obstructed at all of it's faces");
+    return false;
+  }
+
+  private @Nullable Location returnDestinationIfPassable(Location location, BlockFace face) {
+    var destination = location.clone().add(face.getDirection());
+
+    if (destination.getBlock().isPassable())
+      return destination;
+
+    return null;
+  }
+
+  private boolean handOutItem(Player player, ChestItem chestItem) {
+    var item = chestItem.access();
+
+    if (item == null || item.getType() == Material.AIR)
+      return false;
+
+    var remainder = InventoryUtil.addToInventory(player.getInventory(), item, true);
+
+    if (remainder != 0) {
+      player.sendMessage("§cStorageQuery | Your inventory can only hold " + remainder + " too few of the item " + item.getType().name() + " (x" + item.getAmount() + ")");
+      return false;
+    }
+
+    chestItem.chest().getInventory().setItem(chestItem.slot(), null);
+    player.sendMessage("§aStorageQuery | Handed out item " + item.getType().name() + " (x" + item.getAmount() + ")");
+    return true;
+  }
+
   private ItemStack makeHead(String texturesValue, String displayName) {
     var result = new ItemStack(Material.PLAYER_HEAD);
 
@@ -120,13 +217,18 @@ public class ResultDisplayHandler implements Listener {
 
       try {
         textures.setSkin(URI.create(texturesValue).toURL());
-      } catch (MalformedURLException e) {
-        throw new RuntimeException(e);
-      }
+      } catch (MalformedURLException ignored) {}
 
       profile.setTextures(textures);
       meta.setOwnerProfile(profile);
       meta.setDisplayName(displayName);
+
+      meta.setLore(List.of(
+        "§8➥ §dLinksklick §7Gewähltes Item anfordern",
+        "§8➥ §dRechtsklick §7Zur Truhe teleportieren",
+        "§8➥ §dDroppen §7Mehrfachauswahl umschalten"
+      ));
+
       result.setItemMeta(meta);
     }
 

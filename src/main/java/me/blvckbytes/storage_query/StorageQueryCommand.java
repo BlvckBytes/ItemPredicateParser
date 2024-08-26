@@ -56,6 +56,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       return false;
 
     try {
+      var parsingStart = System.nanoTime();
       var tokens = TokenParser.parseTokens(args);
       var predicates = PredicateParser.parsePredicates(tokens, registry);
 
@@ -63,9 +64,18 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§cStorageQuery | Please enter at least one criterion");
         return true;
       }
+      var parsingEnd = System.nanoTime();
+      player.sendMessage(String.format("§6(Parsing took %.2f ms)", (parsingEnd - parsingStart) / 1000.0 / 1000.0));
 
+      var chestSearchStart = System.nanoTime();
       var nearChests = findNearChestBlocks(player.getLocation());
+      var chestSearchEnd = System.nanoTime();
+      player.sendMessage(String.format("§6(Chest-Search took %.2f ms)", (chestSearchEnd - chestSearchStart) / 1000.0 / 1000.0));
+
+      var predicateStart = System.nanoTime();
       var items = applyPredicates(nearChests, predicates);
+      var predicateEnd = System.nanoTime();
+      player.sendMessage(String.format("§6(Predicates took %.2f ms)", (predicateEnd - predicateStart) / 1000.0 / 1000.0));
 
       if (items.isEmpty()) {
         player.sendMessage("§cStorageQuery | Couldn't locate any matching items");

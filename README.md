@@ -2,6 +2,5 @@
 
 ## Things To Think About
 
-- Handle chests being updated in the meantime
-- Item categories (seems to be solved by material-wildcards)
+- Handle chests being updated while the search-results are browsed
 - Write tests for material wildcards

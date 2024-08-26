@@ -39,7 +39,7 @@ public class StorageQueryPlugin extends JavaPlugin {
       return;
     }
 
-    var resultDisplay = new ResultDisplayHandler();
+    var resultDisplay = new ResultDisplayHandler(this);
 
     getServer().getPluginManager().registerEvents(resultDisplay, this);
 

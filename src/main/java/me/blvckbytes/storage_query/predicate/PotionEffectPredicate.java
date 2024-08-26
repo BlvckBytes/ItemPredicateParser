@@ -2,6 +2,7 @@ package me.blvckbytes.storage_query.predicate;
 
 import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
@@ -30,10 +31,10 @@ public record PotionEffectPredicate(
         if (!baseEffect.getType().equals(this.type))
           continue;
 
-        if (this.amplifierArgument != null && !this.amplifierArgument.matches(baseEffect.getAmplifier() + 1))
+        if (doesAmplifierMismatch(baseEffect.getAmplifier()))
           continue;
 
-        if (this.durationArgument != null && !this.durationArgument.matches(baseEffect.getDuration() / 20))
+        if (doesDurationMismatch(item, baseEffect.getDuration()))
           continue;
 
         return true;
@@ -44,10 +45,10 @@ public record PotionEffectPredicate(
       if (!customEffect.getType().equals(this.type))
         continue;
 
-      if (this.amplifierArgument != null && !this.amplifierArgument.matches(customEffect.getAmplifier() + 1))
+      if (doesAmplifierMismatch(customEffect.getAmplifier()))
         continue;
 
-      if (this.durationArgument != null && !this.durationArgument.matches(customEffect.getDuration() / 20))
+      if (doesDurationMismatch(item, customEffect.getDuration()))
         continue;
 
       return true;
@@ -69,5 +70,26 @@ public record PotionEffectPredicate(
       result.add(this.durationArgument.stringify());
 
     return result.toString();
+  }
+
+  private boolean doesAmplifierMismatch(int amplifier) {
+    if (this.amplifierArgument == null)
+      return false;
+
+    // Amplifiers are stored in a zero-based manner
+    return !this.amplifierArgument.matches(amplifier + 1);
+  }
+
+  private boolean doesDurationMismatch(ItemStack item, int duration) {
+    if (this.durationArgument == null)
+      return false;
+
+    // Lingering Potion: "For effects with duration, the duration applied by the
+    // cloud is 1/4 that of the corresponding potion."
+    if (item.getType() == Material.LINGERING_POTION)
+      duration /= 4;
+
+    // The unit of duration is always in ticks, with 20 ticks/s
+    return !this.durationArgument.matches(duration / 20);
   }
 }

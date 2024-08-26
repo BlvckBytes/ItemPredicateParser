@@ -7,10 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
@@ -90,12 +87,16 @@ public class ResultDisplayHandler implements Listener {
 
     var state = stateByPlayerId.get(player.getUniqueId());
 
-    if (state == null || !state.isInventory(event.getClickedInventory()))
+    if (state == null || !state.isInventory(player.getOpenInventory().getTopInventory()))
       return;
 
     event.setCancelled(true);
 
-    var slot = event.getSlot();
+    var slot = event.getRawSlot();
+
+    if (slot >= INVENTORY_N_ROWS * 9)
+      return;
+
     var clickType = event.getClick();
 
     if (clickType == ClickType.DROP) {
@@ -171,7 +172,7 @@ public class ResultDisplayHandler implements Listener {
     for (var blockLocation : blockLocations) {
       for (var teleportFace : teleportFaces) {
         if ((destination = returnDestinationIfPassable(blockLocation, teleportFace)) != null) {
-          player.teleport(destination);
+          player.teleport(destination.add(.5, .1, .5));
           return true;
         }
       }

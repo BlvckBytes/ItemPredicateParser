@@ -47,8 +47,8 @@ public class ResultDisplayHandler implements Listener {
     slots.remove(FORWARDS_SLOT_ID);
 
     var state = new DisplayState(player, items, INVENTORY_N_ROWS, slots, inv -> {
-      inv.setItem(BACKWARDS_SLOT_ID, makeHead(ARROW_LEFT_TEXTURES_URL, "§8» §5Vorherige Seite §8«"));
-      inv.setItem(FORWARDS_SLOT_ID, makeHead(ARROW_RIGHT_TEXTURES_URL, "§8» §5Nächste Seite §8«"));
+      inv.setItem(BACKWARDS_SLOT_ID, makeHead(ARROW_LEFT_TEXTURES_URL, "§8» §5Vorherige Seite §8«", true));
+      inv.setItem(FORWARDS_SLOT_ID, makeHead(ARROW_RIGHT_TEXTURES_URL, "§8» §5Nächste Seite §8«", false));
     });
 
     stateByPlayerId.put(player.getUniqueId(), state);
@@ -134,6 +134,16 @@ public class ResultDisplayHandler implements Listener {
     }
 
     if (clickType == ClickType.RIGHT) {
+      if (slot == BACKWARDS_SLOT_ID) {
+        state.firstPage();
+        return;
+      }
+
+      if (slot == FORWARDS_SLOT_ID) {
+        state.lastPage();
+        return;
+      }
+
       if (chestItem == null)
         return;
 
@@ -209,7 +219,7 @@ public class ResultDisplayHandler implements Listener {
     return true;
   }
 
-  private ItemStack makeHead(String texturesValue, String displayName) {
+  private ItemStack makeHead(String texturesValue, String displayName, boolean isBackwards) {
     var result = new ItemStack(Material.PLAYER_HEAD);
 
     if(result.getItemMeta() instanceof SkullMeta meta) {
@@ -225,9 +235,16 @@ public class ResultDisplayHandler implements Listener {
       meta.setDisplayName(displayName);
 
       meta.setLore(List.of(
+        " ",
+        "§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "§7Aktionen für die Suchergebnisse",
         "§8➥ §dLinksklick §7Gewähltes Item anfordern",
         "§8➥ §dRechtsklick §7Zur Truhe teleportieren",
-        "§8➥ §dDroppen §7Mehrfachauswahl umschalten"
+        "§8➥ §dDroppen §7Mehrfachauswahl umschalten",
+        "§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "§7Aktionen für den Seitenwechsel",
+        "§8➥ §dLinksklick §7Eine Seite " + (isBackwards ? "zurück" : "vorwärts"),
+        "§8➥ §dRechtsklick §7Bis zum " + (isBackwards ? "Anfang" : "Ende")
       ));
 
       result.setItemMeta(meta);

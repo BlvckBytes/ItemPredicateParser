@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query.ui;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +60,7 @@ public class DisplayState {
 
     inventory = makeInventory();
     player.openInventory(inventory);
+    player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 10, 1);
     renderItems();
   }
 
@@ -75,6 +77,22 @@ public class DisplayState {
       return;
 
     --currentPage;
+    show();
+  }
+
+  public void firstPage() {
+    if (currentPage == 1)
+      return;
+
+    currentPage = 1;
+    show();
+  }
+
+  public void lastPage() {
+    if (currentPage == numberOfPages)
+      return;
+
+    currentPage = numberOfPages;
     show();
   }
 
@@ -102,7 +120,7 @@ public class DisplayState {
   }
 
   private Inventory makeInventory() {
-    var result = Bukkit.createInventory(null, 9 * nRows, "§8StorageQuery §5" + currentPage + "§8/§5" + numberOfPages);
+    var result = Bukkit.createInventory(null, 9 * nRows, "§8Suchergebnisse §5" + currentPage + "§8/§5" + numberOfPages);
     inventoryPreparer.accept(result);
     return result;
   }

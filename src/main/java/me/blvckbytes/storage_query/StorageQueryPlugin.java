@@ -15,6 +15,8 @@ import java.util.Objects;
 
 public class StorageQueryPlugin extends JavaPlugin {
 
+  private ResultDisplayHandler displayHandler = null;
+
   @Override
   public void onEnable() {
     var logger = getLogger();
@@ -41,14 +43,20 @@ public class StorageQueryPlugin extends JavaPlugin {
       return;
     }
 
-    var resultDisplay = new ResultDisplayHandler(this);
+    displayHandler = new ResultDisplayHandler(this);
 
-    getServer().getPluginManager().registerEvents(resultDisplay, this);
+    getServer().getPluginManager().registerEvents(displayHandler, this);
 
-    var commandExecutor = new StorageQueryCommand(registryGerman, registryEnglish, resultDisplay);
+    var commandExecutor = new StorageQueryCommand(registryGerman, registryEnglish, displayHandler);
     var pluginCommand = Objects.requireNonNull(getCommand("lagersuche"));
 
     pluginCommand.setExecutor(commandExecutor);
     pluginCommand.setTabCompleter(commandExecutor);
+  }
+
+  @Override
+  public void onDisable() {
+    if (this.displayHandler != null)
+      displayHandler.onShutdown();
   }
 }

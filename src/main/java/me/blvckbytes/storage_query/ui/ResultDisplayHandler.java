@@ -165,6 +165,13 @@ public class ResultDisplayHandler implements Listener {
     event.setCancelled(true);
   }
 
+  public void onShutdown() {
+    for (var stateIterator = stateByPlayerId.entrySet().iterator(); stateIterator.hasNext();) {
+      stateIterator.next().getValue().close();
+      stateIterator.remove();
+    }
+  }
+
   private boolean teleportToChest(Player player, ChestItem chestItem) {
     var chest = chestItem.chest();
 

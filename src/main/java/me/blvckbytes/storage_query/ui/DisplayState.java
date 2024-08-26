@@ -64,6 +64,10 @@ public class DisplayState {
     renderItems();
   }
 
+  public void close() {
+    player.closeInventory();
+  }
+
   public void nextPage() {
     if (currentPage == numberOfPages)
       return;

@@ -1,4 +1,4 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.ui;
 
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.ItemStack;

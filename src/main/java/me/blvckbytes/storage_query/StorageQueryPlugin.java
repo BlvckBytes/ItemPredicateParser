@@ -3,6 +3,8 @@ package me.blvckbytes.storage_query;
 import me.blvckbytes.storage_query.translation.DeteriorationKey;
 import me.blvckbytes.storage_query.translation.TranslatableSource;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
+import me.blvckbytes.storage_query.ui.ResultDisplayHandler;
+import me.blvckbytes.storage_query.ui.StorageQueryCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Registry;
 import org.bukkit.plugin.java.JavaPlugin;

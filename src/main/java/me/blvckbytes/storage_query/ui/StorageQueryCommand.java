@@ -1,4 +1,4 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.ui;
 
 import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;

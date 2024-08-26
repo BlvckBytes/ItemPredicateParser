@@ -1,4 +1,4 @@
-package me.blvckbytes.storage_query;
+package me.blvckbytes.storage_query.ui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

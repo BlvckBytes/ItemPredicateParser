@@ -23,17 +23,17 @@ public class StorageQueryPlugin extends JavaPlugin {
     var logger = getLogger();
 
     var germanSources = Arrays.asList(
-      new TranslatableSource(Registry.ENCHANTMENT, "(Verzauberung) "),
-      new TranslatableSource(Registry.EFFECT, "(Effekt) "),
-      new TranslatableSource(Registry.MATERIAL, "(Material) "),
+      new TranslatableSource(Registry.ENCHANTMENT, "[Verzauberung] "),
+      new TranslatableSource(Registry.EFFECT, "[Effekt] "),
+      new TranslatableSource(Registry.MATERIAL, "[Typ] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), "")
     );
 
     var englishSources = Arrays.asList(
-      new TranslatableSource(Registry.ENCHANTMENT, "(Enchantment) "),
-      new TranslatableSource(Registry.EFFECT, "(Effect) "),
-      new TranslatableSource(Registry.MATERIAL, "(Material) "),
+      new TranslatableSource(Registry.ENCHANTMENT, "[Enchantment] "),
+      new TranslatableSource(Registry.EFFECT, "[Effect] "),
+      new TranslatableSource(Registry.MATERIAL, "[Material] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), "")
     );

@@ -44,13 +44,13 @@ public abstract class TranslationRegistryDependentTests {
     return Arrays.asList(
       new TranslatableSource(
         Registry.ENCHANTMENT.stream().map(x -> patchTranslatable(x, "enchantment.minecraft.")).toList(),
-        "(Enchantment) "
+        "[Enchantment] "
       ),
       new TranslatableSource(
         Registry.EFFECT.stream().map(x -> patchTranslatable(x, "effect.minecraft.")).toList(),
-        "(Effect) "
+        "[Effect] "
       ),
-      new TranslatableSource(Registry.MATERIAL, "(Material) "),
+      new TranslatableSource(Registry.MATERIAL, "[Material] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), "")
     );

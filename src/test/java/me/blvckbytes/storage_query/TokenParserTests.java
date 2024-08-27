@@ -3,10 +3,7 @@ package me.blvckbytes.storage_query;
 import me.blvckbytes.storage_query.parse.ArgumentParseException;
 import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.parse.TokenParser;
-import me.blvckbytes.storage_query.token.IntegerToken;
-import me.blvckbytes.storage_query.token.QuotedStringToken;
-import me.blvckbytes.storage_query.token.Token;
-import me.blvckbytes.storage_query.token.UnquotedStringToken;
+import me.blvckbytes.storage_query.token.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,6 +72,48 @@ public class TokenParserTests {
     makeCase(new String[]{ "2:30" }, new Token[] { new IntegerToken(0, 2*60 + 30, true) });
     makeCase(new String[]{ "12:23" }, new Token[] { new IntegerToken(0, 12*60 + 23, true) });
     makeCase(new String[]{ "12:34:56" }, new Token[] { new IntegerToken(0, 12*60*60 + 34*60 + 56, true) });
+  }
+
+  @Test
+  public void shouldParseParentheses() {
+    makeCase(
+      new String[] { "(abc-de", "f", "\"free", "text", ")", "(", "searc)h\")" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new UnquotedStringToken(0, "abc-de"),
+        new UnquotedStringToken(1, "f"),
+        new QuotedStringToken(2, "free text ) ( searc)h"),
+        new ParenthesisToken(6, false)
+      }
+    );
+
+    makeCase(
+      new String[] { "(abc-de)" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new UnquotedStringToken(0, "abc-de"),
+        new ParenthesisToken(0, false),
+      }
+    );
+
+    makeCase(
+      new String[] { "(\"hello\")" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new QuotedStringToken(0, "hello"),
+        new ParenthesisToken(0, false),
+      }
+    );
+
+    makeCase(
+      new String[] { "(", "abc-de", "\"a", "test\"", ")" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new UnquotedStringToken(1, "abc-de"),
+        new QuotedStringToken(2, "a test"),
+        new ParenthesisToken(4, false),
+      }
+    );
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {

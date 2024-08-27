@@ -1,9 +1,6 @@
 package me.blvckbytes.storage_query.parse;
 
-import me.blvckbytes.storage_query.token.Token;
-import me.blvckbytes.storage_query.token.IntegerToken;
-import me.blvckbytes.storage_query.token.QuotedStringToken;
-import me.blvckbytes.storage_query.token.UnquotedStringToken;
+import me.blvckbytes.storage_query.token.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -16,10 +13,16 @@ public class TokenParser {
   public static List<Token> parseTokens(String[] args) {
     var result = new ArrayList<Token>();
 
+    Token deferredToken = null;
     var stringBeginArgumentIndex = -1;
     var stringContents = new StringBuilder();
 
     for (var argumentIndex = 0; argumentIndex < args.length; ++argumentIndex) {
+      if (deferredToken != null) {
+        result.add(deferredToken);
+        deferredToken = null;
+      }
+
       var arg = args[argumentIndex];
       var argLength = arg.length();
 
@@ -29,6 +32,34 @@ public class TokenParser {
       }
 
       var firstChar = arg.charAt(0);
+      var lastChar = arg.charAt(argLength - 1);
+
+      if (firstChar == '(' && stringBeginArgumentIndex < 0) {
+        result.add(new ParenthesisToken(argumentIndex, true));
+
+        if (argLength == 1)
+          continue;
+
+        arg = arg.substring(1);
+        firstChar = arg.charAt(0);
+        --argLength;
+      }
+
+      if (
+        lastChar == ')' &&
+        // Either a multi-arg string hasn't begun yet, or the closing-paren is
+        // prepended by a multi-arg string termination quote
+        (stringBeginArgumentIndex < 0 || (argLength >= 2 && arg.charAt(argLength - 2) == '"'))
+      ) {
+        deferredToken = new ParenthesisToken(argumentIndex, false);
+
+        if (argLength == 1)
+          continue;
+
+        arg = arg.substring(0, argLength - 1);
+        lastChar = arg.charAt(argLength - 2);
+        --argLength;
+      }
 
       if (firstChar == '"') {
         var terminationIndex = arg.indexOf('"', 1);
@@ -68,7 +99,7 @@ public class TokenParser {
         continue;
       }
 
-      if (arg.charAt(argLength - 1) == '"') {
+      if (lastChar == '"') {
         if (stringBeginArgumentIndex == -1)
           throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
 
@@ -114,6 +145,9 @@ public class TokenParser {
 
     if (stringBeginArgumentIndex != -1)
       throw new ArgumentParseException(stringBeginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
+
+    if (deferredToken != null)
+      result.add(deferredToken);
 
     return result;
   }

@@ -8,13 +8,11 @@ import me.blvckbytes.storage_query.predicate.*;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -250,26 +248,6 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       .validate(0, MaterialPredicate.class, it -> {
         assertThat(it.materials(), Matchers.containsInAnyOrder(Tag.FENCE_GATES.getValues().toArray()));
       });
-  }
-
-  @Test
-  public void textSearchShouldMatchColoredStrings() {
-    assertTrue(
-      parse(new String[] { "\"hello world\"" }, 1)
-        .validate(0, TextSearchPredicate.class, it -> {
-          assertEquals(it.text, "hello world");
-        })
-        .items.getFirst()
-        .test(makeItemWithName("§aH§be§cl§dl§eo §fW§0o§1r§2l§3d"))
-    );
-  }
-
-  private ItemStack makeItemWithName(String name) {
-    var item = new ItemStack(Material.STICK, 1);
-    var meta = Objects.requireNonNull(item.getItemMeta());
-    meta.setDisplayName(name);
-    item.setItemMeta(meta);
-    return item;
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {

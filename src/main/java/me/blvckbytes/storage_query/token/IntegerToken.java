@@ -15,11 +15,6 @@ public record IntegerToken(
     this(commandArgumentIndex, value, false);
   }
 
-  @Override
-  public int getCommandArgumentIndex() {
-    return commandArgumentIndex;
-  }
-
   public boolean matches(@Nullable Integer value) {
     if (this.value == null)
       return true;

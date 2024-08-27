@@ -33,7 +33,7 @@ public class PredicateParser {
       }
 
       if (!(currentToken instanceof UnquotedStringToken translationSearch))
-        throw new ArgumentParseException(currentToken.getCommandArgumentIndex(), ParseConflict.EXPECTED_SEARCH_PATTERN);
+        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_SEARCH_PATTERN);
 
       var searchString = translationSearch.value();
 
@@ -43,7 +43,7 @@ public class PredicateParser {
       var searchResult = registry.search(searchString);
 
       if (searchResult.wildcardPresence() == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
-        throw new ArgumentParseException(currentToken.getCommandArgumentIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
 
       var searchResultEntries = searchResult.result();
 
@@ -107,7 +107,7 @@ public class PredicateParser {
         continue;
       }
 
-      throw new ArgumentParseException(currentToken.getCommandArgumentIndex(), ParseConflict.UNIMPLEMENTED_TRANSLATABLE);
+      throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.UNIMPLEMENTED_TRANSLATABLE);
     }
 
     return result;
@@ -133,7 +133,7 @@ public class PredicateParser {
     if (!token.wasTimeNotation())
       return;
 
-    throw new ArgumentParseException(token.getCommandArgumentIndex(), ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
   }
 
   private static @Nullable IntegerToken tryConsumeIntegerArgument(List<Token> tokens) {

@@ -37,7 +37,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
       SubstringIndices.matchQuerySubstrings(
         text, pendingTextIndices,
-        displayName, SubstringIndices.forString(meta.getDisplayName(), SubstringIndices.FREE_TEXT_DELIMITERS)
+        displayName, SubstringIndices.forString(displayName, SubstringIndices.FREE_TEXT_DELIMITERS)
       );
 
       if (pendingTextIndices.isEmpty())

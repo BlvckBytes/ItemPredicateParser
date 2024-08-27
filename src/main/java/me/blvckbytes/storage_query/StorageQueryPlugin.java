@@ -1,9 +1,6 @@
 package me.blvckbytes.storage_query;
 
-import me.blvckbytes.storage_query.translation.DeteriorationKey;
-import me.blvckbytes.storage_query.translation.NegationKey;
-import me.blvckbytes.storage_query.translation.TranslatableSource;
-import me.blvckbytes.storage_query.translation.TranslationRegistry;
+import me.blvckbytes.storage_query.translation.*;
 import me.blvckbytes.storage_query.ui.ResultDisplayHandler;
 import me.blvckbytes.storage_query.ui.StorageQueryCommand;
 import org.bukkit.Bukkit;
@@ -27,7 +24,8 @@ public class StorageQueryPlugin extends JavaPlugin {
       new TranslatableSource(Registry.EFFECT, "[Effekt] "),
       new TranslatableSource(Registry.MATERIAL, "[Typ] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(NegationKey.INSTANCE), "")
+      new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
+    new TranslatableSource(List.of(DisjunctionKey.INSTANCE), "")
     );
 
     var englishSources = Arrays.asList(
@@ -35,7 +33,8 @@ public class StorageQueryPlugin extends JavaPlugin {
       new TranslatableSource(Registry.EFFECT, "[Effect] "),
       new TranslatableSource(Registry.MATERIAL, "[Material] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(NegationKey.INSTANCE), "")
+      new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
+      new TranslatableSource(List.of(DisjunctionKey.INSTANCE), "")
     );
 
     var registryGerman = TranslationRegistry.load("/de_de.json", germanSources, logger);

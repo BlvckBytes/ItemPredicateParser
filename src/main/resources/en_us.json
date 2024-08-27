@@ -1,4 +1,5 @@
 {
+  "custom.storage-query.disjunction-key": "oder",
   "custom.storage-query.negation-key": "not",
   "custom.storage-query.deterioration-key": "Deterioration",
   "accessibility.onboarding.accessibility.button": "Accessibility Settings...",

@@ -6,7 +6,6 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
 import me.blvckbytes.storage_query.predicate.*;
 import me.blvckbytes.storage_query.translation.DeteriorationKey;
-import me.blvckbytes.storage_query.translation.NegationKey;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import org.bukkit.Material;
@@ -22,13 +21,12 @@ public class PredicateParser {
   public static List<ItemPredicate> parsePredicates(List<Token> tokens, TranslationRegistry registry) {
     var result = new ArrayList<ItemPredicate>();
     var remainingTokens = new ArrayList<>(tokens);
-    var pendingNegations = new ArrayList<TranslatedTranslatable>();
 
     while (!remainingTokens.isEmpty()) {
       var currentToken = remainingTokens.removeFirst();
 
       if (currentToken instanceof QuotedStringToken textSearch) {
-        result.add(applyNegations(pendingNegations, new TextSearchPredicate(textSearch.value())));
+        result.add(new TextSearchPredicate(textSearch.value()));
         continue;
       }
 
@@ -58,24 +56,19 @@ public class PredicateParser {
         }
 
         if (materials.isEmpty())
-          throw new ArgumentParseException(((UnquotedStringToken) currentToken).commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
+          throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
-        result.add(applyNegations(pendingNegations, new MaterialPredicate(null, translationSearch, materials)));
+        result.add(new MaterialPredicate(null, translationSearch, materials));
         continue;
       }
 
       var shortestMatch = getShortestMatch(searchResultEntries);
 
       if (shortestMatch == null)
-        throw new ArgumentParseException(((UnquotedStringToken) currentToken).commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
-
-      if (shortestMatch.translatable() instanceof NegationKey) {
-        pendingNegations.add(shortestMatch);
-        continue;
-      }
+        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
       if (shortestMatch.translatable() instanceof Material predicateMaterial) {
-        result.add(applyNegations(pendingNegations, new MaterialPredicate(shortestMatch, translationSearch, List.of(predicateMaterial))));
+        result.add(new MaterialPredicate(shortestMatch, translationSearch, List.of(predicateMaterial)));
         continue;
       }
 
@@ -83,7 +76,7 @@ public class PredicateParser {
         IntegerToken enchantmentLevel = tryConsumeIntegerArgument(remainingTokens);
         throwOnTimeNotation(enchantmentLevel);
 
-        result.add(applyNegations(pendingNegations, new EnchantmentPredicate(shortestMatch, predicateEnchantment, enchantmentLevel)));
+        result.add(new EnchantmentPredicate(shortestMatch, predicateEnchantment, enchantmentLevel));
         continue;
       }
 
@@ -92,7 +85,7 @@ public class PredicateParser {
         throwOnTimeNotation(potionEffectAmplifier);
 
         IntegerToken potionEffectDuration = tryConsumeIntegerArgument(remainingTokens);
-        result.add(applyNegations(pendingNegations, new PotionEffectPredicate(shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration)));
+        result.add(new PotionEffectPredicate(shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
         continue;
       }
 
@@ -103,24 +96,11 @@ public class PredicateParser {
         IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(remainingTokens);
         throwOnTimeNotation(deteriorationPercentageMax);
 
-        result.add(applyNegations(pendingNegations, new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax)));
+        result.add(new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
       }
 
       throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.UNIMPLEMENTED_TRANSLATABLE);
-    }
-
-    return result;
-  }
-
-  private static ItemPredicate applyNegations(ArrayList<TranslatedTranslatable> pendingNegations, ItemPredicate predicate) {
-    var result = predicate;
-
-    while (!pendingNegations.isEmpty()) {
-      result = new NegationPredicate(
-        pendingNegations.removeFirst(),
-        result
-      );
     }
 
     return result;

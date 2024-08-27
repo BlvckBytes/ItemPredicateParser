@@ -1,10 +1,7 @@
 package me.blvckbytes.storage_query;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import me.blvckbytes.storage_query.translation.DeteriorationKey;
-import me.blvckbytes.storage_query.translation.NegationKey;
-import me.blvckbytes.storage_query.translation.TranslatableSource;
-import me.blvckbytes.storage_query.translation.TranslationRegistry;
+import me.blvckbytes.storage_query.translation.*;
 import org.bukkit.Keyed;
 import org.bukkit.Registry;
 import org.bukkit.Translatable;
@@ -52,7 +49,8 @@ public abstract class TranslationRegistryDependentTests {
       ),
       new TranslatableSource(Registry.MATERIAL, "[Material] "),
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(NegationKey.INSTANCE), "")
+      new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
+      new TranslatableSource(List.of(DisjunctionKey.INSTANCE), "")
     );
   }
 

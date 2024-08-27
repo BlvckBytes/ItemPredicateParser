@@ -1,4 +1,5 @@
 {
+    "custom.storage-query.negation-key": "nicht",
     "custom.storage-query.deterioration-key": "Abnutzung",
     "accessibility.onboarding.accessibility.button": "Barrierefreiheit …",
     "accessibility.onboarding.screen.narrator": "Drücke die Eingabetaste, um die Sprachausgabe zu aktivieren.",

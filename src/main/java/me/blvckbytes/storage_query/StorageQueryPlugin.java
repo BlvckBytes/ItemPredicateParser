@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query;
 
 import me.blvckbytes.storage_query.translation.DeteriorationKey;
+import me.blvckbytes.storage_query.translation.NegationKey;
 import me.blvckbytes.storage_query.translation.TranslatableSource;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import me.blvckbytes.storage_query.ui.ResultDisplayHandler;
@@ -25,14 +26,16 @@ public class StorageQueryPlugin extends JavaPlugin {
       new TranslatableSource(Registry.ENCHANTMENT, "(Verzauberung) "),
       new TranslatableSource(Registry.EFFECT, "(Effekt) "),
       new TranslatableSource(Registry.MATERIAL, "(Material) "),
-      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), "")
+      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
+      new TranslatableSource(List.of(NegationKey.INSTANCE), "")
     );
 
     var englishSources = Arrays.asList(
       new TranslatableSource(Registry.ENCHANTMENT, "(Enchantment) "),
       new TranslatableSource(Registry.EFFECT, "(Effect) "),
       new TranslatableSource(Registry.MATERIAL, "(Material) "),
-      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), "")
+      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
+      new TranslatableSource(List.of(NegationKey.INSTANCE), "")
     );
 
     var registryGerman = TranslationRegistry.load("/de_de.json", germanSources, logger);

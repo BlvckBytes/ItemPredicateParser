@@ -2,13 +2,27 @@ package me.blvckbytes.storage_query.parse;
 
 import java.util.ArrayList;
 
-public record SubstringIndices(int start, int end) {
-
+public record SubstringIndices(
+  int start,
+  int end,
+  boolean isNegated
+) {
   public static final char[] LANGUAGE_FILE_DELIMITERS = { '-', ' ', '_' };
   public static final char[] SEARCH_PATTERN_DELIMITERS = { '-' };
   public static final char[] FREE_TEXT_DELIMITERS = { ' ' };
 
   private static final char PATTERN_WILDCARD_CHAR = '?';
+  private static final char PATTERN_NEGATION_CHAR = '!';
+
+  public SubstringIndices(int start, int end) {
+    this(start, end, false);
+  }
+
+  private static SubstringIndices makePossiblyNegatable(int start, int end, String text) {
+    if (start != end && text.charAt(start) == PATTERN_NEGATION_CHAR)
+      return new SubstringIndices(start + 1, end, true);
+    return new SubstringIndices(start, end, false);
+  }
 
   public int length() {
     return (end - start) + 1;
@@ -34,7 +48,7 @@ public record SubstringIndices(int start, int end) {
 
       if (isDelimiter) {
         if (i != 0 && encounteredNonDelimiter)
-          result.add(new SubstringIndices(nextPartBeginning, i - 1));
+          result.add(SubstringIndices.makePossiblyNegatable(nextPartBeginning, i - 1, input));
 
         nextPartBeginning = i + 1;
         encounteredNonDelimiter = false;
@@ -45,7 +59,7 @@ public record SubstringIndices(int start, int end) {
         encounteredNonDelimiter = true;
 
       if (i == inputLength - 1)
-        result.add(new SubstringIndices(nextPartBeginning, i));
+        result.add(SubstringIndices.makePossiblyNegatable(nextPartBeginning, i, input));
     }
 
     return result;
@@ -118,6 +132,8 @@ public record SubstringIndices(int start, int end) {
         if (relativeIndex < 0)
           continue;
 
+        // Do also remove for negated query substrings, so that no other syllable can match on it
+
         remainingTextSubstrings.remove(remainingTextSubstringIndex);
 
         /*
@@ -141,7 +157,8 @@ public record SubstringIndices(int start, int end) {
             remainingTextSubstringIndex,
             new SubstringIndices(
               remainingTextSubstring.start() + relativeIndex + pendingQuerySubstringLength,
-              remainingTextSubstring.end()
+              remainingTextSubstring.end(),
+              false
             )
           );
         }
@@ -152,7 +169,8 @@ public record SubstringIndices(int start, int end) {
             remainingTextSubstringIndex,
             new SubstringIndices(
               remainingTextSubstring.start(),
-              remainingTextSubstring.start() + relativeIndex - 1
+              remainingTextSubstring.start() + relativeIndex - 1,
+              false
             )
           );
         }
@@ -161,8 +179,19 @@ public record SubstringIndices(int start, int end) {
         break;
       } // Remaining text substrings
 
-      if (didQuerySubstringMatch)
+      if (didQuerySubstringMatch) {
+        // Do not remove negated query substrings that matched, as to keep the result a mismatch
+        if (pendingQuerySubstring.isNegated)
+          continue;
+
         pendingQuerySubstringsIterator.remove();
+        continue;
+      }
+
+      // Remove negated query substrings which didn't find a match, as to allow the result to become a match
+      if (pendingQuerySubstring.isNegated)
+        pendingQuerySubstringsIterator.remove();
+
     } // Pending query substrings
 
     return hasSearchPatternWildcard ? SearchWildcardPresence.PRESENT : SearchWildcardPresence.ABSENT;

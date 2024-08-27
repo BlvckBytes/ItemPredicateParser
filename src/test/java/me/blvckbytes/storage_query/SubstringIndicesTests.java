@@ -1,6 +1,8 @@
 package me.blvckbytes.storage_query;
 
+import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class SubstringIndicesTests {
   @Test
   public void testIndicesGeneration() {
     // Leading and trailing delimiter
-    makeIndicesGenCase(" a bcd ef g ", Arrays.asList(
+    makeIndicesGenCase("-a-bcd-ef-g-", Arrays.asList(
       new SubstringIndices(1, 1),
       new SubstringIndices(3, 5),
       new SubstringIndices(7, 8),
@@ -25,7 +27,7 @@ public class SubstringIndicesTests {
     ));
 
     // Leading delimiter
-    makeIndicesGenCase(" a bcd ef g", Arrays.asList(
+    makeIndicesGenCase("-a-bcd-ef-g", Arrays.asList(
       new SubstringIndices(1, 1),
       new SubstringIndices(3, 5),
       new SubstringIndices(7, 8),
@@ -33,7 +35,7 @@ public class SubstringIndicesTests {
     ));
 
     // Trailing delimiter
-    makeIndicesGenCase("a bcd ef g ", Arrays.asList(
+    makeIndicesGenCase("a-bcd-ef-g-", Arrays.asList(
       new SubstringIndices(0, 0),
       new SubstringIndices(2, 4),
       new SubstringIndices(6, 7),
@@ -41,7 +43,7 @@ public class SubstringIndicesTests {
     ));
 
     // Trailing delimiter and multiple intermediate delimiters
-    makeIndicesGenCase("a bcd    ef   g ", Arrays.asList(
+    makeIndicesGenCase("a-bcd----ef---g-", Arrays.asList(
       new SubstringIndices(0, 0),
       new SubstringIndices(2, 4),
       new SubstringIndices(9, 10),
@@ -49,8 +51,39 @@ public class SubstringIndicesTests {
     ));
   }
 
+  @Test
+  public void testListModifications() {
+    makeListModCase("HELLO,-WORLD", "he-orld", "LLO, W", "");
+    makeListModCase("Diamondchestplate", "dia-chest", "mond plate", "");
+    makeListModCase("Diamondchestplate", "gold-chest", "Diamond plate", "gold");
+  }
+
+  @Test
+  public void shouldHandleNegationsCorrectly() {
+    makeListModCase("Diamondchestplate", "!dia-chest", "mond plate", "dia");
+    makeListModCase("Red-Wool", "!re-wo", "d ol", "re");
+  }
+
+  @Test
+  public void shouldDetectSearchWildcards() {
+    assertEquals(
+      SearchWildcardPresence.PRESENT,
+      makeListModCase("oak-sign", "sign-?", "oak", "")
+    );
+
+    assertEquals(
+      SearchWildcardPresence.ABSENT,
+      makeListModCase("oak-sign", "sign-oa", "k", "")
+    );
+
+    assertEquals(
+      SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY,
+      makeListModCase("oak-sign", "sign-?-o-?", "ak", null)
+    );
+  }
+
   private void makeIndicesGenCase(String input, List<SubstringIndices> expectedIndicesList) {
-    var indicesList = SubstringIndices.forString(input, SubstringIndices.FREE_TEXT_DELIMITERS);
+    var indicesList = SubstringIndices.forString(input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     for (var i = 0; i < expectedIndicesList.size(); ++i) {
       if (i >= indicesList.size())
@@ -64,40 +97,26 @@ public class SubstringIndicesTests {
     }
   }
 
-  @Test
-  public void testListModifications() {
-    var text = "hello, world";
-    var textIndices = SubstringIndices.forString(text, SubstringIndices.FREE_TEXT_DELIMITERS);
-
-    var query = "he orld";
-    var queryIndices = SubstringIndices.forString(query, SubstringIndices.FREE_TEXT_DELIMITERS);
-
-    var pendingQueryIndices = new ArrayList<>(queryIndices);
-    var remainingTextIndices = new ArrayList<>(textIndices);
-
-    SubstringIndices.matchQuerySubstrings(query, pendingQueryIndices, text, remainingTextIndices);
-
-    makeListModCase("HELLO, WORLD", "he orld", "LLO, W", "");
-    makeListModCase("Diamantbrustplatte", "dia brust", "mant platte", "");
-    makeListModCase("Diamantbrustplatte", "gold brust", "Diamant platte", "gold");
-  }
-
-  private void makeListModCase(
+  private SearchWildcardPresence makeListModCase(
     String text,
     String query,
     String expectedRemainingText,
-    String expectedPendingQuery
+    @Nullable String expectedPendingQuery
   ) {
-    var textIndices = SubstringIndices.forString(text, SubstringIndices.FREE_TEXT_DELIMITERS);
-    var queryIndices = SubstringIndices.forString(query, SubstringIndices.FREE_TEXT_DELIMITERS);
+    var textIndices = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryIndices = SubstringIndices.forString(query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     var pendingQueryIndices = new ArrayList<>(queryIndices);
     var remainingTextIndices = new ArrayList<>(textIndices);
 
-    SubstringIndices.matchQuerySubstrings(query, pendingQueryIndices, text, remainingTextIndices);
+    var presence = SubstringIndices.matchQuerySubstrings(query, pendingQueryIndices, text, remainingTextIndices);
 
-    assertEquals(expectedPendingQuery, joinIndices(query, pendingQueryIndices));
+    if (expectedPendingQuery != null)
+      assertEquals(expectedPendingQuery, joinIndices(query, pendingQueryIndices));
+
     assertEquals(expectedRemainingText, joinIndices(text, remainingTextIndices));
+
+    return presence;
   }
 
   private String joinIndices(String text, Collection<SubstringIndices> indices) {

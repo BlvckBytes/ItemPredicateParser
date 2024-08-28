@@ -66,6 +66,7 @@ public record SubstringIndices(
   }
 
   private static int relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
+    // TODO: Text search should ignore color sequences
     var containerIndicesLength = containerIndices.length();
     var containedIndicesLength = containedIndices.length();
 
@@ -108,6 +109,7 @@ public record SubstringIndices(
     String text,
     ArrayList<SubstringIndices> remainingTextSubstrings
   ) {
+    // TODO: If a syllable equals to a wildcard, disregard direct matches
     boolean hasSearchPatternWildcard = false;
 
     for (var pendingQuerySubstringsIterator = pendingQuerySubstrings.iterator(); pendingQuerySubstringsIterator.hasNext();) {

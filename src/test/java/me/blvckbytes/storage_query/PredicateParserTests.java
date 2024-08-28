@@ -913,7 +913,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
   }
 
   private EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level, UnquotedStringToken search) {
-    return new EnchantmentPredicate(search, translationRegistry.lookup(getSpy(enchantment)), getSpy(enchantment), level);
+    return new EnchantmentPredicate(search, translationRegistry.lookup(enchantment), enchantment, level);
   }
 
   private MaterialPredicate materialPredicate(Material material, UnquotedStringToken search) {
@@ -925,7 +925,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
   }
 
   private PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken search) {
-    return new PotionEffectPredicate(search, translationRegistry.lookup(getSpy(type)), getSpy(type), amplifier, duration);
+    return new PotionEffectPredicate(search, translationRegistry.lookup(type), type, amplifier, duration);
   }
 
   private DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken search) {

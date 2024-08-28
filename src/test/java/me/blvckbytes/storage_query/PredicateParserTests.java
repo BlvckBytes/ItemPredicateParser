@@ -5,6 +5,7 @@ import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.parse.PredicateParser;
 import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
+import me.blvckbytes.storage_query.token.ComparisonMode;
 import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
 import me.blvckbytes.storage_query.translation.*;
@@ -740,7 +741,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, 2),
-        new IntegerToken(2, 2 * 60 + 30, true),
+        new IntegerToken(2, 2 * 60 + 30, true, ComparisonMode.EQUALS),
         new UnquotedStringToken(0, "regen")
       )
     );
@@ -750,7 +751,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, null),
-        new IntegerToken(2, 2 * 60 + 30, true),
+        new IntegerToken(2, 2 * 60 + 30, true, ComparisonMode.EQUALS),
         new UnquotedStringToken(0, "regen")
       )
     );

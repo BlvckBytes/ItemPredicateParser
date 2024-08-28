@@ -69,9 +69,57 @@ public class TokenParserTests {
 
   @Test
   public void shouldParseTimeNotation() {
-    makeCase(new String[]{ "2:30" }, new Token[] { new IntegerToken(0, 2*60 + 30, true) });
-    makeCase(new String[]{ "12:23" }, new Token[] { new IntegerToken(0, 12*60 + 23, true) });
-    makeCase(new String[]{ "12:34:56" }, new Token[] { new IntegerToken(0, 12*60*60 + 34*60 + 56, true) });
+    makeCase(
+      new String[] { "2:30" },
+      new Token[] {
+        new IntegerToken(0, 2*60 + 30, true, ComparisonMode.EQUALS)
+      }
+    );
+
+    makeCase(
+      new String[] { "12:23" },
+      new Token[] {
+        new IntegerToken(0, 12*60 + 23, true, ComparisonMode.EQUALS)
+      }
+    );
+
+    makeCase(
+      new String[] { "12:34:56" },
+      new Token[] {
+        new IntegerToken(0, 12*60*60 + 34*60 + 56, true, ComparisonMode.EQUALS)
+      }
+    );
+  }
+
+  @Test
+  public void shouldParseComparisonNotation() {
+    makeCase(
+      new String[] { ">200" },
+      new Token[] {
+        new IntegerToken(0, 200, false, ComparisonMode.GREATER_THAN)
+      }
+    );
+
+    makeCase(
+      new String[] { ">2:20" },
+      new Token[] {
+        new IntegerToken(0, 2*60+20, true, ComparisonMode.GREATER_THAN)
+      }
+    );
+
+    makeCase(
+      new String[] { "<200" },
+      new Token[] {
+        new IntegerToken(0, 200, false, ComparisonMode.LESS_THAN)
+      }
+    );
+
+    makeCase(
+      new String[] { "<2:20" },
+      new Token[] {
+        new IntegerToken(0, 2*60+20, true, ComparisonMode.LESS_THAN)
+      }
+    );
   }
 
   @Test

@@ -133,7 +133,11 @@ public class TokenParser {
       }
 
       // No names will have a leading digit; expect integer
-      if (Character.isDigit(firstChar)) {
+      // Also support comparison mode specifiers, followed by a digit
+      if (
+        Character.isDigit(firstChar) ||
+        (argLength > 1 && (firstChar == '>' || firstChar == '<') && Character.isDigit(arg.charAt(1)))
+      ) {
         var integerArgument = parseIntegerToken(arg, argumentIndex);
 
         if (integerArgument == null)
@@ -162,17 +166,28 @@ public class TokenParser {
   }
 
   private static @Nullable IntegerToken parseIntegerToken(String arg, int argumentIndex) {
-    // TODO: Leading < or > would be great to denote the comparison mode
-
     var argLength = arg.length();
 
     var radixPower = 0;
     var blockCounter = 0;
     var currentNumber = 0;
     var resultingNumber = 0;
+    var comparisonMode = ComparisonMode.EQUALS;
 
     for (var argIndex = argLength - 1; argIndex >= 0; --argIndex) {
       var argChar = arg.charAt(argIndex);
+
+      if (argIndex == 0) {
+        if (argChar == '>') {
+          comparisonMode = ComparisonMode.GREATER_THAN;
+          continue;
+        }
+
+        if (argChar == '<') {
+          comparisonMode = ComparisonMode.LESS_THAN;
+          continue;
+        }
+      }
 
       if (argChar == ':') {
         radixPower = 0;
@@ -192,6 +207,6 @@ public class TokenParser {
 
     resultingNumber += currentNumber * (int) Math.pow(60, blockCounter);
 
-    return new IntegerToken(argumentIndex, resultingNumber, blockCounter != 0);
+    return new IntegerToken(argumentIndex, resultingNumber, blockCounter != 0, comparisonMode);
   }
 }

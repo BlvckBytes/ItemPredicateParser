@@ -8,22 +8,38 @@ import org.jetbrains.annotations.Nullable;
 public record IntegerToken(
   int commandArgumentIndex,
   @Nullable Integer value,
-  boolean wasTimeNotation
+  boolean wasTimeNotation,
+  ComparisonMode comparisonMode
 ) implements Token {
 
   public IntegerToken(int commandArgumentIndex, @Nullable Integer value) {
-    this(commandArgumentIndex, value, false);
+    this(commandArgumentIndex, value, false, ComparisonMode.EQUALS);
   }
 
   public boolean matches(@Nullable Integer value) {
     if (this.value == null)
       return true;
-    return this.value.equals(value);
+
+    if (value == null)
+      return false;
+
+    return switch (comparisonMode) {
+      case EQUALS -> this.value.equals(value);
+      case GREATER_THAN -> this.value < value;
+      case LESS_THAN -> this.value > value;
+    };
   }
 
   public String stringify() {
     if (this.value == null)
       return "*";
+
+    if (this.comparisonMode == ComparisonMode.GREATER_THAN)
+      return ">" + this.value;
+
+    if (this.comparisonMode == ComparisonMode.LESS_THAN)
+      return "<" + this.value;
+
     return this.value.toString();
   }
 }

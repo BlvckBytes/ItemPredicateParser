@@ -26,7 +26,8 @@ public class StorageQueryPlugin extends JavaPlugin {
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
       new TranslatableSource(List.of(DisjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), "")
+      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), ""),
+      new TranslatableSource(List.of(ExactKey.INSTANCE), "")
     );
 
     var englishSources = Arrays.asList(
@@ -36,7 +37,8 @@ public class StorageQueryPlugin extends JavaPlugin {
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
       new TranslatableSource(List.of(DisjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), "")
+      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), ""),
+      new TranslatableSource(List.of(ExactKey.INSTANCE), "")
     );
 
     var registryGerman = TranslationRegistry.load("/de_de.json", germanSources, logger);

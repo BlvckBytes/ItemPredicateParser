@@ -2,6 +2,7 @@
   "custom.storage-query.conjunction-key": "and",
   "custom.storage-query.disjunction-key": "or",
   "custom.storage-query.negation-key": "not",
+  "custom.storage-query.exact-key": "exact",
   "custom.storage-query.deterioration-key": "Deterioration",
   "accessibility.onboarding.accessibility.button": "Accessibility Settings...",
   "accessibility.onboarding.screen.narrator": "Press enter to enable the narrator",

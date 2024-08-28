@@ -172,7 +172,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         if (currentItem == null || currentItem.getType() == Material.AIR)
           continue;
 
-        if (ast.test(currentItem))
+        if (ast.test(currentItem, EnumSet.noneOf(PredicateFlags.class)))
           items.add(new ChestItem(nearChest, slot));
       }
     }
@@ -244,7 +244,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       case UNIMPLEMENTED_TRANSLATABLE -> "Unimplemented translatable; please report this";
       case MULTIPLE_SEARCH_PATTERN_WILDCARDS -> "Used multiple ? within one argument";
       case DOES_NOT_ACCEPT_TIME_NOTATION -> "This argument does not accept time notation";
-      case EXPECTED_EXPRESSION_AFTER_JUNCTION -> "This junction has to to be followed up by another expression";
+      case EXPECTED_EXPRESSION_AFTER_OPERATOR -> "This operator has to to be followed up by another expression";
       case EXPECTED_OPENING_PARENTHESIS -> "Expected a opening parenthesis";
       case EXPECTED_CLOSING_PARENTHESIS -> "Expected a closing parenthesis";
     };

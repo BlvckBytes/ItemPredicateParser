@@ -4,6 +4,8 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumSet;
+
 public record NegationNode(
   Token token,
   TranslatedTranslatable translatedTranslatable,
@@ -11,8 +13,8 @@ public record NegationNode(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item) {
-    return !operand.test(item);
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
+    return !operand.test(item, flags);
   }
 
   @Override

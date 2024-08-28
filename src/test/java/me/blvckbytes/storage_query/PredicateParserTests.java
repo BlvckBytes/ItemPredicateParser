@@ -7,10 +7,7 @@ import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
 import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
-import me.blvckbytes.storage_query.translation.ConjunctionKey;
-import me.blvckbytes.storage_query.translation.DeteriorationKey;
-import me.blvckbytes.storage_query.translation.DisjunctionKey;
-import me.blvckbytes.storage_query.translation.NegationKey;
+import me.blvckbytes.storage_query.translation.*;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
@@ -820,6 +817,57 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     );
   }
 
+  @Test
+  public void shouldHandleExactKey() {
+    makeCase(
+      new String[] { "exact", "unbr", "2" },
+      exact(
+        enchantmentPredicate(
+          Enchantment.UNBREAKING,
+          new IntegerToken(2, 2),
+          new UnquotedStringToken(1, "unbr")
+        )
+      )
+    );
+
+    makeCase(
+      new String[] { "dia-ches", "and", "exact(", "unbr", "fire-prot", "1)", "or", "not", "exact", "feather-fall" },
+      orJoin(
+        andJoin(false,
+          materialPredicate(
+            Material.DIAMOND_CHESTPLATE,
+            new UnquotedStringToken(0, "dia-ches")
+          ),
+          exact(
+            new ParenthesesNode(
+              andJoin(true,
+                enchantmentPredicate(
+                  Enchantment.UNBREAKING,
+                  null,
+                  new UnquotedStringToken(3, "unbr")
+                ),
+                enchantmentPredicate(
+                  Enchantment.FIRE_PROTECTION,
+                  new IntegerToken(5, 1),
+                  new UnquotedStringToken(4, "fire-prot")
+                )
+              )
+            )
+          )
+        ),
+        negate(
+          exact(
+            enchantmentPredicate(
+              Enchantment.FEATHER_FALLING,
+              null,
+              new UnquotedStringToken(9, "feather-fall")
+            )
+          )
+        )
+      )
+    );
+  }
+
   private void assertTreesEqual(
     @Nullable ItemPredicate rootExpected,
     @Nullable ItemPredicate rootActual,
@@ -853,6 +901,11 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         var actualNegation = (NegationNode) actual;
         assertEquals(expectedNegation.translatedTranslatable(), actualNegation.translatedTranslatable());
         assertTreesEqual(rootExpected, rootActual, expectedNegation.operand(), actualNegation.operand());
+      }
+      case ExactNode expectedExact -> {
+        var actualExact = (ExactNode) actual;
+        assertEquals(expectedExact.translatedTranslatable(), actualExact.translatedTranslatable());
+        assertTreesEqual(rootExpected, rootActual, expectedExact.operand(), actualExact.operand());
       }
       case ParenthesesNode expectedParentheses -> {
         assertTreesEqual(rootExpected, rootActual, expectedParentheses.inner(), ((ParenthesesNode) actual).inner());
@@ -910,6 +963,10 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
 
   private ItemPredicate negate(ItemPredicate predicate) {
     return new NegationNode(null, translationRegistry.lookup(NegationKey.INSTANCE), predicate);
+  }
+
+  private ItemPredicate exact(ItemPredicate predicate) {
+    return new ExactNode(null, translationRegistry.lookup(ExactKey.INSTANCE), predicate);
   }
 
   private EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level, UnquotedStringToken search) {

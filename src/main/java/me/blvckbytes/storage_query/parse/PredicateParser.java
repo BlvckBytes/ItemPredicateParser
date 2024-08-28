@@ -4,6 +4,7 @@ import me.blvckbytes.storage_query.token.*;
 import me.blvckbytes.storage_query.predicate.*;
 import me.blvckbytes.storage_query.translation.*;
 import org.bukkit.Material;
+import org.bukkit.Translatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
@@ -12,8 +13,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class PredicateParser {
+
+  @FunctionalInterface
+  private interface BinaryNodeConstructor {
+    ItemPredicate call(Token token, TranslatedTranslatable translatable, ItemPredicate lhs, ItemPredicate rhs);
+  }
+
+  @FunctionalInterface
+  private interface UnaryNodeConstructor {
+    ItemPredicate call(Token token, TranslatedTranslatable translatable, ItemPredicate operand);
+  }
 
   private final TranslationRegistry translationRegistry;
   private final TranslatedTranslatable conjunctionTranslation;
@@ -54,75 +66,73 @@ public class PredicateParser {
   }
 
   private @Nullable ItemPredicate parseConjunctionNode() {
-    var result = parseNegationNode();
-
-    if (result == null)
-      return null;
-
-    while (!tokens.isEmpty()) {
-      var currentToken = tokens.getFirst();
-      var currentTranslatable = resolveTranslated(currentToken);
-
-      if (currentTranslatable == null || !(currentTranslatable.translatable() instanceof ConjunctionKey))
-        break;
-
-      tokens.removeFirst();
-
-      var rhs = parseNegationNode();
-
-      if (rhs == null)
-        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
-
-      result = new ConjunctionNode(currentToken, currentTranslatable, result, rhs, false);
-    }
-
-    return result;
+    return parseBinaryNode(this::parseNegationNode, ConjunctionKey.class, ConjunctionNode::new);
   }
 
   private @Nullable ItemPredicate parseDisjunctionNode() {
-    var result = parseConjunctionNode();
+    return parseBinaryNode(this::parseConjunctionNode, DisjunctionKey.class, DisjunctionNode::new);
+  }
+
+  private @Nullable ItemPredicate parseBinaryNode(
+    Supplier<ItemPredicate> parser,
+    Class<? extends Translatable> operatorType,
+    BinaryNodeConstructor constructor
+  ) {
+    var result = parser.get();
 
     if (result == null)
       return null;
 
     while (!tokens.isEmpty()) {
-      var currentToken = tokens.getFirst();
-      var currentTranslatable = resolveTranslated(currentToken);
+      var token = tokens.getFirst();
+      var translated = resolveTranslated(token);
 
-      if (currentTranslatable == null || !(currentTranslatable.translatable() instanceof DisjunctionKey))
+      if (translated == null || !operatorType.isInstance(translated.translatable()))
         break;
 
       tokens.removeFirst();
 
-      var rhs = parseConjunctionNode();
+      var rhs = parser.get();
 
       if (rhs == null)
-        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
+        throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
 
-      result = new DisjunctionNode(currentToken, currentTranslatable, result, rhs);
+      result = constructor.call(token, translated, result, rhs);
     }
 
     return result;
   }
 
   private @Nullable ItemPredicate parseNegationNode() {
+    return parseUnaryNode(this::parseExactNode, NegationKey.class, NegationNode::new);
+  }
+
+  private @Nullable ItemPredicate parseExactNode() {
+    return parseUnaryNode(this::parseParenthesesNode, ExactKey.class, ExactNode::new);
+  }
+
+  private @Nullable ItemPredicate parseUnaryNode(
+    Supplier<ItemPredicate> parser,
+    Class<? extends Translatable> operatorType,
+    UnaryNodeConstructor constructor
+  ) {
     if (tokens.isEmpty())
       return null;
 
     var token = tokens.getFirst();
     var translated = resolveTranslated(token);
 
-    if (translated == null || !(translated.translatable() instanceof NegationKey))
-      return parseParenthesesNode();
+    if (translated == null || !operatorType.isInstance(translated.translatable()))
+      return parser.get();
 
     tokens.removeFirst();
 
-    var operand = parseParenthesesNode();
+    var operand = parser.get();
 
     if (operand == null)
-      throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
+      throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
 
-    return new NegationNode(token, translated, operand);
+    return constructor.call(token, translated, operand);
   }
 
   private @Nullable ItemPredicate parseParenthesesNode() {

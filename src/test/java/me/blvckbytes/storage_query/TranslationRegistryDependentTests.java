@@ -39,7 +39,8 @@ public abstract class TranslationRegistryDependentTests {
       new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
       new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
       new TranslatableSource(List.of(DisjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), "")
+      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), ""),
+      new TranslatableSource(List.of(ExactKey.INSTANCE), "")
     );
   }
 }

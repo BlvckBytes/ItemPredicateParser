@@ -51,12 +51,12 @@ public class TokenParser {
         continue;
 
       while (
-        lastChar == ')' &&
+        (lastChar == ')' || lastChar == '(') &&
         // Either a multi-arg string hasn't begun yet, or the closing-paren is
         // prepended by a multi-arg string termination quote
         (stringBeginArgumentIndex < 0 || (argLength >= 2 && arg.charAt(argLength - 2) == '"'))
       ) {
-        deferredTokens.add(new ParenthesisToken(argumentIndex, false));
+        deferredTokens.add(new ParenthesisToken(argumentIndex, lastChar == '('));
 
         if (argLength == 1) {
           continueArgLoop = true;
@@ -162,6 +162,8 @@ public class TokenParser {
   }
 
   private static @Nullable IntegerToken parseIntegerToken(String arg, int argumentIndex) {
+    // TODO: Leading < or > would be great to denote the comparison mode
+
     var argLength = arg.length();
 
     var radixPower = 0;

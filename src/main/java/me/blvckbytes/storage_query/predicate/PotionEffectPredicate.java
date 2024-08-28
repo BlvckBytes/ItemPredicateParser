@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.StringJoiner;
 
 public record PotionEffectPredicate(
@@ -20,7 +21,7 @@ public record PotionEffectPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item) {
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
     var meta = item.getItemMeta();
 
     if (!(meta instanceof PotionMeta potionMeta))

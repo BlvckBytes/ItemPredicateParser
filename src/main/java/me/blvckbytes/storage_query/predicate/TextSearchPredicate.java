@@ -6,6 +6,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +21,7 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public boolean test(ItemStack item) {
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
     var meta = item.getItemMeta();
 
     if (meta == null)

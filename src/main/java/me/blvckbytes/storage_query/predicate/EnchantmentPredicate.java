@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -20,7 +21,7 @@ public record EnchantmentPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item) {
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
     ItemMeta meta = item.getItemMeta();
 
     if (meta == null)

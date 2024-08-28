@@ -6,23 +6,26 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumSet;
 
-public record DisjunctionNode(
+public record ExactNode(
   Token token,
   TranslatedTranslatable translatedTranslatable,
-  ItemPredicate lhs,
-  ItemPredicate rhs
+  ItemPredicate operand
 ) implements ItemPredicate {
 
   @Override
   public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
-    return lhs.test(item, flags) || rhs.test(item, flags);
+    if (flags.contains(PredicateFlags.EXACT_MODE)) {
+      // TODO: Implement correct behavior
+    }
+
+    return operand.test(item, flags);
   }
 
   @Override
   public String stringify(boolean useTokens) {
     if (useTokens)
-      return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
+      return token.stringify() + " " + operand.stringify(true);
 
-    return lhs.stringify(false) + " " + translatedTranslatable.normalizedName() + " " + rhs.stringify(false);
+    return translatedTranslatable.normalizedName() + " " + operand.stringify(false);
   }
 }

@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public record MaterialPredicate(
@@ -15,7 +16,7 @@ public record MaterialPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item) {
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
     for (var material : materials) {
       if (material.equals(item.getType()))
         return true;

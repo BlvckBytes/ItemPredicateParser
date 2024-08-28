@@ -38,9 +38,9 @@ public enum ParseConflict {
    */
   DOES_NOT_ACCEPT_TIME_NOTATION,
   /**
-   * And/Not/Or all demand a right-hand-side expression
+   * And/Not/Or/Exact all demand a right-hand-side expression
    */
-  EXPECTED_EXPRESSION_AFTER_JUNCTION,
+  EXPECTED_EXPRESSION_AFTER_OPERATOR,
   /**
    * A closing parenthesis has been used to introduce a new parentheses-group
    */

@@ -142,6 +142,14 @@ public class TokenParserTests {
         new ParenthesisToken(7, false),
       }
     );
+
+    makeCase(
+      new String[] { "exact(" },
+      new Token[] {
+        new UnquotedStringToken(0, "exact"),
+        new ParenthesisToken(0, true)
+      }
+    );
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {

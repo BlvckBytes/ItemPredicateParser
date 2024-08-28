@@ -2,8 +2,10 @@ package me.blvckbytes.storage_query.predicate;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumSet;
+
 public interface ItemPredicate {
-  boolean test(ItemStack item);
+  boolean test(ItemStack item, EnumSet<PredicateFlags> flags);
 
   /**
    * Stringifies the predicate to represent the fully-expanded version of it's previously

@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.StringJoiner;
 
 public record DeteriorationPredicate(
@@ -17,7 +18,7 @@ public record DeteriorationPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item) {
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
     if (item.getItemMeta() instanceof Damageable damageableMeta) {
       var damage = damageableMeta.getDamage();
       var maxDamage = (int) item.getType().getMaxDurability();

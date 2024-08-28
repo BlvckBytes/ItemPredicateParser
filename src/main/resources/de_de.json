@@ -2,6 +2,7 @@
     "custom.storage-query.conjunction-key": "und",
     "custom.storage-query.disjunction-key": "oder",
     "custom.storage-query.negation-key": "nicht",
+    "custom.storage-query.exact-key": "exakt",
     "custom.storage-query.deterioration-key": "Abnutzung",
     "accessibility.onboarding.accessibility.button": "Barrierefreiheit …",
     "accessibility.onboarding.screen.narrator": "Drücke die Eingabetaste, um die Sprachausgabe zu aktivieren.",

@@ -5,6 +5,8 @@ import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record ConjunctionNode(
   @Nullable Token token,
   TranslatedTranslatable translatedTranslatable,
@@ -13,9 +15,18 @@ public record ConjunctionNode(
   boolean wasImplicit
 ) implements ItemPredicate {
 
+  public ConjunctionNode(
+    @Nullable Token token,
+    TranslatedTranslatable translatedTranslatable,
+    ItemPredicate lhs,
+    ItemPredicate rhs
+  ) {
+    this(token, translatedTranslatable, lhs, rhs, false);
+  }
+
   @Override
-  public boolean test(ItemStack item) {
-    return lhs.test(item) && rhs.test(item);
+  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
+    return lhs.test(item, flags) && rhs.test(item, flags);
   }
 
   @Override

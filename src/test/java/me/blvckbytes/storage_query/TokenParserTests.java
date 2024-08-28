@@ -114,6 +114,34 @@ public class TokenParserTests {
         new ParenthesisToken(4, false),
       }
     );
+
+    makeCase(
+      new String[] { "(((test))))" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new ParenthesisToken(0, true),
+        new ParenthesisToken(0, true),
+        new UnquotedStringToken(0, "test"),
+        new ParenthesisToken(0, false),
+        new ParenthesisToken(0, false),
+        new ParenthesisToken(0, false),
+        new ParenthesisToken(0, false),
+      }
+    );
+
+    makeCase(
+      new String[] { "(", "(", "(", "test", ")", ")", ")", ")" },
+      new Token[] {
+        new ParenthesisToken(0, true),
+        new ParenthesisToken(1, true),
+        new ParenthesisToken(2, true),
+        new UnquotedStringToken(3, "test"),
+        new ParenthesisToken(4, false),
+        new ParenthesisToken(5, false),
+        new ParenthesisToken(6, false),
+        new ParenthesisToken(7, false),
+      }
+    );
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {

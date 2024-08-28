@@ -13,15 +13,13 @@ public class TokenParser {
   public static List<Token> parseTokens(String[] args) {
     var result = new ArrayList<Token>();
 
-    Token deferredToken = null;
+    List<Token> deferredTokens = new ArrayList<>();
     var stringBeginArgumentIndex = -1;
     var stringContents = new StringBuilder();
 
     for (var argumentIndex = 0; argumentIndex < args.length; ++argumentIndex) {
-      if (deferredToken != null) {
-        result.add(deferredToken);
-        deferredToken = null;
-      }
+      result.addAll(deferredTokens);
+      deferredTokens.clear();
 
       var arg = args[argumentIndex];
       var argLength = arg.length();
@@ -34,32 +32,44 @@ public class TokenParser {
       var firstChar = arg.charAt(0);
       var lastChar = arg.charAt(argLength - 1);
 
-      if (firstChar == '(' && stringBeginArgumentIndex < 0) {
+      var continueArgLoop = false;
+
+      while (firstChar == '(' && stringBeginArgumentIndex < 0) {
         result.add(new ParenthesisToken(argumentIndex, true));
 
-        if (argLength == 1)
-          continue;
+        if (argLength == 1) {
+          continueArgLoop = true;
+          break;
+        }
 
         arg = arg.substring(1);
         firstChar = arg.charAt(0);
         --argLength;
       }
 
-      if (
+      if (continueArgLoop)
+        continue;
+
+      while (
         lastChar == ')' &&
         // Either a multi-arg string hasn't begun yet, or the closing-paren is
         // prepended by a multi-arg string termination quote
         (stringBeginArgumentIndex < 0 || (argLength >= 2 && arg.charAt(argLength - 2) == '"'))
       ) {
-        deferredToken = new ParenthesisToken(argumentIndex, false);
+        deferredTokens.add(new ParenthesisToken(argumentIndex, false));
 
-        if (argLength == 1)
-          continue;
+        if (argLength == 1) {
+          continueArgLoop = true;
+          break;
+        }
 
         arg = arg.substring(0, argLength - 1);
         lastChar = arg.charAt(argLength - 2);
         --argLength;
       }
+
+      if (continueArgLoop)
+        continue;
 
       if (firstChar == '"') {
         var terminationIndex = arg.indexOf('"', 1);
@@ -146,8 +156,7 @@ public class TokenParser {
     if (stringBeginArgumentIndex != -1)
       throw new ArgumentParseException(stringBeginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
-    if (deferredToken != null)
-      result.add(deferredToken);
+    result.addAll(deferredTokens);
 
     return result;
   }

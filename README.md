@@ -3,6 +3,9 @@
 ## Things To Think About
 
 - Handle chests being updated while the search-results are browsed
-- If there are multiple material predicates, which would make no sense, just or them, as to allow for more flexibility
 - Text search should ignore color sequences
-- Write tests for the negation predicate
+- Tests for AST stringification, especially in regard to idempotency through stringification/parse cycles
+- If a syllable equals to a wildcard, disregard direct matches
+- If not all matches fit into the max_completer_results, add a "...and <x> more" as the last entry
+- Store the exact input on predicates, as to keep abbreviations alive when persisting
+- Effect and Enchantment: What if I only want the specified on there, and nothing else?

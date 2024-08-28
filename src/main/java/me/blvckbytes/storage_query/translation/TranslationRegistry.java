@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
+import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
@@ -36,6 +37,14 @@ public class TranslationRegistry {
       .stream()
       .sorted(Comparator.comparing(TranslatedTranslatable::translation))
       .toArray(TranslatedTranslatable[]::new);
+  }
+
+  public @Nullable TranslatedTranslatable lookup(Translatable translatable) {
+    for (var entry : entries) {
+      if (entry.translatable() == translatable)
+        return entry;
+    }
+    return null;
   }
 
   public SearchResult search(String text) {

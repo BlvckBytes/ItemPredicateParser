@@ -36,5 +36,17 @@ public enum ParseConflict {
    * An integer token with time notation has been passed to a predicate which has
    * nothing to do with time.
    */
-  DOES_NOT_ACCEPT_TIME_NOTATION
+  DOES_NOT_ACCEPT_TIME_NOTATION,
+  /**
+   * And/Not/Or all demand a right-hand-side expression
+   */
+  EXPECTED_EXPRESSION_AFTER_JUNCTION,
+  /**
+   * A closing parenthesis has been used to introduce a new parentheses-group
+   */
+  EXPECTED_OPENING_PARENTHESIS,
+  /**
+   * A previously introduced parentheses-group is missing its termination
+   */
+  EXPECTED_CLOSING_PARENTHESIS,
 }

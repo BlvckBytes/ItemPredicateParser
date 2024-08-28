@@ -1,6 +1,6 @@
 package me.blvckbytes.storage_query.predicate;
 
-import me.blvckbytes.storage_query.token.UnquotedStringToken;
+import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public record MaterialPredicate(
+  Token token,
   @Nullable TranslatedTranslatable translatedTranslatable,
-  UnquotedStringToken searchToken,
   List<Material> materials
 ) implements ItemPredicate {
 
@@ -24,10 +24,10 @@ public record MaterialPredicate(
   }
 
   @Override
-  public String stringify() {
-    if (translatedTranslatable != null)
+  public String stringify(boolean useTokens) {
+    if (translatedTranslatable != null && !useTokens)
       return translatedTranslatable.normalizedName();
 
-    return searchToken.value();
+    return token.stringify();
   }
 }

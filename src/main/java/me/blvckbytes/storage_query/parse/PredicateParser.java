@@ -47,7 +47,7 @@ public class PredicateParser {
         break;
 
       // Consecutive predicates are implicitly joined by AND
-      result = new ConjunctionNode(conjunctionTranslation, result, nextExpression, true);
+      result = new ConjunctionNode(null, conjunctionTranslation, result, nextExpression, true);
     }
 
     return result;
@@ -73,7 +73,7 @@ public class PredicateParser {
       if (rhs == null)
         throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
 
-      result = new ConjunctionNode(currentTranslatable, result, rhs, false);
+      result = new ConjunctionNode(currentToken, currentTranslatable, result, rhs, false);
     }
 
     return result;
@@ -99,7 +99,7 @@ public class PredicateParser {
       if (rhs == null)
         throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
 
-      result = new DisjunctionNode(currentTranslatable, result, rhs);
+      result = new DisjunctionNode(currentToken, currentTranslatable, result, rhs);
     }
 
     return result;
@@ -122,7 +122,7 @@ public class PredicateParser {
     if (operand == null)
       throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_JUNCTION);
 
-    return new NegationNode(translated, operand);
+    return new NegationNode(token, translated, operand);
   }
 
   private @Nullable ItemPredicate parseParenthesesNode() {
@@ -159,7 +159,7 @@ public class PredicateParser {
       if (!((tokens.getFirst() instanceof ParenthesisToken nextToken) && nextToken.isOpening()))
         break;
 
-      inner = new ConjunctionNode(conjunctionTranslation, inner, parseParenthesesNode(), true);
+      inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseParenthesesNode(), true);
     }
 
     if (tokens.isEmpty()) {
@@ -183,7 +183,7 @@ public class PredicateParser {
           // Re-climb the precedence ladder
           // This way, missing closing parentheses will be added to the very end, which makes it
           // possible to actually get the desired result, until closing-parens are added in while typing
-          inner = new ConjunctionNode(conjunctionTranslation, inner, parseDisjunctionNode(), true);
+          inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseDisjunctionNode(), true);
         }
 
         return new ParenthesesNode(inner);
@@ -256,7 +256,7 @@ public class PredicateParser {
         if (materials.isEmpty())
           throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
-        predicates.add(new MaterialPredicate(null, translationSearch, materials));
+        predicates.add(new MaterialPredicate(translationSearch, null, materials));
         tokens.removeFirst();
         continue;
       }
@@ -267,7 +267,7 @@ public class PredicateParser {
         throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
       if (shortestMatch.translatable() instanceof Material predicateMaterial) {
-        predicates.add(new MaterialPredicate(shortestMatch, translationSearch, List.of(predicateMaterial)));
+        predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(predicateMaterial)));
         tokens.removeFirst();
         continue;
       }
@@ -278,7 +278,7 @@ public class PredicateParser {
         IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(enchantmentLevel);
 
-        predicates.add(new EnchantmentPredicate(shortestMatch, predicateEnchantment, enchantmentLevel));
+        predicates.add(new EnchantmentPredicate(currentToken, shortestMatch, predicateEnchantment, enchantmentLevel));
         continue;
       }
 
@@ -290,7 +290,7 @@ public class PredicateParser {
 
         IntegerToken potionEffectDuration = tryConsumeIntegerArgument(tokens);
 
-        predicates.add(new PotionEffectPredicate(shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
+        predicates.add(new PotionEffectPredicate(currentToken, shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
         continue;
       }
 
@@ -303,7 +303,7 @@ public class PredicateParser {
         IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(deteriorationPercentageMax);
 
-        predicates.add(new DeteriorationPredicate(shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
+        predicates.add(new DeteriorationPredicate(currentToken, shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
       }
 
@@ -317,7 +317,7 @@ public class PredicateParser {
 
     // Consecutive predicates are implicitly joined by AND
     while (!predicates.isEmpty())
-      result = new ConjunctionNode(conjunctionTranslation, result, predicates.removeFirst(), true);
+      result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.removeFirst(), true);
 
     return result;
   }

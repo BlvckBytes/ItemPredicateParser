@@ -137,7 +137,7 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public String stringify() {
+  public String stringify(boolean useTokens) {
     return "\"" + text + "\"";
   }
 

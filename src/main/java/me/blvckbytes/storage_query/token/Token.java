@@ -6,4 +6,6 @@ public interface Token {
    * the command as dispatched by the user
    */
   int commandArgumentIndex();
+
+  String stringify();
 }

@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query.predicate;
 
 import me.blvckbytes.storage_query.token.IntegerToken;
+import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.StringJoiner;
 
 public record PotionEffectPredicate(
+  Token token,
   TranslatedTranslatable translatedTranslatable,
   PotionEffectType type,
   @Nullable IntegerToken amplifierArgument,
@@ -58,10 +60,13 @@ public record PotionEffectPredicate(
   }
 
   @Override
-  public String stringify() {
+  public String stringify(boolean useTokens) {
     var result = new StringJoiner(" ");
 
-    result.add(translatedTranslatable.normalizedName());
+    if (useTokens)
+      result.add(token.stringify());
+    else
+      result.add(translatedTranslatable.normalizedName());
 
     if (this.amplifierArgument != null)
       result.add(this.amplifierArgument.stringify());

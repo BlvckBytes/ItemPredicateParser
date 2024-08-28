@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query.predicate;
 
 import me.blvckbytes.storage_query.token.IntegerToken;
+import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.StringJoiner;
 
 public record DeteriorationPredicate(
+  Token token,
   TranslatedTranslatable translatedTranslatable,
   @Nullable IntegerToken deteriorationPercentageMin,
   @Nullable IntegerToken deteriorationPercentageMax
@@ -44,7 +46,7 @@ public record DeteriorationPredicate(
   }
 
   @Override
-  public String stringify() {
+  public String stringify(boolean useTokens) {
     var result = new StringJoiner(" ");
 
     result.add(translatedTranslatable.normalizedName());

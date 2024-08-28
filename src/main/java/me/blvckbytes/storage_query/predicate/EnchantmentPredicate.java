@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query.predicate;
 
 import me.blvckbytes.storage_query.token.IntegerToken;
+import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 public record EnchantmentPredicate(
+  Token token,
   TranslatedTranslatable translatedTranslatable,
   Enchantment enchantment,
   @Nullable IntegerToken levelArgument
@@ -45,10 +47,13 @@ public record EnchantmentPredicate(
   }
 
   @Override
-  public String stringify() {
+  public String stringify(boolean useTokens) {
     var result = new StringJoiner(" ");
 
-    result.add(translatedTranslatable.normalizedName());
+    if (useTokens)
+      result.add(token.stringify());
+    else
+      result.add(translatedTranslatable.normalizedName());
 
     if (this.levelArgument != null)
       result.add(this.levelArgument.stringify());

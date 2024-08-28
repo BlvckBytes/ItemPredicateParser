@@ -12,7 +12,7 @@ public record ParenthesesNode (
   }
 
   @Override
-  public String stringify() {
-    return "(" + inner.stringify() + ")";
+  public String stringify(boolean useTokens) {
+    return "(" + inner.stringify(useTokens) + ")";
   }
 }

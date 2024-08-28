@@ -30,6 +30,74 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PredicateParserTests extends TranslationRegistryDependentTests {
 
   @Test
+  public void shouldStringifyAsParsed() {
+    makeStringificationCase(
+      new String[] { "dia-ches", "unbr", "2", "regen", "3", "sign-?" },
+      "dia-ches unbr 2 regen 3 sign-?",
+      false, true
+    );
+
+    makeStringificationCase(
+      new String[] { "dia-ches", "and", "unbr", "2", "regen", "3", "sign-?" },
+      "dia-ches and unbr 2 regen 3 sign-?",
+      false, true
+    );
+
+    makeStringificationCase(
+      new String[] { "dia-ches", "and", "unbr", "2", "or", "regen", "3", "sign-?" },
+      "dia-ches and unbr 2 or regen 3 sign-?",
+      false, true
+    );
+
+    makeStringificationCase(
+      new String[] { "(dia-ches", "and", "unbr", "2)", "or", "(regen", "3", "sign-?)" },
+      "(dia-ches and unbr 2) or (regen 3 sign-?)",
+      false, true
+    );
+
+    // But we most definitely want parentheses to be closed
+    makeStringificationCase(
+      new String[] { "(dia-ches", "and", "(unbr", "2" },
+      "(dia-ches and (unbr 2))",
+      true, true
+    );
+  }
+
+  @Test
+  public void shouldStringifyExpandedAbbreviations() {
+    makeStringificationCase(
+      new String[] { "dia-ches", "unbr", "2", "regen", "3", "sign-?" },
+      "Diamond-Chestplate Unbreaking 2 Regeneration 3 sign-?",
+      false, false
+    );
+
+    makeStringificationCase(
+      new String[] { "dia-ches", "and", "unbr", "2", "regen", "3", "sign-?" },
+      "Diamond-Chestplate and Unbreaking 2 Regeneration 3 sign-?",
+      false, false
+    );
+
+    makeStringificationCase(
+      new String[] { "dia-ches", "and", "unbr", "2", "or", "regen", "3", "sign-?" },
+      "Diamond-Chestplate and Unbreaking 2 or Regeneration 3 sign-?",
+      false, false
+    );
+
+    makeStringificationCase(
+      new String[] { "(dia-ches", "and", "unbr", "2)", "or", "(regen", "3", "sign-?)" },
+      "(Diamond-Chestplate and Unbreaking 2) or (Regeneration 3 sign-?)",
+      false, false
+    );
+
+    // But we most definitely want parentheses to be closed
+    makeStringificationCase(
+      new String[] { "(dia-ches", "and", "(unbr", "2" },
+      "(Diamond-Chestplate and (Unbreaking 2))",
+      true, false
+    );
+  }
+
+  @Test
   public void shouldYieldNullOnEmptyInput() {
     makeCase(new String[] {}, null);
     makeCase(new String[] { "" }, null);
@@ -42,9 +110,22 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "dia-ches", "unbr", "4", "night-v", "deter" },
       andJoin(true,
         materialPredicate(Material.DIAMOND_CHESTPLATE, new UnquotedStringToken(0, "dia-ches")),
-        enchantmentPredicate(Enchantment.UNBREAKING, new IntegerToken(2, 4)),
-        potionEffectPredicate(PotionEffectType.NIGHT_VISION, null, null),
-        deteriorationPredicate(null, null)
+        enchantmentPredicate(
+          Enchantment.UNBREAKING,
+          new IntegerToken(2, 4),
+          new UnquotedStringToken(1, "unbr")
+        ),
+        potionEffectPredicate(
+          PotionEffectType.NIGHT_VISION,
+          null,
+          null,
+          new UnquotedStringToken(3, "night-v")
+        ),
+        deteriorationPredicate(
+          null,
+          null,
+          new UnquotedStringToken(4, "deter")
+        )
       )
     );
   }
@@ -56,7 +137,11 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       andJoin(true,
         materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(0, "gold-boot")),
         negate(
-          enchantmentPredicate(Enchantment.UNBREAKING, null)
+          enchantmentPredicate(
+            Enchantment.UNBREAKING,
+            null,
+            new UnquotedStringToken(2, "unbr")
+          )
         )
       )
     );
@@ -66,10 +151,18 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       andJoin(true,
         materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(0, "gold-boot")),
         negate(
-          enchantmentPredicate(Enchantment.UNBREAKING, null)
+          enchantmentPredicate(
+            Enchantment.UNBREAKING,
+            null,
+            new UnquotedStringToken(2, "unbr")
+          )
         ),
         negate(
-          deteriorationPredicate(null, null)
+          deteriorationPredicate(
+            null,
+            null,
+            new UnquotedStringToken(4, "deter")
+          )
         ),
         negate(
           new TextSearchPredicate("test")
@@ -83,9 +176,21 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "mendi", "and", "unbr", "3", "and", "deter" },
       andJoin(false,
-        enchantmentPredicate(Enchantment.MENDING, null),
-        enchantmentPredicate(Enchantment.UNBREAKING, new IntegerToken(3, 3)),
-        deteriorationPredicate(null, null)
+        enchantmentPredicate(
+          Enchantment.MENDING,
+          null,
+          new UnquotedStringToken(0, "mendi")
+        ),
+        enchantmentPredicate(
+          Enchantment.UNBREAKING,
+          new IntegerToken(3, 3),
+          new UnquotedStringToken(2, "unbr")
+        ),
+        deteriorationPredicate(
+          null,
+          null,
+          new UnquotedStringToken(5, "deter")
+        )
       )
     );
   }
@@ -97,7 +202,11 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       orJoin(
         materialPredicate(Material.DIAMOND_SHOVEL, new UnquotedStringToken(0, "dia-shov")),
         materialPredicate(Material.DIAMOND_PICKAXE, new UnquotedStringToken(2, "dia-pick")),
-        enchantmentPredicate(Enchantment.UNBREAKING, new IntegerToken(5, 2)),
+        enchantmentPredicate(
+          Enchantment.UNBREAKING,
+          new IntegerToken(5, 2),
+          new UnquotedStringToken(4, "unbr")
+        ),
         materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(7, "gold-boot"))
       )
     );
@@ -149,9 +258,21 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "(unbr", "fire-prot", "3", "thorn)" },
       new ParenthesesNode(
         andJoin(false,
-          enchantmentPredicate(Enchantment.UNBREAKING, null),
-          enchantmentPredicate(Enchantment.FIRE_PROTECTION, new IntegerToken(2, 3)),
-          enchantmentPredicate(Enchantment.THORNS, null)
+          enchantmentPredicate(
+            Enchantment.UNBREAKING,
+            null,
+            new UnquotedStringToken(0, "unbr")
+          ),
+          enchantmentPredicate(
+            Enchantment.FIRE_PROTECTION,
+            new IntegerToken(2, 3),
+            new UnquotedStringToken(1, "fire-prot")
+          ),
+          enchantmentPredicate(
+            Enchantment.THORNS,
+            null,
+            new UnquotedStringToken(3, "thorn")
+          )
         )
       )
     );
@@ -160,9 +281,21 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "(unbr", "or", "fire-prot", "3", "or", "thorn)" },
       new ParenthesesNode(
         orJoin(
-          enchantmentPredicate(Enchantment.UNBREAKING, null),
-          enchantmentPredicate(Enchantment.FIRE_PROTECTION, new IntegerToken(3, 3)),
-          enchantmentPredicate(Enchantment.THORNS, null)
+          enchantmentPredicate(
+            Enchantment.UNBREAKING,
+            null,
+            new UnquotedStringToken(0, "unbr")
+          ),
+          enchantmentPredicate(
+            Enchantment.FIRE_PROTECTION,
+            new IntegerToken(3, 3),
+            new UnquotedStringToken(2, "fire-prot")
+          ),
+          enchantmentPredicate(
+            Enchantment.THORNS,
+            null,
+            new UnquotedStringToken(5, "thorn")
+          )
         )
       )
     );
@@ -172,7 +305,11 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         new ParenthesesNode(
           new ParenthesesNode(
-            enchantmentPredicate(Enchantment.UNBREAKING, null)
+            enchantmentPredicate(
+              Enchantment.UNBREAKING,
+              null,
+              new UnquotedStringToken(0, "unbr")
+            )
           )
         )
       )
@@ -183,7 +320,11 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         new ParenthesesNode(
           new ParenthesesNode(
-            enchantmentPredicate(Enchantment.UNBREAKING, null)
+            enchantmentPredicate(
+              Enchantment.UNBREAKING,
+              null,
+              new UnquotedStringToken(3, "unbr")
+            )
           )
         )
       )
@@ -199,7 +340,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            new IntegerToken(2, 2)
+            new IntegerToken(2, 2),
+            new UnquotedStringToken(1, "unbr")
           )
         )
       )
@@ -214,7 +356,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            new IntegerToken(2, 2)
+            new IntegerToken(2, 2),
+            new UnquotedStringToken(1, "unbr")
           )
         )
       )
@@ -228,7 +371,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
             new ParenthesesNode(
               enchantmentPredicate(
                 Enchantment.UNBREAKING,
-                new IntegerToken(2, 2)
+                new IntegerToken(2, 2),
+                new UnquotedStringToken(1, "unbr")
               )
             )
          )
@@ -380,7 +524,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         null,
-        null
+        null,
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -389,7 +534,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, 2),
-        null
+        null,
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -398,7 +544,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, null),
-        null
+        null,
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -407,7 +554,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, 2),
-        new IntegerToken(2, 1600)
+        new IntegerToken(2, 1600),
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -416,7 +564,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, null),
-        new IntegerToken(2, 1600)
+        new IntegerToken(2, 1600),
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -425,7 +574,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, 2),
-        new IntegerToken(2, null)
+        new IntegerToken(2, null),
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -437,7 +587,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "thorn" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        null
+        null,
+        new UnquotedStringToken(0, "thorn")
       )
     );
 
@@ -445,7 +596,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "thorn", "2" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        new IntegerToken(1, 2)
+        new IntegerToken(1, 2),
+        new UnquotedStringToken(0, "thorn")
       )
     );
 
@@ -453,7 +605,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "thorn", "*" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        new IntegerToken(1, null)
+        new IntegerToken(1, null),
+        new UnquotedStringToken(0, "thorn")
       )
     );
 
@@ -494,7 +647,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter" },
       deteriorationPredicate(
         null,
-        null
+        null,
+        new UnquotedStringToken(0, "deter")
       )
     );
 
@@ -502,7 +656,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter", "5" },
       deteriorationPredicate(
         new IntegerToken(1, 5),
-        null
+        null,
+        new UnquotedStringToken(0, "deter")
       )
     );
 
@@ -510,7 +665,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter", "*" },
       deteriorationPredicate(
         new IntegerToken(1, null),
-        null
+        null,
+        new UnquotedStringToken(0, "deter")
       )
     );
 
@@ -518,7 +674,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter", "5", "85" },
       deteriorationPredicate(
         new IntegerToken(1, 5),
-        new IntegerToken(2, 85)
+        new IntegerToken(2, 85),
+        new UnquotedStringToken(0, "deter")
       )
     );
 
@@ -526,7 +683,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter", "*", "85" },
       deteriorationPredicate(
         new IntegerToken(1, null),
-        new IntegerToken(2, 85)
+        new IntegerToken(2, 85),
+        new UnquotedStringToken(0, "deter")
       )
     );
 
@@ -534,7 +692,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "deter", "5", "*" },
       deteriorationPredicate(
         new IntegerToken(1, 5),
-        new IntegerToken(2, null)
+        new IntegerToken(2, null),
+        new UnquotedStringToken(0, "deter")
       )
     );
   }
@@ -553,17 +712,20 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       andJoin(true,
         deteriorationPredicate(
           new IntegerToken(1, 3),
-          null
+          null,
+          new UnquotedStringToken(0, "deter")
         ),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(3, null)
+          new IntegerToken(3, null),
+          new UnquotedStringToken(2, "unbr")
         ),
         new TextSearchPredicate("text a"),
         potionEffectPredicate(
           PotionEffectType.REGENERATION,
           new IntegerToken(6, 4),
-          new IntegerToken(7, null)
+          new IntegerToken(7, null),
+          new UnquotedStringToken(5, "regen")
         ),
         materialPredicate(
           Material.DIAMOND_PICKAXE,
@@ -581,7 +743,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, 2),
-        new IntegerToken(2, 2 * 60 + 30, true)
+        new IntegerToken(2, 2 * 60 + 30, true),
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -590,7 +753,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
         new IntegerToken(1, null),
-        new IntegerToken(2, 2 * 60 + 30, true)
+        new IntegerToken(2, 2 * 60 + 30, true),
+        new UnquotedStringToken(0, "regen")
       )
     );
 
@@ -669,7 +833,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertNotNull(actual);
 
     assertEquals(expected.getClass(), actual.getClass(), () -> (
-      Objects.requireNonNull(rootExpected).stringify() + " =/= " + Objects.requireNonNull(rootActual).stringify()
+      Objects.requireNonNull(rootExpected).stringify(false) + " =/= " + Objects.requireNonNull(rootActual).stringify(false)
     ));
 
     switch (expected) {
@@ -696,14 +860,13 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       case MaterialPredicate expectedMaterial -> {
         var actualMaterial = (MaterialPredicate) actual;
         assertEquals(expectedMaterial.translatedTranslatable(), actualMaterial.translatedTranslatable());
-        assertEquals(expectedMaterial.searchToken(), actualMaterial.searchToken());
+        assertEquals(expectedMaterial.token(), actualMaterial.token());
         assertThat(actualMaterial.materials(), Matchers.containsInAnyOrder(expectedMaterial.materials().toArray()));
       }
       default -> {
         assertEquals(expected, actual);
       }
     }
-
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
@@ -711,6 +874,14 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     var exception = assertThrows(ArgumentParseException.class, predicateParser::parseAst);
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
+  }
+
+  private void makeStringificationCase(String[] args, String expected, boolean allowMissingClosingParentheses, boolean stringifyTokens) {
+    var predicateParser = new PredicateParser(translationRegistry, TokenParser.parseTokens(args), allowMissingClosingParentheses);
+    var ast = predicateParser.parseAst();
+
+    assertNotNull(ast);
+    assertEquals(expected, ast.stringify(stringifyTokens));
   }
 
   private void makeCase(String[] args, @Nullable ItemPredicate expected) {
@@ -726,38 +897,38 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
   private ItemPredicate andJoin(boolean implicit, ItemPredicate... predicates) {
     var result = predicates[0];
     for (var i = 1; i < predicates.length; ++i)
-      result = new ConjunctionNode(translationRegistry.lookup(ConjunctionKey.INSTANCE), result, predicates[i], implicit);
+      result = new ConjunctionNode(null, translationRegistry.lookup(ConjunctionKey.INSTANCE), result, predicates[i], implicit);
     return result;
   }
 
   private ItemPredicate orJoin(ItemPredicate... predicates) {
     var result = predicates[0];
     for (var i = 1; i < predicates.length; ++i)
-      result = new DisjunctionNode(translationRegistry.lookup(DisjunctionKey.INSTANCE), result, predicates[i]);
+      result = new DisjunctionNode(null, translationRegistry.lookup(DisjunctionKey.INSTANCE), result, predicates[i]);
     return result;
   }
 
   private ItemPredicate negate(ItemPredicate predicate) {
-    return new NegationNode(translationRegistry.lookup(NegationKey.INSTANCE), predicate);
+    return new NegationNode(null, translationRegistry.lookup(NegationKey.INSTANCE), predicate);
   }
 
-  private EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level) {
-    return new EnchantmentPredicate(translationRegistry.lookup(getSpy(enchantment)), getSpy(enchantment), level);
+  private EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level, UnquotedStringToken search) {
+    return new EnchantmentPredicate(search, translationRegistry.lookup(getSpy(enchantment)), getSpy(enchantment), level);
   }
 
   private MaterialPredicate materialPredicate(Material material, UnquotedStringToken search) {
-    return new MaterialPredicate(translationRegistry.lookup(material), search, List.of(material));
+    return new MaterialPredicate(search, translationRegistry.lookup(material), List.of(material));
   }
 
   private MaterialPredicate materialsPredicate(UnquotedStringToken search, Collection<Material> materials) {
-    return new MaterialPredicate(null, search, new ArrayList<>(materials));
+    return new MaterialPredicate(search, null, new ArrayList<>(materials));
   }
 
-  private PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration) {
-    return new PotionEffectPredicate(translationRegistry.lookup(getSpy(type)), getSpy(type), amplifier, duration);
+  private PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken search) {
+    return new PotionEffectPredicate(search, translationRegistry.lookup(getSpy(type)), getSpy(type), amplifier, duration);
   }
 
-  private DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max) {
-    return new DeteriorationPredicate(translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
+  private DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken search) {
+    return new DeteriorationPredicate(search, translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
   }
 }

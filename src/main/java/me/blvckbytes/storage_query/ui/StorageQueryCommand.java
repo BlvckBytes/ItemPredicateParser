@@ -119,7 +119,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         var currentCommandRepresentation = new PredicateParser(registry, tokens, true).parseAst();
 
         if (currentCommandRepresentation != null)
-          showParseMessage(player, "§a" + currentCommandRepresentation.stringify());
+          showParseMessage(player, "§a" + currentCommandRepresentation.stringify(false));
       } catch (ArgumentParseException e) {
         showParseMessage(player, generateParseExceptionMessage(args, e));
       }

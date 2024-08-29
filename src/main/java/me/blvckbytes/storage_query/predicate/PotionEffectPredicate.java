@@ -5,7 +5,6 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,35 +20,20 @@ public record PotionEffectPredicate(
 
   @Override
   public boolean test(PredicateState state) {
-    if (!(state.meta instanceof PotionMeta potionMeta))
-      return false;
+    for (var effectIterator = state.getEffects().iterator(); effectIterator.hasNext();) {
+      var effect = effectIterator.next();
 
-    var baseType = potionMeta.getBasePotionType();
-
-    if (baseType != null) {
-      for (var baseEffect : baseType.getPotionEffects()) {
-        if (!baseEffect.getType().equals(this.type))
-          continue;
-
-        if (doesAmplifierMismatch(baseEffect.getAmplifier()))
-          continue;
-
-        if (doesDurationMismatch(state.item, baseEffect.getDuration()))
-          continue;
-
-        return true;
-      }
-    }
-
-    for (var customEffect : potionMeta.getCustomEffects()) {
-      if (!customEffect.getType().equals(this.type))
+      if (!effect.getType().equals(this.type))
         continue;
 
-      if (doesAmplifierMismatch(customEffect.getAmplifier()))
+      if (doesAmplifierMismatch(effect.getAmplifier()))
         continue;
 
-      if (doesDurationMismatch(state.item, customEffect.getDuration()))
+      if (doesDurationMismatch(state.item, effect.getDuration()))
         continue;
+
+      if (state.isExactMode)
+        effectIterator.remove();
 
       return true;
     }

@@ -11,11 +11,14 @@ public record ExactNode(
 
   @Override
   public boolean test(PredicateState state) {
-    if (state.flags.contains(PredicateFlags.EXACT_MODE)) {
-      // TODO: Implement correct behavior
-    }
+    var exactState = state.copyAndEnterExact();
 
-    return operand.test(state);
+    // The predicates themselves weren't satisfied
+    if (!operand.test(exactState))
+        return false;
+
+    // There have been remaining, unmatched properties - exact-mode failed
+    return !exactState.hasRemains();
   }
 
   @Override

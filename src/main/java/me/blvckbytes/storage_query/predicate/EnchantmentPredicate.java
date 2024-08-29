@@ -9,9 +9,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 public record EnchantmentPredicate(
   Token token,
@@ -21,25 +19,47 @@ public record EnchantmentPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
+  public boolean test(PredicateState state) {
+    for (var entry : extractEnchantments(state.meta, false)) {
+      if (doesEnchantmentMatch(entry.getKey(), entry.getValue()))
+        return true;
+    }
+
+    return false;
+  }
+
+  public Set<Map.Entry<Enchantment, Integer>> extractEnchantments(@Nullable ItemMeta meta, boolean modifiable) {
     if (meta == null)
-      return false;
+      return Set.of();
 
     Map<Enchantment, Integer> enchantments;
 
-    if (meta instanceof EnchantmentStorageMeta enchantmentStorage)
-      enchantments = enchantmentStorage.getStoredEnchants();
+    if (meta instanceof EnchantmentStorageMeta enchantmentStorageMeta)
+      enchantments = enchantmentStorageMeta.getStoredEnchants();
     else
       enchantments = meta.getEnchants();
 
-    for (var enchant : enchantments.entrySet()) {
-      if (!enchant.getKey().equals(this.enchantment))
-        continue;
+    if (!modifiable)
+      return enchantments.entrySet();
 
-      if (this.levelArgument != null && !this.levelArgument.matches(enchant.getValue()))
-        continue;
+    return new HashSet<>(enchantments.entrySet());
+  }
 
-      return true;
+  private boolean doesEnchantmentMatch(Enchantment enchantment, int level) {
+    if (!enchantment.equals(this.enchantment))
+      return false;
+
+    return this.levelArgument == null || this.levelArgument.matches(level);
+  }
+
+  public boolean matchOnRemaining(ItemStack item, Set<Map.Entry<Enchantment, Integer>> remaining) {
+    for (var entryIterator = remaining.iterator(); entryIterator.hasNext();) {
+      var entry = entryIterator.next();
+
+      if (doesEnchantmentMatch(entry.getKey(), entry.getValue())) {
+        entryIterator.remove();
+        return true;
+      }
     }
 
     return false;

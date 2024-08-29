@@ -3,12 +3,9 @@ package me.blvckbytes.storage_query.predicate;
 import me.blvckbytes.storage_query.token.IntegerToken;
 import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.StringJoiner;
 
 public record DeteriorationPredicate(
@@ -19,10 +16,10 @@ public record DeteriorationPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
-    if (meta instanceof Damageable damageableMeta) {
+  public boolean test(PredicateState state) {
+    if (state.meta instanceof Damageable damageableMeta) {
       var damage = damageableMeta.getDamage();
-      var maxDamage = (int) item.getType().getMaxDurability();
+      var maxDamage = (int) state.item.getType().getMaxDurability();
 
       if (maxDamage == 0)
         return false;

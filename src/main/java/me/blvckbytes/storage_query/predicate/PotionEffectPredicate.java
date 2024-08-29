@@ -5,12 +5,10 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.StringJoiner;
 
 public record PotionEffectPredicate(
@@ -22,8 +20,8 @@ public record PotionEffectPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
-    if (!(meta instanceof PotionMeta potionMeta))
+  public boolean test(PredicateState state) {
+    if (!(state.meta instanceof PotionMeta potionMeta))
       return false;
 
     var baseType = potionMeta.getBasePotionType();
@@ -36,7 +34,7 @@ public record PotionEffectPredicate(
         if (doesAmplifierMismatch(baseEffect.getAmplifier()))
           continue;
 
-        if (doesDurationMismatch(item, baseEffect.getDuration()))
+        if (doesDurationMismatch(state.item, baseEffect.getDuration()))
           continue;
 
         return true;
@@ -50,7 +48,7 @@ public record PotionEffectPredicate(
       if (doesAmplifierMismatch(customEffect.getAmplifier()))
         continue;
 
-      if (doesDurationMismatch(item, customEffect.getDuration()))
+      if (doesDurationMismatch(state.item, customEffect.getDuration()))
         continue;
 
       return true;

@@ -1,20 +1,8 @@
 package me.blvckbytes.storage_query.predicate;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
-
 public interface ItemPredicate {
 
-  // Passing down the meta spares the need to access it over and
-  // over again, which internally causes useless allocations
-  boolean test(
-    ItemStack item,
-    @Nullable ItemMeta meta,
-    EnumSet<PredicateFlags> flags
-  );
+  boolean test(PredicateState state);
 
   /**
    * Stringifies the predicate to represent the fully-expanded version of it's previously

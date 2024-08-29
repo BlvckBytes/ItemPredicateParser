@@ -3,11 +3,8 @@ package me.blvckbytes.storage_query.predicate;
 import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 
 public record MaterialPredicate(
@@ -17,9 +14,9 @@ public record MaterialPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
+  public boolean test(PredicateState state) {
     for (var material : materials) {
-      if (material.equals(item.getType()))
+      if (material.equals(state.item.getType()))
         return true;
     }
     return false;

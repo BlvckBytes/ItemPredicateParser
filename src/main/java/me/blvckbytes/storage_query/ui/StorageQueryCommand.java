@@ -135,9 +135,6 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
 
       var searchResult = registry.search(searchText);
 
-      if (searchResult.wildcardPresence() == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
-        throw new ArgumentParseException(argumentIndex, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
-
       // TODO: If not all matches fit into the max_completer_results, add a "...and <x> more" as the last entry
 
       return searchResult.result()

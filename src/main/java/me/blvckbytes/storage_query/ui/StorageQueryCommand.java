@@ -27,7 +27,7 @@ import java.util.*;
 
 public class StorageQueryCommand implements CommandExecutor, TabCompleter {
 
-  private static final int MAX_COMPLETER_RESULTS = 15;
+  private static final int MAX_COMPLETER_RESULTS = 20;
   private static final int CHEST_SEARCH_DISTANCE_HALF = 50;
 
   private final TranslationRegistry registryGerman;
@@ -76,15 +76,8 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       var parsingEnd = System.nanoTime();
       player.sendMessage(String.format("§6(Parsing took %.2f ms)", (parsingEnd - parsingStart) / 1000.0 / 1000.0));
 
-      var chestSearchStart = System.nanoTime();
       var nearChests = findNearChestBlocks(player.getLocation());
-      var chestSearchEnd = System.nanoTime();
-      player.sendMessage(String.format("§6(Chest-Search took %.2f ms)", (chestSearchEnd - chestSearchStart) / 1000.0 / 1000.0));
-
-      var predicateStart = System.nanoTime();
-      var items = applyAst(nearChests, ast);
-      var predicateEnd = System.nanoTime();
-      player.sendMessage(String.format("§6(Predicates took %.2f ms)", (predicateEnd - predicateStart) / 1000.0 / 1000.0));
+      var items = applyAst(player, nearChests, ast);
 
       if (items.isEmpty()) {
         player.sendMessage("§cStorageQuery | Couldn't locate any matching items");
@@ -159,8 +152,11 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
     }
   }
 
-  private List<ChestItem> applyAst(List<Chest> chests, ItemPredicate ast) {
+  private List<ChestItem> applyAst(Player player, List<Chest> chests, ItemPredicate ast) {
     var items = new ArrayList<ChestItem>();
+
+    var totalPredicateTime = 0L;
+    var totalExecutions = 0L;
 
     for (var nearChest : chests) {
       var inventory = nearChest.getInventory();
@@ -172,10 +168,19 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         if (currentItem == null || currentItem.getType() == Material.AIR)
           continue;
 
-        if (ast.test(new PredicateState(currentItem)))
+        var before = System.nanoTime();
+        var predicateResult = ast.test(new PredicateState(currentItem));
+        var after = System.nanoTime();
+
+        totalPredicateTime += after - before;
+        ++totalExecutions;
+
+        if (predicateResult)
           items.add(new ChestItem(nearChest, slot));
       }
     }
+
+    player.sendMessage(String.format("§6(Predicate took %.4f ms/slot)", (totalPredicateTime / totalExecutions) / 1000.0 / 1000.0));
 
     return items;
   }

@@ -46,27 +46,35 @@ public class TranslationRegistry {
     return null;
   }
 
-  public SearchResult search(@Nullable Integer argumentIndex, String text) {
+  public SearchResult search(@Nullable Integer argumentIndex, String query) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
       return new SearchResult(List.of(), false);
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
-    var textParts = SubstringIndices.forString(argumentIndex, text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryParts = SubstringIndices.forString(argumentIndex, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     var isWildcardPresent = false;
 
     for (var entry : entries) {
-      var pendingTextParts = new ArrayList<>(textParts);
+      var pendingQueryParts = new ArrayList<>(queryParts);
+      var pendingTextParts = new ArrayList<>(entry.partIndices());
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
-        text, pendingTextParts,
-        entry.translation(), new ArrayList<>(entry.partIndices())
+        query, pendingQueryParts,
+        entry.translation(), pendingTextParts
       );
 
-      if (pendingTextParts.isEmpty())
-        result.add(entry);
+      if (!pendingQueryParts.isEmpty())
+        continue;
+
+      // If there's a wildcard, disregard full matches
+      // TODO: Add a test-case for this
+      if (isWildcardPresent && pendingTextParts.isEmpty())
+        continue;
+
+      result.add(entry);
     }
 
     return new SearchResult(result, isWildcardPresent);

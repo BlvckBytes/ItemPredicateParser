@@ -3,7 +3,9 @@ package me.blvckbytes.storage_query.predicate;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -21,9 +23,7 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
-    var meta = item.getItemMeta();
-
+  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
     if (meta == null)
       return false;
 

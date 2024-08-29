@@ -21,9 +21,7 @@ public record EnchantmentPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
-    ItemMeta meta = item.getItemMeta();
-
+  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
     if (meta == null)
       return false;
 

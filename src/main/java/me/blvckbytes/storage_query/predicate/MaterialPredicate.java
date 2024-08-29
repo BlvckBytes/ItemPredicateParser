@@ -4,6 +4,7 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -16,7 +17,7 @@ public record MaterialPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
+  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
     for (var material : materials) {
       if (material.equals(item.getType()))
         return true;

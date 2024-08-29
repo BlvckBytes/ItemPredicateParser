@@ -5,6 +5,7 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -18,8 +19,8 @@ public record DeteriorationPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
-    if (item.getItemMeta() instanceof Damageable damageableMeta) {
+  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
+    if (meta instanceof Damageable damageableMeta) {
       var damage = damageableMeta.getDamage();
       var maxDamage = (int) item.getType().getMaxDurability();
 

@@ -5,6 +5,7 @@ import me.blvckbytes.storage_query.token.Token;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
@@ -21,9 +22,7 @@ public record PotionEffectPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(ItemStack item, EnumSet<PredicateFlags> flags) {
-    var meta = item.getItemMeta();
-
+  public boolean test(ItemStack item, @Nullable ItemMeta meta, EnumSet<PredicateFlags> flags) {
     if (!(meta instanceof PotionMeta potionMeta))
       return false;
 

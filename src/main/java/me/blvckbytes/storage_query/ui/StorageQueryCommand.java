@@ -172,7 +172,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
         if (currentItem == null || currentItem.getType() == Material.AIR)
           continue;
 
-        if (ast.test(currentItem, EnumSet.noneOf(PredicateFlags.class)))
+        if (ast.test(currentItem, currentItem.getItemMeta(), EnumSet.noneOf(PredicateFlags.class)))
           items.add(new ChestItem(nearChest, slot));
       }
     }

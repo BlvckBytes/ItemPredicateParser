@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
@@ -47,33 +46,30 @@ public class TranslationRegistry {
     return null;
   }
 
-  public SearchResult search(String text) {
+  public SearchResult search(@Nullable Integer argumentIndex, String text) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
-      return new SearchResult();
+      return new SearchResult(List.of(), false);
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
-    var textParts = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var textParts = SubstringIndices.forString(argumentIndex, text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
-    var wildcardPresence = SearchWildcardPresence.ABSENT;
+    var isWildcardPresent = false;
 
     for (var entry : entries) {
       var pendingTextParts = new ArrayList<>(textParts);
 
-      wildcardPresence = SubstringIndices.matchQuerySubstrings(
+      isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
         text, pendingTextParts,
         entry.translation(), new ArrayList<>(entry.partIndices())
       );
-
-      if (wildcardPresence == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
-        return new SearchResult(List.of(), wildcardPresence);
 
       if (pendingTextParts.isEmpty())
         result.add(entry);
     }
 
-    return new SearchResult(result, wildcardPresence);
+    return new SearchResult(result, isWildcardPresent);
   }
 
   private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) {

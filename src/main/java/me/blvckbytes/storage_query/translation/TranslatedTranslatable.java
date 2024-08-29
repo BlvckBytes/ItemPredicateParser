@@ -25,7 +25,7 @@ public record TranslatedTranslatable(
         .replace(' ', '-')
         .replace('_', '-')
       ,
-      SubstringIndices.forString(translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
+      SubstringIndices.forString(null, translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
     );
   }
 }

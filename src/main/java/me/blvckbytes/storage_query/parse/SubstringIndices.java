@@ -1,11 +1,14 @@
 package me.blvckbytes.storage_query.parse;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 
 public record SubstringIndices(
   int start,
   int end,
-  boolean isNegated
+  boolean isNegated,
+  boolean isPatternWildcardChar
 ) {
   public static final char[] LANGUAGE_FILE_DELIMITERS = { '-', ' ', '_' };
   public static final char[] SEARCH_PATTERN_DELIMITERS = { '-' };
@@ -15,25 +18,37 @@ public record SubstringIndices(
   private static final char PATTERN_NEGATION_CHAR = '!';
 
   public SubstringIndices(int start, int end) {
-    this(start, end, false);
+    this(start, end, false, false);
   }
 
   private static SubstringIndices makePossiblyNegatable(int start, int end, String text) {
+    var isPatternWildcardChar = start == end && text.charAt(start) == PATTERN_WILDCARD_CHAR;
+
     if (start != end && text.charAt(start) == PATTERN_NEGATION_CHAR)
-      return new SubstringIndices(start + 1, end, true);
-    return new SubstringIndices(start, end, false);
+      return new SubstringIndices(start + 1, end, true, isPatternWildcardChar );
+
+    return new SubstringIndices(start, end, false, isPatternWildcardChar );
   }
 
   public int length() {
     return (end - start) + 1;
   }
 
-  public static ArrayList<SubstringIndices> forString(String input, char[] delimiters) {
+  /**
+   * @param argumentIndex If provided, checks for search pattern wildcard presence (throws on duplicate or only)
+   */
+  public static ArrayList<SubstringIndices> forString(
+    @Nullable Integer argumentIndex,
+    String input,
+    char[] delimiters
+  ) {
     var result = new ArrayList<SubstringIndices>();
     var inputLength = input.length();
 
     int nextPartBeginning = 0;
     boolean encounteredNonDelimiter = false;
+    boolean encounteredSearchPatternWildcard = false;
+    boolean encounteredNonSearchPatternWildcard = false;
 
     for (int i = 0; i < inputLength; ++i) {
       var currentChar = input.charAt(i);
@@ -46,21 +61,35 @@ public record SubstringIndices(
         }
       }
 
-      if (isDelimiter) {
-        if (i != 0 && encounteredNonDelimiter)
-          result.add(SubstringIndices.makePossiblyNegatable(nextPartBeginning, i - 1, input));
-
-        nextPartBeginning = i + 1;
-        encounteredNonDelimiter = false;
-        continue;
-      }
-
-      else
+      if (!isDelimiter) {
         encounteredNonDelimiter = true;
 
-      if (i == inputLength - 1)
-        result.add(SubstringIndices.makePossiblyNegatable(nextPartBeginning, i, input));
+        if (i != inputLength - 1)
+          continue;
+      }
+
+      if (encounteredNonDelimiter) {
+        var nextIndices = SubstringIndices.makePossiblyNegatable(nextPartBeginning, isDelimiter ? i - 1 : i, input);
+
+        if (nextIndices.isPatternWildcardChar) {
+          if (argumentIndex != null) {
+            if (encounteredSearchPatternWildcard)
+              throw new ArgumentParseException(argumentIndex, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+            encounteredSearchPatternWildcard = true;
+          }
+        }
+        else
+          encounteredNonSearchPatternWildcard = true;
+
+        result.add(nextIndices);
+      }
+
+      nextPartBeginning = i + 1;
+      encounteredNonDelimiter = false;
     }
+
+    if (encounteredSearchPatternWildcard && !encounteredNonSearchPatternWildcard)
+      throw new ArgumentParseException(argumentIndex, ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
 
     return result;
   }
@@ -103,7 +132,10 @@ public record SubstringIndices(
     return -1;
   }
 
-  public static SearchWildcardPresence matchQuerySubstrings(
+  /**
+   * @return Whether a pattern wildcard char has been encountered
+   */
+  public static boolean matchQuerySubstrings(
     String query,
     ArrayList<SubstringIndices> pendingQuerySubstrings,
     String text,
@@ -115,14 +147,9 @@ public record SubstringIndices(
     for (var pendingQuerySubstringsIterator = pendingQuerySubstrings.iterator(); pendingQuerySubstringsIterator.hasNext();) {
       var pendingQuerySubstring = pendingQuerySubstringsIterator.next();
 
-      if (pendingQuerySubstring.length() == 1 && query.charAt(pendingQuerySubstring.start()) == PATTERN_WILDCARD_CHAR) {
-        if (!hasSearchPatternWildcard) {
-          hasSearchPatternWildcard = true;
-          pendingQuerySubstringsIterator.remove();
-          continue;
-        }
-
-        return SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY;
+      if (pendingQuerySubstring.isPatternWildcardChar) {
+        hasSearchPatternWildcard = true;
+        pendingQuerySubstringsIterator.remove();
       }
 
       boolean didQuerySubstringMatch = false;
@@ -160,7 +187,7 @@ public record SubstringIndices(
             new SubstringIndices(
               remainingTextSubstring.start() + relativeIndex + pendingQuerySubstringLength,
               remainingTextSubstring.end(),
-              false
+              false, false
             )
           );
         }
@@ -172,7 +199,7 @@ public record SubstringIndices(
             new SubstringIndices(
               remainingTextSubstring.start(),
               remainingTextSubstring.start() + relativeIndex - 1,
-              false
+              false, false
             )
           );
         }
@@ -196,6 +223,6 @@ public record SubstringIndices(
 
     } // Pending query substrings
 
-    return hasSearchPatternWildcard ? SearchWildcardPresence.PRESENT : SearchWildcardPresence.ABSENT;
+    return hasSearchPatternWildcard;
   }
 }

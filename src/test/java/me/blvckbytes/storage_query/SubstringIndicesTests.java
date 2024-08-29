@@ -1,6 +1,7 @@
 package me.blvckbytes.storage_query;
 
-import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
+import me.blvckbytes.storage_query.parse.ArgumentParseException;
+import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.parse.SubstringIndices;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SubstringIndicesTests {
 
@@ -66,24 +66,39 @@ public class SubstringIndicesTests {
 
   @Test
   public void shouldDetectSearchWildcards() {
+    assertTrue(makeListModCase("oak-sign", "sign-?", "oak", ""));
+
+    assertFalse(makeListModCase("oak-sign", "sign-oa", "k", ""));
+
     assertEquals(
-      SearchWildcardPresence.PRESENT,
-      makeListModCase("oak-sign", "sign-?", "oak", "")
+      ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> SubstringIndices.forString(0, "sign-?-o-?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+      ).getConflict()
+    );
+
+    assertFalse(makeListModCase("oak-sign", "o", "ak sign", ""));
+
+    assertEquals(
+      ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> SubstringIndices.forString(0, "?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+      ).getConflict()
     );
 
     assertEquals(
-      SearchWildcardPresence.ABSENT,
-      makeListModCase("oak-sign", "sign-oa", "k", "")
-    );
-
-    assertEquals(
-      SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY,
-      makeListModCase("oak-sign", "sign-?-o-?", "ak", null)
+      ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> SubstringIndices.forString(0, "---?--", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+      ).getConflict()
     );
   }
 
   private void makeIndicesGenCase(String input, List<SubstringIndices> expectedIndicesList) {
-    var indicesList = SubstringIndices.forString(input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var indicesList = SubstringIndices.forString(0, input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     for (var i = 0; i < expectedIndicesList.size(); ++i) {
       if (i >= indicesList.size())
@@ -97,14 +112,14 @@ public class SubstringIndicesTests {
     }
   }
 
-  private SearchWildcardPresence makeListModCase(
+  private boolean makeListModCase(
     String text,
     String query,
     String expectedRemainingText,
     @Nullable String expectedPendingQuery
   ) {
-    var textIndices = SubstringIndices.forString(text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
-    var queryIndices = SubstringIndices.forString(query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var textIndices = SubstringIndices.forString(null, text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryIndices = SubstringIndices.forString(0, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     var pendingQueryIndices = new ArrayList<>(queryIndices);
     var remainingTextIndices = new ArrayList<>(textIndices);

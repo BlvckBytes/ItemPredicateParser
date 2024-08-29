@@ -1,12 +1,10 @@
 package me.blvckbytes.storage_query.ui;
 
-import me.blvckbytes.storage_query.parse.ParseConflict;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
 import me.blvckbytes.storage_query.parse.ArgumentParseException;
 import me.blvckbytes.storage_query.parse.PredicateParser;
 import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
-import me.blvckbytes.storage_query.parse.SearchWildcardPresence;
 import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import net.md_5.bungee.api.ChatMessageType;
@@ -133,7 +131,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       if (searchText.isEmpty())
         return List.of();
 
-      var searchResult = registry.search(searchText);
+      var searchResult = registry.search(argumentIndex, searchText);
 
       // TODO: If not all matches fit into the max_completer_results, add a "...and <x> more" as the last entry
 
@@ -245,6 +243,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
       case MISSING_STRING_TERMINATION -> "String has not been terminated";
       case UNIMPLEMENTED_TRANSLATABLE -> "Unimplemented translatable; please report this";
       case MULTIPLE_SEARCH_PATTERN_WILDCARDS -> "Used multiple ? within one argument";
+      case ONLY_SEARCH_PATTERN_WILDCARD -> "Cannot search just for a wildcard";
       case DOES_NOT_ACCEPT_TIME_NOTATION -> "This argument does not accept time notation";
       case EXPECTED_EXPRESSION_AFTER_OPERATOR -> "This operator has to to be followed up by another expression";
       case EXPECTED_OPENING_PARENTHESIS -> "Expected a opening parenthesis";

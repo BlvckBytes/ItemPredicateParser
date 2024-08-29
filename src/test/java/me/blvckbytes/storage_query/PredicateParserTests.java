@@ -7,6 +7,7 @@ import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
 import me.blvckbytes.storage_query.token.ComparisonMode;
 import me.blvckbytes.storage_query.token.IntegerToken;
+import me.blvckbytes.storage_query.token.QuotedStringToken;
 import me.blvckbytes.storage_query.token.UnquotedStringToken;
 import me.blvckbytes.storage_query.translation.*;
 import org.bukkit.Material;
@@ -163,7 +164,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
           )
         ),
         negate(
-          new TextSearchPredicate("test")
+          new TextSearchPredicate(
+            new QuotedStringToken(6, "test")
+          )
         )
       )
     );
@@ -614,27 +617,37 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
 
     makeCase(
       new String[] { "\"a", "long", "search\"" },
-      new TextSearchPredicate("a long search")
+      new TextSearchPredicate(
+        new QuotedStringToken(0, "a long search")
+      )
     );
 
     makeCase(
       new String[] { "\"short\"" },
-      new TextSearchPredicate("short")
+      new TextSearchPredicate(
+        new QuotedStringToken(0, "short")
+      )
     );
 
     makeCase(
       new String[] { "\"", "short\"" },
-      new TextSearchPredicate(" short")
+      new TextSearchPredicate(
+        new QuotedStringToken(0, " short")
+      )
     );
 
     makeCase(
       new String[] { "\"short", "\"" },
-      new TextSearchPredicate("short ")
+      new TextSearchPredicate(
+        new QuotedStringToken(0, "short ")
+      )
     );
 
     makeCase(
       new String[] { "\"", "short", "\"" },
-      new TextSearchPredicate(" short ")
+      new TextSearchPredicate(
+        new QuotedStringToken(0, " short ")
+      )
     );
 
     // ================================================================================
@@ -718,7 +731,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
           new IntegerToken(3, null),
           new UnquotedStringToken(2, "unbr")
         ),
-        new TextSearchPredicate("text a"),
+        new TextSearchPredicate(
+          new QuotedStringToken(4, "text a")
+        ),
         potionEffectPredicate(
           PotionEffectType.REGENERATION,
           new IntegerToken(6, 4),
@@ -729,7 +744,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
           Material.DIAMOND_PICKAXE,
           new UnquotedStringToken(8, "dia-pick")
         ),
-        new TextSearchPredicate("multi arg text b ")
+        new TextSearchPredicate(
+          new QuotedStringToken(9, "multi arg text b ")
+        )
       )
     );
   }

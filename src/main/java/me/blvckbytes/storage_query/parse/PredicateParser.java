@@ -212,9 +212,9 @@ public class PredicateParser {
       return null;
 
     return resolveCache.computeIfAbsent(token, tk -> {
-      var searchResult = translationRegistry.search(stringToken.value());
+      var searchResult = translationRegistry.search(token.commandArgumentIndex(), stringToken.value());
 
-      if (searchResult.wildcardPresence() != SearchWildcardPresence.ABSENT)
+      if (searchResult.isWildcardPresent())
         return null;
 
       return getShortestMatch(searchResult.result());
@@ -228,7 +228,7 @@ public class PredicateParser {
       var currentToken = tokens.getFirst();
 
       if (currentToken instanceof QuotedStringToken textSearch) {
-        predicates.add(new TextSearchPredicate(textSearch.value()));
+        predicates.add(new TextSearchPredicate(textSearch));
         tokens.removeFirst();
         continue;
       }
@@ -246,16 +246,13 @@ public class PredicateParser {
         continue;
       }
 
-      var searchResult = translationRegistry.search(searchString);
-
-      if (searchResult.wildcardPresence() == SearchWildcardPresence.CONFLICT_OCCURRED_REPEATEDLY)
-        throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+      var searchResult = translationRegistry.search(currentToken.commandArgumentIndex(), searchString);
 
       var searchResultEntries = searchResult.result();
 
       // Wildcards may only apply to materials, not only because that's the only place where they make sense, but
       // because otherwise, predicate-ambiguity would arise.
-      if (searchResult.wildcardPresence() == SearchWildcardPresence.PRESENT) {
+      if (searchResult.isWildcardPresent()) {
         var materials = new ArrayList<Material>();
 
         for (var resultEntry : searchResultEntries) {

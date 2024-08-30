@@ -304,6 +304,8 @@ public class PredicateParser {
       if (shortestMatch.translatable() instanceof DeteriorationKey) {
         tokens.removeFirst();
 
+        // TODO: These arguments should not accept comparison other than equal
+
         IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(deteriorationPercentageMin);
 

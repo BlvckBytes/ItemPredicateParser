@@ -94,13 +94,17 @@ public record SubstringIndices(
     return result;
   }
 
-  private static int relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
-    // TODO: Text search should ignore color sequences
+  public record IndexOfResult(
+    int beginInContainer,
+    int numberOfContainerChars
+  ) {}
+
+  private static IndexOfResult relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
     var containerIndicesLength = containerIndices.length();
     var containedIndicesLength = containedIndices.length();
 
     if (containerIndicesLength < containedIndicesLength)
-      return -1;
+      return new IndexOfResult(-1, 0);
 
     /*
       0: A B C
@@ -113,23 +117,48 @@ public record SubstringIndices(
     for (int containerOffset = 0; containerOffset <= highestOffset; ++containerOffset) {
       boolean didMatch = true;
 
+      // As color-sequences are skipped on the outer-loop's counter, keep an internal
+      // backup to respond the very front of the sequence, including said sequences.
+      var initialContainerOffset = containerOffset;
+
       for (int containedOffset = 0; containedOffset < containedIndicesLength; ++containedOffset) {
         var containerIndex = containerIndices.start + containedOffset + containerOffset;
         var containedIndex = containedIndices.start + containedOffset;
-
         var containerChar = container.charAt(containerIndex);
+        var containedChar = contained.charAt(containedIndex);
 
-        if (Character.toLowerCase(containerChar) != Character.toLowerCase(contained.charAt(containedIndex))) {
+        while (containerChar == '§' && containerOffset < highestOffset) {
+          var nextContainerChar = container.charAt(containerIndex + 1);
+
+          if (
+            (nextContainerChar >= '0' && nextContainerChar <= '9')
+            || (nextContainerChar >= 'a' && nextContainerChar <= 'f')
+            || (nextContainerChar >= 'k' && nextContainerChar <= 'o')
+            || nextContainerChar == 'r'
+          ) {
+            containerOffset += 2;
+            containerIndex = containerIndices.start + containedOffset + containerOffset;
+            containerChar = container.charAt(containerIndex);
+          }
+
+          else
+            break;
+        }
+
+        if (Character.toLowerCase(containerChar) != Character.toLowerCase(containedChar)) {
           didMatch = false;
           break;
         }
       }
 
       if (didMatch)
-        return containerOffset;
+        return new IndexOfResult(
+          initialContainerOffset,
+          containerOffset - initialContainerOffset + containedIndicesLength
+        );
     }
 
-    return -1;
+    return new IndexOfResult(-1, 0);
   }
 
   /**
@@ -155,7 +184,8 @@ public record SubstringIndices(
 
       for (var remainingTextSubstringIndex = 0; remainingTextSubstringIndex < remainingTextSubstrings.size(); ++remainingTextSubstringIndex) {
         var remainingTextSubstring = remainingTextSubstrings.get(remainingTextSubstringIndex);
-        var relativeIndex = SubstringIndices.relativeIndexOf(query, pendingQuerySubstring, text, remainingTextSubstring);
+        var indexResult = SubstringIndices.relativeIndexOf(query, pendingQuerySubstring, text, remainingTextSubstring);
+        var relativeIndex = indexResult.beginInContainer;
 
         if (relativeIndex < 0)
           continue;
@@ -177,14 +207,14 @@ public record SubstringIndices(
          */
 
         var remainingTextSubstringLength = remainingTextSubstring.length();
-        var pendingQuerySubstringLength = pendingQuerySubstring.length();
+        var substringLength = indexResult.numberOfContainerChars;
 
         // Remainder after match
-        if (relativeIndex != remainingTextSubstringLength - pendingQuerySubstringLength) {
+        if (relativeIndex != remainingTextSubstringLength - substringLength) {
           remainingTextSubstrings.add(
             remainingTextSubstringIndex,
             new SubstringIndices(
-              remainingTextSubstring.start() + relativeIndex + pendingQuerySubstringLength,
+              remainingTextSubstring.start() + relativeIndex + substringLength,
               remainingTextSubstring.end(),
               false, false
             )

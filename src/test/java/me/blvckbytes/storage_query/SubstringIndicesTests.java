@@ -97,6 +97,15 @@ public class SubstringIndicesTests {
     );
   }
 
+  @Test
+  public void shouldIgnoreStandardColorSequences() {
+    // debug-info: 69 chars total, 40 color-sequence chars, 29 other chars
+    var coloredString = "§aH§be§cl§dl§eo §fW§0o§1r§2l§3d §4T§5e§6s§7t§8i§9n§m§ag §ncolo§krs §r:)";
+
+    makeListModCase(coloredString, "hello world testing colors :)", "", "");
+    makeListModCase(coloredString, "testing", "§aH§be§cl§dl§eo §fW§0o§1r§2l§3d   §ncolo§krs §r:)", "");
+  }
+
   private void makeIndicesGenCase(String input, List<SubstringIndices> expectedIndicesList) {
     var indicesList = SubstringIndices.forString(0, input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 

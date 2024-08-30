@@ -1,4 +1,5 @@
 {
+    "custom.storage-query.amount-key": "Anzahl",
     "custom.storage-query.conjunction-key": "und",
     "custom.storage-query.disjunction-key": "oder",
     "custom.storage-query.negation-key": "nicht",

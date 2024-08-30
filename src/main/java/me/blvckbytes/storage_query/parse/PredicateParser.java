@@ -314,6 +314,20 @@ public class PredicateParser {
         continue;
       }
 
+      if (shortestMatch.translatable() instanceof AmountKey) {
+        tokens.removeFirst();
+
+        IntegerToken amount = tryConsumeIntegerArgument(tokens);
+        throwOnTimeNotation(amount);
+
+        // TODO: Write tests for this
+        if (amount == null)
+          throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_FOLLOWING_INTEGER);
+
+        predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
+        continue;
+      }
+
       break;
     }
 

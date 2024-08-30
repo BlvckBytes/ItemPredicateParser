@@ -2,9 +2,13 @@ package me.blvckbytes.storage_query.parse;
 
 public enum ParseConflict {
   /**
-   * Expected an integer as an argument to the preceding search-pattern, but got something else
+   * Expected the current token to be an integer, as it started out that way, but was malformed after all
    */
-  EXPECTED_INTEGER,
+  EXPECTED_CORRECT_INTEGER,
+  /**
+   * The current predicate expects a non-omit-able integer argument
+   */
+  EXPECTED_FOLLOWING_INTEGER,
   /**
    * Expected an unquoted search-pattern, but got something else
    */

@@ -236,7 +236,8 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
     }
 
     var conflictMessage = switch (exception.getConflict()) {
-      case EXPECTED_INTEGER -> "Expected an integer";
+      case EXPECTED_CORRECT_INTEGER -> "Expected a non-malformed integer";
+      case EXPECTED_FOLLOWING_INTEGER -> "This predicate requires an integer argument";
       case EXPECTED_SEARCH_PATTERN -> "Expected a name to search for";
       case NO_SEARCH_MATCH -> "Found no matches";
       case MALFORMED_STRING_ARGUMENT -> "Malformed string notation";

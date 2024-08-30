@@ -58,7 +58,7 @@ public class TokenParserTests {
 
   @Test
   public void shouldThrowOnMalformedInput() {
-    makeExceptionCase(new String[] { "22a" }, 0, ParseConflict.EXPECTED_INTEGER);
+    makeExceptionCase(new String[] { "22a" }, 0, ParseConflict.EXPECTED_CORRECT_INTEGER);
     makeExceptionCase(new String[] { "\"hello" }, 0, ParseConflict.MISSING_STRING_TERMINATION);
     makeExceptionCase(new String[] { "hello", "\"world", "22" }, 1, ParseConflict.MISSING_STRING_TERMINATION);
     makeExceptionCase(new String[] { "\"hel\"lo\"" }, 0, ParseConflict.MALFORMED_STRING_ARGUMENT);

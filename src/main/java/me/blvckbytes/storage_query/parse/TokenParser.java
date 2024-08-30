@@ -141,7 +141,7 @@ public class TokenParser {
         var integerArgument = parseIntegerToken(arg, argumentIndex);
 
         if (integerArgument == null)
-          throw new ArgumentParseException(argumentIndex, ParseConflict.EXPECTED_INTEGER);
+          throw new ArgumentParseException(argumentIndex, ParseConflict.EXPECTED_CORRECT_INTEGER);
 
         result.add(integerArgument);
         continue;

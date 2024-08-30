@@ -19,26 +19,27 @@ public class StorageQueryPlugin extends JavaPlugin {
   public void onEnable() {
     var logger = getLogger();
 
+    var customSource = new TranslatableSource(List.of(
+      DeteriorationKey.INSTANCE,
+      NegationKey.INSTANCE,
+      DisjunctionKey.INSTANCE,
+      ConjunctionKey.INSTANCE,
+      ExactKey.INSTANCE,
+      AmountKey.INSTANCE
+    ), "");
+
     var germanSources = Arrays.asList(
       new TranslatableSource(Registry.ENCHANTMENT, "[Verzauberung] "),
       new TranslatableSource(Registry.EFFECT, "[Effekt] "),
       new TranslatableSource(Registry.MATERIAL, "[Typ] "),
-      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(DisjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ExactKey.INSTANCE), "")
+      customSource
     );
 
     var englishSources = Arrays.asList(
       new TranslatableSource(Registry.ENCHANTMENT, "[Enchantment] "),
       new TranslatableSource(Registry.EFFECT, "[Effect] "),
       new TranslatableSource(Registry.MATERIAL, "[Material] "),
-      new TranslatableSource(List.of(DeteriorationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(NegationKey.INSTANCE), ""),
-      new TranslatableSource(List.of(DisjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ConjunctionKey.INSTANCE), ""),
-      new TranslatableSource(List.of(ExactKey.INSTANCE), "")
+      customSource
     );
 
     var registryGerman = TranslationRegistry.load("/de_de.json", germanSources, logger);

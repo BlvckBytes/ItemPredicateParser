@@ -2,29 +2,7 @@
 
 # StorageQuery
 
-## Table of Contents
-- [Things To Think About](#things-to-think-about)
-- [Language Files](#language-files)
-  - [Word Spacing](#word-spacing)
-  - [Collision-Prefixes](#collision-prefixes)
-- [Grammar](#grammar)
-  - [Syllables](#syllables)
-    - [Examples](#examples)
-  - [Numeric Arguments](#numeric-arguments)
-  - [Item Predicates](#item-predicates)
-    - [Amount](#amount)
-    - [Material](#material)
-    - [Deterioration](#deterioration)
-    - [Enchantment](#enchantment)
-    - [Potion Effect](#potion-effect)
-    - [Text Search](#text-search)
-  - [Operators And Precedences](#operators-and-precedences)
-    - [Parentheses](#parentheses)
-    - [Exact Mode](#exact-mode)
-    - [Negation (Not)](#negation-(not))
-    - [Conjunction (And)](#conjunction-(and))
-    - [Disjunction (Or)](#disjunction-(or))
-  - [Implicit Operators](#implicit-operators)
+<!-- #toc -->
 
 ## Things To Think About
 

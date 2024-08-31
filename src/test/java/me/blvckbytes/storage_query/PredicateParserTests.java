@@ -903,6 +903,15 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         Tag.FENCE_GATES.getValues()
       )
     );
+
+    // Wildcards should not respond with direct matches
+    makeCase(
+      new String[] { "arrow-?" },
+      materialsPredicate(
+        new UnquotedStringToken(0, "arrow-?"),
+        List.of(Material.SPECTRAL_ARROW, Material.TIPPED_ARROW)
+      )
+    );
   }
 
   @Test
@@ -1002,6 +1011,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         var actualMaterial = (MaterialPredicate) actual;
         assertEquals(expectedMaterial.translatedTranslatable(), actualMaterial.translatedTranslatable());
         assertEquals(expectedMaterial.token(), actualMaterial.token());
+        assertEquals(actualMaterial.materials().size(), expectedMaterial.materials().size());
         assertThat(actualMaterial.materials(), Matchers.containsInAnyOrder(expectedMaterial.materials().toArray()));
       }
       default -> {

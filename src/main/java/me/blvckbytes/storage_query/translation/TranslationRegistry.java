@@ -70,7 +70,6 @@ public class TranslationRegistry {
         continue;
 
       // If there's a wildcard, disregard full matches
-      // TODO: Add a test-case for this
       if (isWildcardPresent && pendingTextParts.isEmpty())
         continue;
 

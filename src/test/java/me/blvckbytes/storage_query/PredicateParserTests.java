@@ -707,6 +707,74 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         new UnquotedStringToken(0, "deter")
       )
     );
+
+    assertEquals(
+      ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> makeCase(
+          new String[] { "deter", ">5" },
+          amountPredicate(
+            new IntegerToken(1, 5, false, ComparisonMode.GREATER_THAN),
+            new UnquotedStringToken(0, "deter")
+          )
+        )
+      ).getConflict()
+    );
+
+    assertEquals(
+      ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> makeCase(
+          new String[] { "deter", "*", "<5" },
+          amountPredicate(
+            new IntegerToken(2, 5, false, ComparisonMode.LESS_THAN),
+            new UnquotedStringToken(0, "deter")
+          )
+        )
+      ).getConflict()
+    );
+
+    // ================================================================================
+    // Amount
+    // ================================================================================
+
+    makeCase(
+      new String[] { "amount", "32" },
+      amountPredicate(
+        new IntegerToken(1, 32),
+        new UnquotedStringToken(0, "amount")
+      )
+    );
+
+    assertEquals(
+      ParseConflict.EXPECTED_FOLLOWING_INTEGER,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> makeCase(
+          new String[] { "amount", "*" },
+          amountPredicate(
+            new IntegerToken(1, 32),
+            new UnquotedStringToken(0, "amount")
+          )
+        )
+      ).getConflict()
+    );
+
+    assertEquals(
+      ParseConflict.EXPECTED_FOLLOWING_INTEGER,
+      assertThrows(
+        ArgumentParseException.class,
+        () -> makeCase(
+          new String[] { "amount" },
+          amountPredicate(
+            new IntegerToken(1, 32),
+            new UnquotedStringToken(0, "amount")
+          )
+        )
+      ).getConflict()
+    );
   }
 
   @Test
@@ -781,7 +849,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeExceptionCase(new String[] { "regen", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
     makeExceptionCase(new String[] { "regen", "2:30", "*" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
     makeExceptionCase(new String[] { "regen", "2:30", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    makeExceptionCase(new String[] { "amount", "2:30" }, 1, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
   }
+
 
   @Test
   public void shouldThrowOnInvalidBeginning() {
@@ -991,19 +1061,23 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     return new EnchantmentPredicate(search, translationRegistry.lookup(enchantment), enchantment, level);
   }
 
-  private MaterialPredicate materialPredicate(Material material, UnquotedStringToken search) {
-    return new MaterialPredicate(search, translationRegistry.lookup(material), List.of(material));
+  private MaterialPredicate materialPredicate(Material material, UnquotedStringToken token) {
+    return new MaterialPredicate(token, translationRegistry.lookup(material), List.of(material));
   }
 
   private MaterialPredicate materialsPredicate(UnquotedStringToken search, Collection<Material> materials) {
     return new MaterialPredicate(search, null, new ArrayList<>(materials));
   }
 
-  private PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken search) {
-    return new PotionEffectPredicate(search, translationRegistry.lookup(type), type, amplifier, duration);
+  private PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken token) {
+    return new PotionEffectPredicate(token, translationRegistry.lookup(type), type, amplifier, duration);
   }
 
-  private DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken search) {
-    return new DeteriorationPredicate(search, translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
+  private DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken token) {
+    return new DeteriorationPredicate(token, translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
+  }
+
+  private AmountPredicate amountPredicate(@Nullable IntegerToken amount, UnquotedStringToken token) {
+    return new AmountPredicate(token, translationRegistry.lookup(AmountKey.INSTANCE), amount);
   }
 }

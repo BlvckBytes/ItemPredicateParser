@@ -304,13 +304,13 @@ public class PredicateParser {
       if (shortestMatch.translatable() instanceof DeteriorationKey) {
         tokens.removeFirst();
 
-        // TODO: These arguments should not accept comparison other than equal
-
         IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(deteriorationPercentageMin);
+        throwOnNonEqualsComparison(deteriorationPercentageMin);
 
         IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(deteriorationPercentageMax);
+        throwOnNonEqualsComparison(deteriorationPercentageMax);
 
         predicates.add(new DeteriorationPredicate(currentToken, shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
         continue;
@@ -322,8 +322,7 @@ public class PredicateParser {
         IntegerToken amount = tryConsumeIntegerArgument(tokens);
         throwOnTimeNotation(amount);
 
-        // TODO: Write tests for this
-        if (amount == null)
+        if (amount == null || amount.value() == null)
           throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.EXPECTED_FOLLOWING_INTEGER);
 
         predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
@@ -343,6 +342,16 @@ public class PredicateParser {
       result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.removeFirst(), true);
 
     return result;
+  }
+
+  private static void throwOnNonEqualsComparison(@Nullable IntegerToken token) {
+    if (token == null)
+      return;
+
+    if (token.comparisonMode() == ComparisonMode.EQUALS)
+      return;
+
+    throw new ArgumentParseException(token.commandArgumentIndex(), ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON);
   }
 
   private static void throwOnTimeNotation(@Nullable IntegerToken token) {

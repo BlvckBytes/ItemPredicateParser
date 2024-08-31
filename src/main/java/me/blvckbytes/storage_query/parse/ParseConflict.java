@@ -46,6 +46,11 @@ public enum ParseConflict {
    */
   DOES_NOT_ACCEPT_TIME_NOTATION,
   /**
+   * An integer token with comparison notation has been passed to a predicate which
+   * does not offer range comparison functionality
+   */
+  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON,
+  /**
    * And/Not/Or/Exact all demand a right-hand-side expression
    */
   EXPECTED_EXPRESSION_AFTER_OPERATOR,

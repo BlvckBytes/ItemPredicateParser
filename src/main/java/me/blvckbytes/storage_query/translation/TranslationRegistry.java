@@ -34,13 +34,16 @@ public class TranslationRegistry {
 
     this.entries = unsortedEntries
       .stream()
-      .sorted(Comparator.comparing(TranslatedTranslatable::translation))
+      .sorted(Comparator.comparing(it -> it.translation))
       .toArray(TranslatedTranslatable[]::new);
+
+    for (var entryIndex = 0; entryIndex < this.entries.length; ++entryIndex)
+      this.entries[entryIndex].alphabeticalIndex = entryIndex;
   }
 
   public @Nullable TranslatedTranslatable lookup(Translatable translatable) {
     for (var entry : entries) {
-      if (entry.translatable() == translatable)
+      if (entry.translatable == translatable)
         return entry;
     }
     return null;
@@ -59,11 +62,11 @@ public class TranslationRegistry {
 
     for (var entry : entries) {
       var pendingQueryParts = new ArrayList<>(queryParts);
-      var pendingTextParts = new ArrayList<>(entry.partIndices());
+      var pendingTextParts = new ArrayList<>(entry.partIndices);
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
         query, pendingQueryParts,
-        entry.translation(), pendingTextParts
+        entry.translation, pendingTextParts
       );
 
       if (!pendingQueryParts.isEmpty())
@@ -96,15 +99,15 @@ public class TranslationRegistry {
         var existingEntry = output.get(outputIndex);
 
         if (!(
-          existingEntry.normalizedName().equalsIgnoreCase(entry.normalizedName()) &&
-          existingEntry.source() != entry.source() // Do not prefix within the same source - useless
+          existingEntry.normalizedName.equalsIgnoreCase(entry.normalizedName) &&
+          existingEntry.source != entry.source // Do not prefix within the same source - useless
         ))
           continue;
 
         output.set(outputIndex, new TranslatedTranslatable(
-          existingEntry.source(),
-          existingEntry.translatable(),
-          existingEntry.source().collisionPrefix() + existingEntry.translation()
+          existingEntry.source,
+          existingEntry.translatable,
+          existingEntry.source.collisionPrefix() + existingEntry.translation
         ));
 
         output.add(new TranslatedTranslatable(

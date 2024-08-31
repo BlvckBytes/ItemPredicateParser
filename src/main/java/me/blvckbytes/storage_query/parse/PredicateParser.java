@@ -87,7 +87,7 @@ public class PredicateParser {
       var token = tokens.getFirst();
       var translated = resolveTranslated(token);
 
-      if (translated == null || !operatorType.isInstance(translated.translatable()))
+      if (translated == null || !operatorType.isInstance(translated.translatable))
         break;
 
       tokens.removeFirst();
@@ -122,7 +122,7 @@ public class PredicateParser {
     var token = tokens.getFirst();
     var translated = resolveTranslated(token);
 
-    if (translated == null || !operatorType.isInstance(translated.translatable()))
+    if (translated == null || !operatorType.isInstance(translated.translatable))
       return parser.get();
 
     tokens.removeFirst();
@@ -256,7 +256,7 @@ public class PredicateParser {
         var materials = new ArrayList<Material>();
 
         for (var resultEntry : searchResultEntries) {
-          if (resultEntry.translatable() instanceof Material material)
+          if (resultEntry.translatable instanceof Material material)
             materials.add(material);
         }
 
@@ -273,13 +273,13 @@ public class PredicateParser {
       if (shortestMatch == null)
         throw new ArgumentParseException(currentToken.commandArgumentIndex(), ParseConflict.NO_SEARCH_MATCH);
 
-      if (shortestMatch.translatable() instanceof Material predicateMaterial) {
+      if (shortestMatch.translatable instanceof Material predicateMaterial) {
         predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(predicateMaterial)));
         tokens.removeFirst();
         continue;
       }
 
-      if (shortestMatch.translatable() instanceof Enchantment predicateEnchantment) {
+      if (shortestMatch.translatable instanceof Enchantment predicateEnchantment) {
         tokens.removeFirst();
 
         IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
@@ -289,7 +289,7 @@ public class PredicateParser {
         continue;
       }
 
-      if (shortestMatch.translatable() instanceof PotionEffectType predicatePotionEffect) {
+      if (shortestMatch.translatable instanceof PotionEffectType predicatePotionEffect) {
         tokens.removeFirst();
 
         IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
@@ -301,7 +301,7 @@ public class PredicateParser {
         continue;
       }
 
-      if (shortestMatch.translatable() instanceof DeteriorationKey) {
+      if (shortestMatch.translatable instanceof DeteriorationKey) {
         tokens.removeFirst();
 
         IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
@@ -316,7 +316,7 @@ public class PredicateParser {
         continue;
       }
 
-      if (shortestMatch.translatable() instanceof AmountKey) {
+      if (shortestMatch.translatable instanceof AmountKey) {
         tokens.removeFirst();
 
         IntegerToken amount = tryConsumeIntegerArgument(tokens);
@@ -380,9 +380,6 @@ public class PredicateParser {
   }
 
   private static @Nullable TranslatedTranslatable getShortestMatch(List<TranslatedTranslatable> matches) {
-    // TODO: This should account for alphabetical sorting order too, not just length, to
-    //       handle contains-&-length "collision"
-
     if (matches.isEmpty())
       return null;
 
@@ -392,17 +389,26 @@ public class PredicateParser {
       return matches.getFirst();
 
     var shortestMatchLength = Integer.MAX_VALUE;
-    var shortestMatchIndex = 0;
+    TranslatedTranslatable shortestMatch = null;
 
     for (var matchIndex = 0; matchIndex < numberOfMatches; ++matchIndex) {
-      var currentLength = matches.get(matchIndex).translation().length();
+      var currentMatch = matches.get(matchIndex);
+      var currentLength = currentMatch.translation.length();
 
-      if (currentLength < shortestMatchLength) {
-        shortestMatchLength = currentLength;
-        shortestMatchIndex = matchIndex;
+      if (currentLength > shortestMatchLength)
+        continue;
+
+      if (shortestMatch != null && currentLength == shortestMatchLength) {
+        if (currentMatch.alphabeticalIndex < shortestMatch.alphabeticalIndex)
+          shortestMatch = currentMatch;
+
+        continue;
       }
+
+      shortestMatchLength = currentLength;
+      shortestMatch = currentMatch;
     }
 
-    return matches.get(shortestMatchIndex);
+    return shortestMatch;
   }
 }

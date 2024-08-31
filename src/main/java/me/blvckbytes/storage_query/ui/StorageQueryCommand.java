@@ -5,7 +5,6 @@ import me.blvckbytes.storage_query.parse.ArgumentParseException;
 import me.blvckbytes.storage_query.parse.PredicateParser;
 import me.blvckbytes.storage_query.parse.TokenParser;
 import me.blvckbytes.storage_query.predicate.*;
-import me.blvckbytes.storage_query.translation.TranslatedTranslatable;
 import me.blvckbytes.storage_query.translation.TranslationRegistry;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -137,7 +136,7 @@ public class StorageQueryCommand implements CommandExecutor, TabCompleter {
 
       return searchResult.result()
         .stream()
-        .map(TranslatedTranslatable::normalizedName)
+        .map(it -> it.normalizedName)
         .sorted(Comparator.comparing(String::length))
         .limit(MAX_COMPLETER_RESULTS)
         .toList();

@@ -25,7 +25,7 @@ public record MaterialPredicate(
   @Override
   public String stringify(boolean useTokens) {
     if (translatedTranslatable != null && !useTokens)
-      return translatedTranslatable.normalizedName();
+      return translatedTranslatable.normalizedName;
 
     return token.stringify();
   }

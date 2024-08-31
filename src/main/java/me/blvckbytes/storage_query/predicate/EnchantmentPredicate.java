@@ -45,7 +45,7 @@ public record EnchantmentPredicate(
     if (useTokens)
       result.add(token.stringify());
     else
-      result.add(translatedTranslatable.normalizedName());
+      result.add(translatedTranslatable.normalizedName);
 
     if (this.levelArgument != null)
       result.add(this.levelArgument.stringify());

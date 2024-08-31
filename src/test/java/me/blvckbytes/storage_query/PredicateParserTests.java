@@ -965,6 +965,35 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     );
   }
 
+  @Test
+  public void shouldUseShortestMatchByAlphabeticIndex() {
+    makeCase(
+      new String[] { "lu" }, // Luck, Lure
+      potionEffectPredicate(
+        PotionEffectType.LUCK,
+        null,
+        null,
+        new UnquotedStringToken(0, "lu")
+      )
+    );
+
+    makeCase(
+      new String[] { "bu" }, // Bucket, Bundle
+      materialPredicate(
+        Material.BUCKET,
+        new UnquotedStringToken(0, "bu")
+      )
+    );
+
+    makeCase(
+      new String[] { "wh" }, // Wheat, White
+      materialPredicate(
+        Material.WHEAT,
+        new UnquotedStringToken(0, "wh")
+      )
+    );
+  }
+
   private void assertTreesEqual(
     @Nullable ItemPredicate rootExpected,
     @Nullable ItemPredicate rootActual,

@@ -2,7 +2,6 @@ package me.blvckbytes.item_predicate_parser;
 
 import me.blvckbytes.item_predicate_parser.parse.ArgumentParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
-import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.token.ComparisonMode;
@@ -1050,14 +1049,14 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
-    var predicateParser = new PredicateParser(translationRegistry, TokenParser.parseTokens(args), false);
+    var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
     var exception = assertThrows(ArgumentParseException.class, predicateParser::parseAst);
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 
   private void makeStringificationCase(String[] args, String expected, boolean allowMissingClosingParentheses, boolean stringifyTokens) {
-    var predicateParser = new PredicateParser(translationRegistry, TokenParser.parseTokens(args), allowMissingClosingParentheses);
+    var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), allowMissingClosingParentheses);
     var ast = predicateParser.parseAst();
 
     assertNotNull(ast);
@@ -1069,7 +1068,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
   }
 
   private void makeCase(String[] args, @Nullable ItemPredicate expected, boolean allowMissingClosingParentheses) {
-    var predicateParser = new PredicateParser(translationRegistry, TokenParser.parseTokens(args), allowMissingClosingParentheses);
+    var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), allowMissingClosingParentheses);
     var actual = predicateParser.parseAst();
     assertTreesEqual(expected, actual, expected, actual);
   }

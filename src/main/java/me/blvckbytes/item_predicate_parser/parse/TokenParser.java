@@ -10,14 +10,19 @@ public class TokenParser {
 
   private static final char INTEGER_WILDCARD_CHAR = '*';
 
-  public static List<Token> parseTokens(String[] args) {
+  public static ArrayList<Token> parseTokens(String text) {
+    // FIXME: This is - of course - totally unacceptable and will be replaced soon.
+    return parseTokens(text.split(" "), 0);
+  }
+
+  public static ArrayList<Token> parseTokens(String[] args, int offset) {
     var result = new ArrayList<Token>();
 
     List<Token> deferredTokens = new ArrayList<>();
     var stringBeginArgumentIndex = -1;
     var stringContents = new StringBuilder();
 
-    for (var argumentIndex = 0; argumentIndex < args.length; ++argumentIndex) {
+    for (var argumentIndex = offset; argumentIndex < args.length; ++argumentIndex) {
       result.addAll(deferredTokens);
       deferredTokens.clear();
 

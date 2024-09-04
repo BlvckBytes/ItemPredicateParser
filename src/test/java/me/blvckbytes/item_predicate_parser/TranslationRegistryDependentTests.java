@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import me.blvckbytes.item_predicate_parser.parse.PredicateParserFactory;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import org.bukkit.Registry;
 import org.junit.jupiter.api.AfterAll;
@@ -16,6 +17,7 @@ public abstract class TranslationRegistryDependentTests {
 
   protected static final Logger logger = Logger.getAnonymousLogger();
   protected static TranslationRegistry translationRegistry;
+  protected static PredicateParserFactory parserFactory;
 
   @BeforeAll
   public static void setup() {
@@ -23,6 +25,8 @@ public abstract class TranslationRegistryDependentTests {
 
     translationRegistry = TranslationRegistry.load("/en_us.json", makeSources(), logger);
     assertNotNull(translationRegistry);
+
+    parserFactory = new PredicateParserFactory(translationRegistry);
   }
 
   @AfterAll

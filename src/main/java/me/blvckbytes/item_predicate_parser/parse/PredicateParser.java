@@ -35,18 +35,15 @@ public class PredicateParser {
 
   public PredicateParser(
     TranslationRegistry translationRegistry,
-    List<Token> tokens,
+    TranslatedTranslatable conjunctionTranslation,
+    ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
     this.translationRegistry = translationRegistry;
-    this.tokens = new ArrayList<>(tokens);
+    this.tokens = tokens;
     this.allowMissingClosingParentheses = allowMissingClosingParentheses;
-
-    this.conjunctionTranslation = this.translationRegistry.lookup(ConjunctionKey.INSTANCE);
+    this.conjunctionTranslation = conjunctionTranslation;
     this.resolveCache = new HashMap<>();
-
-    if (this.conjunctionTranslation == null)
-      throw new IllegalStateException("Expected the registry to know about the conjunction translation");
   }
 
   public @Nullable ItemPredicate parseAst() {

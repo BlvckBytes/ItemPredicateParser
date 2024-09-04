@@ -201,13 +201,13 @@ public class TokenParserTests {
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
-    var exception = assertThrows(ArgumentParseException.class, () -> TokenParser.parseTokens(args));
+    var exception = assertThrows(ArgumentParseException.class, () -> TokenParser.parseTokens(args, 0));
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 
   private void makeCase(String[] args, Token[] expectedTokens) {
-    var actualTokens = TokenParser.parseTokens(args);
+    var actualTokens = TokenParser.parseTokens(args, 0);
 
     assertEquals(expectedTokens.length, actualTokens.size());
 

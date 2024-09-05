@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
+import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -136,7 +137,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
   @Override
   public String stringify(boolean useTokens) {
-    return "\"" + text + "\"";
+    return "\"" + UnquotedStringToken.escapeDoubleQuotes(text) + "\"";
   }
 
   @Override

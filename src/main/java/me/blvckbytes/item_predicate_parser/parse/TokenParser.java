@@ -4,214 +4,179 @@ import me.blvckbytes.item_predicate_parser.token.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TokenParser {
 
   private static final char INTEGER_WILDCARD_CHAR = '*';
 
   public static ArrayList<Token> parseTokens(String text) {
-    // FIXME: This is - of course - totally unacceptable and will be replaced soon.
-    return parseTokens(text.split(" "), 0);
+    return parseTokens(new StringWalker(text));
   }
 
   public static ArrayList<Token> parseTokens(String[] args, int offset) {
+    return parseTokens(StringWalker.fromArgumentArray(args, offset));
+  }
+
+  private static ArrayList<Token> parseTokens(StringWalker walker) {
     var result = new ArrayList<Token>();
 
-    List<Token> deferredTokens = new ArrayList<>();
-    var stringBeginArgumentIndex = -1;
-    var stringContents = new StringBuilder();
+    Token token;
+    char c;
 
-    for (var argumentIndex = offset; argumentIndex < args.length; ++argumentIndex) {
-      result.addAll(deferredTokens);
-      deferredTokens.clear();
+    while (true) {
+      walker.consumeWhitespace();
 
-      var arg = args[argumentIndex];
-      var argLength = arg.length();
+      if ((c = walker.peekChar()) == 0)
+        break;
 
-      if (argLength == 0) {
-        result.add(new UnquotedStringToken(argumentIndex, ""));
+      if (c == '(' || c == ')') {
+        result.add(new ParenthesisToken(walker.getArgumentIndex(), walker.getCharsSinceLastSpace(), c == '('));
+        walker.nextChar();
         continue;
       }
 
-      var firstChar = arg.charAt(0);
-      var lastChar = arg.charAt(argLength - 1);
-
-      var continueArgLoop = false;
-
-      while (firstChar == '(' && stringBeginArgumentIndex < 0) {
-        result.add(new ParenthesisToken(argumentIndex, true));
-
-        if (argLength == 1) {
-          continueArgLoop = true;
-          break;
-        }
-
-        arg = arg.substring(1);
-        firstChar = arg.charAt(0);
-        --argLength;
-      }
-
-      if (continueArgLoop)
-        continue;
-
-      while (
-        (lastChar == ')' || lastChar == '(') &&
-        // Either a multi-arg string hasn't begun yet, or the closing-paren is
-        // prepended by a multi-arg string termination quote
-        (stringBeginArgumentIndex < 0 || (argLength >= 2 && arg.charAt(argLength - 2) == '"'))
-      ) {
-        deferredTokens.add(new ParenthesisToken(argumentIndex, lastChar == '('));
-
-        if (argLength == 1) {
-          continueArgLoop = true;
-          break;
-        }
-
-        arg = arg.substring(0, argLength - 1);
-        lastChar = arg.charAt(argLength - 2);
-        --argLength;
-      }
-
-      if (continueArgLoop)
-        continue;
-
-      if (firstChar == '"') {
-        var terminationIndex = arg.indexOf('"', 1);
-
-        // Argument contains both the start- and end-marker
-        if (terminationIndex > 0) {
-          if (arg.indexOf('"', terminationIndex + 1) != -1)
-            throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
-
-          result.add(new QuotedStringToken(argumentIndex, arg.substring(1, argLength - 1)));
-          continue;
-        }
-
-        // Contains only one double-quote, which is leading
-
-        // Terminated a string which contains a trailing whitespace (valid use-case)
-        if (stringBeginArgumentIndex != -1) {
-          if (argLength != 1)
-            throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
-
-          stringContents.append(' ');
-          result.add(new QuotedStringToken(stringBeginArgumentIndex, stringContents.toString()));
-          stringBeginArgumentIndex = -1;
-          stringContents.setLength(0);
-          continue;
-        }
-
-        // Started a string which contains a leading whitespace (valid use-case)
-        if (argLength == 1) {
-          stringBeginArgumentIndex = argumentIndex;
-          continue;
-        }
-
-        // Multi-arg string beginning
-        stringBeginArgumentIndex = argumentIndex;
-        stringContents.append(arg, 1, argLength);
+      if ((token = tryConsumeQuotedString(walker)) != null) {
+        result.add(token);
         continue;
       }
 
-      if (lastChar == '"') {
-        if (stringBeginArgumentIndex == -1)
-          throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
-
-        // Multi-arg string termination
-        stringContents.append(' ').append(arg, 0, argLength - 1);
-        result.add(new QuotedStringToken(stringBeginArgumentIndex, stringContents.toString()));
-        stringBeginArgumentIndex = -1;
-        stringContents.setLength(0);
+      if ((token = tryConsumeInteger(walker)) != null) {
+        result.add(token);
         continue;
       }
 
-      // Within string
-      if (stringBeginArgumentIndex >= 0) {
-        stringContents.append(' ').append(arg);
-        continue;
-      }
-
-      if (firstChar == INTEGER_WILDCARD_CHAR && argLength == 1) {
-        result.add(new IntegerToken(argumentIndex, null));
-        continue;
-      }
-
-      // No names will have a leading digit; expect integer
-      // Also support comparison mode specifiers, followed by a digit
-      if (
-        Character.isDigit(firstChar) ||
-        (argLength > 1 && (firstChar == '>' || firstChar == '<') && Character.isDigit(arg.charAt(1)))
-      ) {
-        var integerArgument = parseIntegerToken(arg, argumentIndex);
-
-        if (integerArgument == null)
-          throw new ArgumentParseException(argumentIndex, ParseConflict.EXPECTED_CORRECT_INTEGER);
-
-        result.add(integerArgument);
-        continue;
-      }
-
-      // Ensure that there are no quotes wedged into search-terms
-      // At this point, first and last char have been checked against, so skip them
-      for (var argIndex = 1; argIndex < argLength - 1; ++argIndex) {
-        if (arg.charAt(argIndex) == '"')
-          throw new ArgumentParseException(argumentIndex, ParseConflict.MALFORMED_STRING_ARGUMENT);
-      }
-
-      result.add(new UnquotedStringToken(argumentIndex, arg));
+      if ((token = tryConsumeUnquotedString(walker)) != null)
+        result.add(token);
     }
-
-    if (stringBeginArgumentIndex != -1)
-      throw new ArgumentParseException(stringBeginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
-
-    result.addAll(deferredTokens);
 
     return result;
   }
 
-  private static @Nullable IntegerToken parseIntegerToken(String arg, int argumentIndex) {
-    var argLength = arg.length();
+  private static @Nullable QuotedStringToken tryConsumeQuotedString(StringWalker walker) {
+    if (walker.peekChar() != '"')
+      return null;
 
-    var radixPower = 0;
-    var blockCounter = 0;
-    var currentNumber = 0;
-    var resultingNumber = 0;
-    var comparisonMode = ComparisonMode.EQUALS;
+    int beginArgumentIndex = walker.getArgumentIndex();
+    int firstCharIndex = walker.getCharsSinceLastSpace();
 
-    for (var argIndex = argLength - 1; argIndex >= 0; --argIndex) {
-      var argChar = arg.charAt(argIndex);
+    walker.nextChar();
 
-      if (argIndex == 0) {
-        if (argChar == '>') {
-          comparisonMode = ComparisonMode.GREATER_THAN;
+    char c;
+
+    var stringContents = new StringBuilder(64);
+
+    while ((c = walker.peekChar()) != 0) {
+      if (c == '"') {
+        // Allow to escape double-quotes within strings
+        if (walker.peekPreviousChar() == '\\') {
+          stringContents.setCharAt(stringContents.length() - 1, walker.nextChar());
           continue;
         }
 
-        if (argChar == '<') {
-          comparisonMode = ComparisonMode.LESS_THAN;
-          continue;
-        }
+        break;
       }
 
-      if (argChar == ':') {
-        radixPower = 0;
-        resultingNumber += currentNumber * (int) Math.pow(60, blockCounter);
-        currentNumber = 0;
-        ++blockCounter;
+      stringContents.append(walker.nextChar());
+    }
+
+    if (walker.nextChar() != '"')
+      throw new ArgumentParseException(beginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
+
+    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, stringContents.toString());
+  }
+
+  private static @Nullable IntegerToken tryConsumeInteger(StringWalker walker) {
+    char firstChar = walker.peekChar();
+    var firstCharIndex = walker.getCharsSinceLastSpace();
+
+    if (firstChar == INTEGER_WILDCARD_CHAR) {
+      walker.nextChar();
+      return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, null);
+    }
+
+    var comparisonMode = ComparisonMode.EQUALS;
+
+    if (firstChar == '>' || firstChar == '<') {
+      comparisonMode = firstChar == '>' ? ComparisonMode.GREATER_THAN : ComparisonMode.LESS_THAN;
+      walker.nextChar();
+    }
+
+    // Not a number, but rather an unquoted string
+    if (!Character.isDigit(walker.peekChar())) {
+      if (comparisonMode != ComparisonMode.EQUALS)
+        walker.undoNextChar();
+
+      return null;
+    }
+
+    var blocks = new int[] { -1, -1, -1 };
+    var blocksIndex = 0;
+
+    var blockBeginIndex = walker.getNextCharIndex();
+    char currentChar;
+
+    while (true) {
+      var currentCharIndex = walker.getNextCharIndex();
+      currentChar = walker.peekChar();
+
+      var isEnd = currentChar == 0 || currentChar == ')' || walker.isConsideredWhitespace(currentChar);
+
+      if (!isEnd)
+        walker.nextChar();
+
+      if (currentChar == ':' || isEnd) {
+        int currentBlockValue = 0;
+        int digitPlaceValue = 0;
+
+        for (int index = currentCharIndex - 1; index >= blockBeginIndex; --index)
+          currentBlockValue += (walker.charAt(index) - '0') * (int) Math.pow(10, digitPlaceValue++);
+
+        if (blocksIndex == blocks.length)
+          throw new ArgumentParseException(walker.getArgumentIndex(), ParseConflict.TOO_MANY_TIME_NOTATION_BLOCKS);
+
+        blocks[blocksIndex++] = currentBlockValue;
+
+        if (isEnd)
+          break;
+
+        blockBeginIndex = currentCharIndex + 1;
         continue;
       }
 
-      if (!(argChar >= '0' && argChar <= '9'))
-        return null;
-
-      currentNumber += (argChar - '0') * (int) Math.pow(10, radixPower);
-
-      ++radixPower;
+      if (!(currentChar >= '0' && currentChar <= '9'))
+        throw new ArgumentParseException(walker.getArgumentIndex(), ParseConflict.EXPECTED_CORRECT_INTEGER);
     }
 
-    resultingNumber += currentNumber * (int) Math.pow(60, blockCounter);
+    var blockPower = 0;
+    var resultingNumber = 0;
 
-    return new IntegerToken(argumentIndex, resultingNumber, blockCounter != 0, comparisonMode);
+    for (var blockIndex = blocks.length - 1; blockIndex >= 0; --blockIndex) {
+      if (blocks[blockIndex] < 0)
+        continue;
+
+      resultingNumber += blocks[blockIndex] * (int) Math.pow(60, blockPower++);
+    }
+
+    return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, resultingNumber, blockPower > 1, comparisonMode);
+  }
+
+  private static @Nullable UnquotedStringToken tryConsumeUnquotedString(StringWalker walker) {
+    var beginIndex = walker.getNextCharIndex();
+    var firstCharIndex = walker.getCharsSinceLastSpace();
+
+    char c;
+
+    while ((c = walker.peekChar()) != 0) {
+      // Trailing token-chars are interpreted as such, by definition
+      if (walker.isConsideredWhitespace(c) || c == ')' || c == '(' || c == '"')
+        break;
+
+      walker.nextChar();
+    }
+
+    if (walker.getNextCharIndex() == beginIndex)
+      return null;
+
+    return new UnquotedStringToken(walker.getArgumentIndex(), firstCharIndex, walker.makeSubstring(beginIndex));
   }
 }

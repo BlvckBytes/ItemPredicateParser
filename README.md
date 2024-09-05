@@ -108,7 +108,9 @@ argument to specify a range of target values.
 ![integer comparison](readme_images/rr_integer_comparison.png)
 
 For time-spans, as in potion-durations, numbers may be separated by colons `:`, where each group is
-multiplied by its corresponding power of `60`. For Example: `8:30 = 8*60 + 30`.
+multiplied by its corresponding power of `60`. For Example: `8:30 = 8*60 + 30`. The maximum number of
+colon-separated groups is three, as in `h:m:s`, with the option to omit `m` if it's zero - for
+example: `1::50 = 1*60*60 + 50`, representing 1h and 50s.
 
 ![duration](readme_images/rr_duration.png)
 
@@ -159,7 +161,8 @@ left out if not required.
 
 Searches through the custom display-name and lore-lines (lines below the display-name), if existing, as well
 as through book-authors, book-pages, book-titles and head-owner-names. Ignores colors and casing. Text searches
-are encapsulated by double-quotes `"` in order to differentiate them from syllable-patterns.
+are encapsulated by double-quotes `"` in order to differentiate them from syllable-patterns. If the double-quote `"`
+itself is to be included within the text search, prepend it by a backslash, as to mark it as a non-terminator.
 
 ![text search predicate](readme_images/rr_text_search_predicate.png)
 

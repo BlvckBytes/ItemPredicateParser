@@ -98,11 +98,13 @@ public class TranslationRegistry {
       for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
         var existingEntry = output.get(outputIndex);
 
-        if (!(
-          existingEntry.normalizedName.equalsIgnoreCase(entry.normalizedName) &&
-          existingEntry.source != entry.source // Do not prefix within the same source - useless
-        ))
+        if (!existingEntry.normalizedTranslation.equalsIgnoreCase(entry.normalizedTranslation))
           continue;
+
+        if (existingEntry.source == entry.source) {
+          // TODO: Add auto-incrementing collision-prefixes on colliding members within the same source
+          continue;
+        }
 
         output.set(outputIndex, new TranslatedTranslatable(
           existingEntry.source,

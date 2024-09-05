@@ -7,5 +7,10 @@ public interface Token {
    */
   int commandArgumentIndex();
 
+  /**
+   * Index of the first char which corresponds to this token, relative to its containing first argument
+   */
+  int firstCharIndex();
+
   String stringify();
 }

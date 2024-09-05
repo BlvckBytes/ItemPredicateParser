@@ -10,22 +10,22 @@ public class TranslatedTranslatable {
   public final TranslatableSource source;
   public final Translatable translatable;
   public final String translation;
-  public final String normalizedName;
+  public final String normalizedTranslation;
   public final List<SubstringIndices> partIndices;
 
   public int alphabeticalIndex = 0;
 
-  public TranslatedTranslatable(
+  private TranslatedTranslatable(
     TranslatableSource source,
     Translatable translatable,
     String translation,
-    String normalizedName,
+    String normalizedTranslation,
     List<SubstringIndices> partIndices
   ) {
     this.source = source;
     this.translatable = translatable;
     this.translation = translation;
-    this.normalizedName = normalizedName;
+    this.normalizedTranslation = normalizedTranslation;
     this.partIndices = partIndices;
   }
 
@@ -38,16 +38,39 @@ public class TranslatedTranslatable {
       source,
       translatable,
       translation,
-      translation
-        .replace(' ', '-')
-        .replace('_', '-')
-      ,
+      normalize(translation),
       SubstringIndices.forString(null, translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
     );
   }
 
   @Override
   public String toString() {
-    return normalizedName;
+    return normalizedTranslation;
+  }
+
+  public static String normalize(String input) {
+    var result = input.toCharArray();
+
+    for (var i = 0; i < result.length; ++i) {
+      var c = result[i];
+
+      var newChar = switch (c) {
+        // Avoids ambiguity in relation to quoted strings
+        case '"' -> '\'';
+        // Avoids ambiguity in relation to logical groups
+        case '(' -> '[';
+        case ')' -> ']';
+        // Syllable-patterns are separated by spaces
+        case ' ' -> '-';
+        // Just for uniformity
+        case '_' -> '-';
+        default -> c;
+      };
+
+      if (newChar != c)
+        result[i] = newChar;
+    }
+
+    return new String(result);
   }
 }

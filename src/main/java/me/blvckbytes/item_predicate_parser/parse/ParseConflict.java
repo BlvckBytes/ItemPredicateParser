@@ -6,6 +6,10 @@ public enum ParseConflict {
    */
   EXPECTED_CORRECT_INTEGER,
   /**
+   * Max. 3 blocks, separated by colon, are allowed when using time-notation
+   */
+  TOO_MANY_TIME_NOTATION_BLOCKS,
+  /**
    * The current predicate expects a non-omit-able integer argument
    */
   EXPECTED_FOLLOWING_INTEGER,
@@ -18,20 +22,9 @@ public enum ParseConflict {
    */
   NO_SEARCH_MATCH,
   /**
-   * Either tried to put two or more strings into a single argument or began yet
-   * another string within the same argument that terminated a previous multi-arg string,
-   * or closed a string that has not been previously begun
-   */
-  MALFORMED_STRING_ARGUMENT,
-  /**
    * Didn't close a previously began string until the very end
    */
   MISSING_STRING_TERMINATION,
-  /**
-   * The search-pattern matched on an instance of a translatable that is not yet
-   * implemented; this should never happen in production.
-   */
-  UNIMPLEMENTED_TRANSLATABLE,
   /**
    * Provided more than one search pattern wildcard (?) within a single argument
    */

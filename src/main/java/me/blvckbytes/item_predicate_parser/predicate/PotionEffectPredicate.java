@@ -48,7 +48,7 @@ public record PotionEffectPredicate(
     if (useTokens)
       result.add(token.stringify());
     else
-      result.add(translatedTranslatable.normalizedName);
+      result.add(translatedTranslatable.normalizedTranslation);
 
     if (this.amplifierArgument != null)
       result.add(this.amplifierArgument.stringify());

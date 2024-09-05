@@ -7,13 +7,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public record IntegerToken(
   int commandArgumentIndex,
+  int firstCharIndex,
   @Nullable Integer value,
   boolean wasTimeNotation,
   ComparisonMode comparisonMode
 ) implements Token {
 
-  public IntegerToken(int commandArgumentIndex, @Nullable Integer value) {
-    this(commandArgumentIndex, value, false, ComparisonMode.EQUALS);
+  public IntegerToken(int commandArgumentIndex, int firstCharIndex, @Nullable Integer value) {
+    this(commandArgumentIndex, firstCharIndex, value, false, ComparisonMode.EQUALS);
   }
 
   public boolean matches(@Nullable Integer value) {

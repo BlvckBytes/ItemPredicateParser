@@ -8,7 +8,6 @@
 
 - Write documentation about how to use it
 - The predicates and the IntegerToken could use some test-cases too
-- Do not allow empty or blank strings
 
 ## Language Files
 

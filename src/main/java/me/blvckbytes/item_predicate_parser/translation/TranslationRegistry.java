@@ -1,21 +1,15 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStreamReader;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TranslationRegistry {
-
-  private static final Gson GSON = new GsonBuilder().create();
 
   private final JsonObject languageFile;
   private final Logger logger;
@@ -26,7 +20,7 @@ public class TranslationRegistry {
     this.logger = logger;
   }
 
-  public void initialize(Iterable<TranslatableSource> sources) {
+  public void initialize(Iterable<TranslatableSource> sources) throws IllegalStateException {
     var unsortedEntries = new ArrayList<TranslatedTranslatable>();
 
     for (var source : sources)
@@ -82,15 +76,13 @@ public class TranslationRegistry {
     return new SearchResult(result, isWildcardPresent);
   }
 
-  private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) {
+  private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) throws IllegalStateException {
     for (var translatable : source.items()) {
       var translationKey = translatable.getTranslationKey();
       var translationValue = getTranslationOrNull(languageFile, translationKey);
 
-      if (translationValue == null) {
-        logger.warning("Could not locate translation-value for key " + translationKey);
-        continue;
-      }
+      if (translationValue == null)
+        throw new IllegalStateException("Could not locate translation-value for key " + translationKey);
 
       var entry = new TranslatedTranslatable(source, translatable, translationValue);
       boolean hadCollision = false;
@@ -137,28 +129,5 @@ public class TranslationRegistry {
       return null;
 
     return translationValue.getAsString();
-  }
-
-  public static @Nullable TranslationRegistry load(
-    String absoluteLanguageFilePath,
-    Iterable<TranslatableSource> translatableSources,
-    Logger logger
-  ) {
-    try (var inputStream = TranslationRegistry.class.getResourceAsStream(absoluteLanguageFilePath)) {
-      if (inputStream == null)
-        throw new IllegalStateException("Resource stream was null");
-
-      var languageJson = GSON.fromJson(new InputStreamReader(inputStream), JsonObject.class);
-
-      var registry = new TranslationRegistry(languageJson, logger);
-
-      registry.initialize(translatableSources);
-
-      logger.info("Loaded registry for translation-file " + absoluteLanguageFilePath);
-      return registry;
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, "Could not load translation-file " + absoluteLanguageFilePath, e);
-      return null;
-    }
   }
 }

@@ -82,6 +82,8 @@ public class TokenParser {
     if (walker.nextChar() != '"')
       throw new ArgumentParseException(beginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
+    // TODO: Do not allow empty or blank strings
+
     return new QuotedStringToken(beginArgumentIndex, firstCharIndex, stringContents.toString());
   }
 

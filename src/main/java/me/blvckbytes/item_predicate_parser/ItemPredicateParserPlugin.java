@@ -1,46 +1,39 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.item_predicate_parser.translation.*;
+import me.blvckbytes.item_predicate_parser.translation.ILanguageRegistry;
+import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
+import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import org.bukkit.Bukkit;
-import org.bukkit.Registry;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.logging.Level;
 
 public class ItemPredicateParserPlugin extends JavaPlugin {
 
+  private static ItemPredicateParserPlugin instance;
+  private LanguageRegistry languageRegistry;
+
   @Override
   public void onEnable() {
-    var logger = getLogger();
+    try {
+      this.languageRegistry = new LanguageRegistry(this);
 
-    var customSource = new TranslatableSource(List.of(
-      DeteriorationKey.INSTANCE,
-      NegationKey.INSTANCE,
-      DisjunctionKey.INSTANCE,
-      ConjunctionKey.INSTANCE,
-      ExactKey.INSTANCE,
-      AmountKey.INSTANCE
-    ), "");
+      for (TranslationLanguage language : TranslationLanguage.values())
+        this.languageRegistry.initializeRegistry(language);
 
-    var germanSources = Arrays.asList(
-      new TranslatableSource(Registry.ENCHANTMENT, "[Verzauberung] "),
-      new TranslatableSource(Registry.EFFECT, "[Effekt] "),
-      new TranslatableSource(Registry.MATERIAL, "[Typ] "),
-      customSource
-    );
-
-    var englishSources = Arrays.asList(
-      new TranslatableSource(Registry.ENCHANTMENT, "[Enchantment] "),
-      new TranslatableSource(Registry.EFFECT, "[Effect] "),
-      new TranslatableSource(Registry.MATERIAL, "[Material] "),
-      customSource
-    );
-
-    var registryGerman = TranslationRegistry.load("/de_de.json", germanSources, logger);
-    var registryEnglish = TranslationRegistry.load("/en_us.json", englishSources, logger);
-
-    if (registryGerman == null || registryEnglish == null)
+      instance = this;
+    } catch (Exception e) {
+      getLogger().log(Level.SEVERE, "Could not download and or initialize languages", e);
       Bukkit.getPluginManager().disablePlugin(this);
+    }
+  }
+
+  public ILanguageRegistry getLanguageRegistry() {
+    return languageRegistry;
+  }
+
+  public static @Nullable ItemPredicateParserPlugin getInstance() {
+    return instance;
   }
 }

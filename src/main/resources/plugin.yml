@@ -1,4 +1,4 @@
-name: ItemPredicateParserPlugin
+name: ItemPredicateParser
 main: me.blvckbytes.item_predicate_parser.ItemPredicateParserPlugin
 version: 0.1
 author: BlvckBytes

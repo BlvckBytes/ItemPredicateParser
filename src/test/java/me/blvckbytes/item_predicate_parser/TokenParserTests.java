@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.item_predicate_parser.parse.ArgumentParseException;
+import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.token.*;
@@ -250,7 +250,7 @@ public class TokenParserTests {
   }
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
-    var exception = assertThrows(ArgumentParseException.class, () -> TokenParser.parseTokens(args, 0));
+    var exception = assertThrows(ItemPredicateParseException.class, () -> TokenParser.parseTokens(args, 0));
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }

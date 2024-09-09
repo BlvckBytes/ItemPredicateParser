@@ -1,17 +1,23 @@
 package me.blvckbytes.item_predicate_parser.parse;
 
-public class ArgumentParseException extends RuntimeException {
+public class ItemPredicateParseException extends RuntimeException {
 
   private final int argumentIndex;
+  private final int firstCharIndex;
   private final ParseConflict conflict;
 
-  public ArgumentParseException(int argumentIndex, ParseConflict conflict) {
+  public ItemPredicateParseException(int argumentIndex, int firstCharIndex, ParseConflict conflict) {
     this.argumentIndex = argumentIndex;
+    this.firstCharIndex = firstCharIndex;
     this.conflict = conflict;
   }
 
   public int getArgumentIndex() {
     return argumentIndex;
+  }
+
+  public int getFirstCharIndex() {
+    return firstCharIndex;
   }
 
   public ParseConflict getConflict() {

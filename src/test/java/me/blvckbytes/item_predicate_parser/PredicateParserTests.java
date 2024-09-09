@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.item_predicate_parser.parse.ArgumentParseException;
+import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.*;
@@ -735,7 +735,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertEquals(
       ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON,
       assertThrows(
-        ArgumentParseException.class,
+        ItemPredicateParseException.class,
         () -> makeCase(
           new String[] { "deter", ">5" },
           amountPredicate(
@@ -749,7 +749,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertEquals(
       ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON,
       assertThrows(
-        ArgumentParseException.class,
+        ItemPredicateParseException.class,
         () -> makeCase(
           new String[] { "deter", "*", "<5" },
           amountPredicate(
@@ -775,7 +775,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertEquals(
       ParseConflict.EXPECTED_FOLLOWING_INTEGER,
       assertThrows(
-        ArgumentParseException.class,
+        ItemPredicateParseException.class,
         () -> makeCase(
           new String[] { "amount", "*" },
           amountPredicate(
@@ -789,7 +789,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertEquals(
       ParseConflict.EXPECTED_FOLLOWING_INTEGER,
       assertThrows(
-        ArgumentParseException.class,
+        ItemPredicateParseException.class,
         () -> makeCase(
           new String[] { "amount" },
           amountPredicate(
@@ -1075,7 +1075,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
-    var exception = assertThrows(ArgumentParseException.class, predicateParser::parseAst);
+    var exception = assertThrows(ItemPredicateParseException.class, predicateParser::parseAst);
     assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }

@@ -80,7 +80,7 @@ public class TokenParser {
     }
 
     if (walker.nextChar() != '"')
-      throw new ArgumentParseException(beginArgumentIndex, ParseConflict.MISSING_STRING_TERMINATION);
+      throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
     // TODO: Do not allow empty or blank strings
 
@@ -134,7 +134,7 @@ public class TokenParser {
           currentBlockValue += (walker.charAt(index) - '0') * (int) Math.pow(10, digitPlaceValue++);
 
         if (blocksIndex == blocks.length)
-          throw new ArgumentParseException(walker.getArgumentIndex(), ParseConflict.TOO_MANY_TIME_NOTATION_BLOCKS);
+          throw new ItemPredicateParseException(walker.getArgumentIndex(), firstCharIndex, ParseConflict.TOO_MANY_TIME_NOTATION_BLOCKS);
 
         blocks[blocksIndex++] = currentBlockValue;
 
@@ -146,7 +146,7 @@ public class TokenParser {
       }
 
       if (!(currentChar >= '0' && currentChar <= '9'))
-        throw new ArgumentParseException(walker.getArgumentIndex(), ParseConflict.EXPECTED_CORRECT_INTEGER);
+        throw new ItemPredicateParseException(walker.getArgumentIndex(), firstCharIndex, ParseConflict.EXPECTED_CORRECT_INTEGER);
     }
 
     var blockPower = 0;

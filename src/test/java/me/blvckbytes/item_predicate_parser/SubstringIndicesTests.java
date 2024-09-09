@@ -1,8 +1,10 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.item_predicate_parser.parse.ArgumentParseException;
+import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
+import me.blvckbytes.item_predicate_parser.token.Token;
+import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SubstringIndicesTests {
+
+  private static final Token dummyToken = new UnquotedStringToken(0, 0, "");
 
   @Test
   public void testIndicesGeneration() {
@@ -78,8 +82,8 @@ public class SubstringIndicesTests {
     assertEquals(
       ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS,
       assertThrows(
-        ArgumentParseException.class,
-        () -> SubstringIndices.forString(0, "sign-?-o-?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        ItemPredicateParseException.class,
+        () -> SubstringIndices.forString(dummyToken, "sign-?-o-?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
       ).getConflict()
     );
 
@@ -88,16 +92,16 @@ public class SubstringIndicesTests {
     assertEquals(
       ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
       assertThrows(
-        ArgumentParseException.class,
-        () -> SubstringIndices.forString(0, "?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        ItemPredicateParseException.class,
+        () -> SubstringIndices.forString(dummyToken, "?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
       ).getConflict()
     );
 
     assertEquals(
       ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
       assertThrows(
-        ArgumentParseException.class,
-        () -> SubstringIndices.forString(0, "---?--", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        ItemPredicateParseException.class,
+        () -> SubstringIndices.forString(dummyToken, "---?--", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
       ).getConflict()
     );
   }
@@ -112,7 +116,7 @@ public class SubstringIndicesTests {
   }
 
   private void makeIndicesGenCase(String input, List<SubstringIndices> expectedIndicesList) {
-    var indicesList = SubstringIndices.forString(0, input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var indicesList = SubstringIndices.forString(dummyToken, input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     for (var i = 0; i < expectedIndicesList.size(); ++i) {
       if (i >= indicesList.size())
@@ -133,7 +137,7 @@ public class SubstringIndicesTests {
     @Nullable String expectedPendingQuery
   ) {
     var textIndices = SubstringIndices.forString(null, text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
-    var queryIndices = SubstringIndices.forString(0, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryIndices = SubstringIndices.forString(dummyToken, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     var pendingQueryIndices = new ArrayList<>(queryIndices);
     var remainingTextIndices = new ArrayList<>(textIndices);

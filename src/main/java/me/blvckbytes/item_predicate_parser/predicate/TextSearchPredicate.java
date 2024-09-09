@@ -17,7 +17,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
   public TextSearchPredicate(QuotedStringToken token) {
     this.text = token.value();
-    this.textIndices = SubstringIndices.forString(token.commandArgumentIndex(), token.value(), SubstringIndices.FREE_TEXT_DELIMITERS);
+    this.textIndices = SubstringIndices.forString(token, token.value(), SubstringIndices.FREE_TEXT_DELIMITERS);
   }
 
   @Override

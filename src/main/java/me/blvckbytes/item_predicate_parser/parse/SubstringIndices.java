@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.parse;
 
+import me.blvckbytes.item_predicate_parser.token.Token;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ public record SubstringIndices(
   }
 
   /**
-   * @param argumentIndex If provided, checks for search pattern wildcard presence (throws on duplicate or only)
+   * @param token If provided, checks for search pattern wildcard presence (throws on duplicate or only)
    */
   public static ArrayList<SubstringIndices> forString(
-    @Nullable Integer argumentIndex,
+    @Nullable Token token,
     String input,
     char[] delimiters
   ) {
@@ -72,9 +73,9 @@ public record SubstringIndices(
         var nextIndices = SubstringIndices.makePossiblyNegatable(nextPartBeginning, isDelimiter ? i - 1 : i, input);
 
         if (nextIndices.isPatternWildcardChar) {
-          if (argumentIndex != null) {
+          if (token != null) {
             if (encounteredSearchPatternWildcard)
-              throw new ArgumentParseException(argumentIndex, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+              throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
             encounteredSearchPatternWildcard = true;
           }
         }
@@ -89,7 +90,7 @@ public record SubstringIndices(
     }
 
     if (encounteredSearchPatternWildcard && !encounteredNonSearchPatternWildcard)
-      throw new ArgumentParseException(argumentIndex, ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
+      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
 
     return result;
   }

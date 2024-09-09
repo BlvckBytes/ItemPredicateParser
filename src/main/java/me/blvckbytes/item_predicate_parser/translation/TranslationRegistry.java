@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser.translation;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
+import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,14 +44,14 @@ public class TranslationRegistry {
     return null;
   }
 
-  public SearchResult search(@Nullable Integer argumentIndex, String query) {
+  public SearchResult search(UnquotedStringToken query) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
       return new SearchResult(List.of(), false);
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
-    var queryParts = SubstringIndices.forString(argumentIndex, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITERS);
 
     var isWildcardPresent = false;
 
@@ -59,7 +60,7 @@ public class TranslationRegistry {
       var pendingTextParts = new ArrayList<>(entry.partIndices);
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
-        query, pendingQueryParts,
+        query.value(), pendingQueryParts,
         entry.translation, pendingTextParts
       );
 

@@ -78,6 +78,41 @@ public class TokenParserTests {
   }
 
   @Test
+  public void shouldThrowOnEmptyOrBlankStrings() {
+    makeExceptionCase(
+      new String[] {
+        "\"\""
+      },
+      0,
+      ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+    );
+
+    makeExceptionCase(
+      new String[] {
+        "\" \""
+      },
+      0,
+      ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+    );
+
+    makeExceptionCase(
+      new String[] {
+        "hello-world", "\"\t\n\r \""
+      },
+      1,
+      ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+    );
+
+    makeExceptionCase(
+      new String[] {
+        "hello-world", "\"       \""
+      },
+      1,
+      ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+    );
+  }
+
+  @Test
   public void shouldSetCorrectFirstCharIndex() {
     makeCase(
       new String[] { "abc(def(geh))" },

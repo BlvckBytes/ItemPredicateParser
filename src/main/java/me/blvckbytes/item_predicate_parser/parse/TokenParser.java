@@ -82,9 +82,12 @@ public class TokenParser {
     if (walker.nextChar() != '"')
       throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.MISSING_STRING_TERMINATION);
 
-    // TODO: Do not allow empty or blank strings
+    var stringValue = stringContents.toString();
 
-    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, stringContents.toString());
+    if (stringValue.isBlank())
+      throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING);
+
+    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, stringValue);
   }
 
   private static @Nullable IntegerToken tryConsumeInteger(StringWalker walker) {

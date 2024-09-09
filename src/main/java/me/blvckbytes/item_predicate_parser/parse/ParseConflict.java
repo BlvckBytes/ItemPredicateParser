@@ -55,4 +55,9 @@ public enum ParseConflict {
    * A previously introduced parentheses-group is missing its termination
    */
   EXPECTED_CLOSING_PARENTHESIS,
+  /**
+   * Quoted strings which are either completely empty or consist of only whitespace
+   * are useless when searching for text-content, so they may not reach execution
+   */
+  EMPTY_OR_BLANK_QUOTED_STRING
 }

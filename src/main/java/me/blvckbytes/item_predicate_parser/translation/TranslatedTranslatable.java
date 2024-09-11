@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser.translation;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import org.bukkit.Translatable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TranslatedTranslatable {
@@ -11,7 +12,7 @@ public class TranslatedTranslatable {
   public final Translatable translatable;
   public final String normalizedUnPrefixedTranslation;
   public final String normalizedPrefixedTranslation;
-  public final List<SubstringIndices> partIndices;
+  private final List<SubstringIndices> partIndices;
 
   public int alphabeticalIndex = 0;
 
@@ -26,6 +27,10 @@ public class TranslatedTranslatable {
     this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
     this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
     this.partIndices = SubstringIndices.forString(null, normalizedPrefixedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);
+  }
+
+  public ArrayList<SubstringIndices> getPartIndicesCopy() {
+    return new ArrayList<>(partIndices);
   }
 
   @Override

@@ -57,7 +57,7 @@ public class TranslationRegistry {
 
     for (var entry : entries) {
       var pendingQueryParts = new ArrayList<>(queryParts);
-      var pendingTextParts = new ArrayList<>(entry.partIndices);
+      var pendingTextParts = entry.getPartIndicesCopy();
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
         query.value(), pendingQueryParts,

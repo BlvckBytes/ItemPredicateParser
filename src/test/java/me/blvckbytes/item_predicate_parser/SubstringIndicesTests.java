@@ -83,7 +83,7 @@ public class SubstringIndicesTests {
       ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS,
       assertThrows(
         ItemPredicateParseException.class,
-        () -> SubstringIndices.forString(dummyToken, "sign-?-o-?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        () -> SubstringIndices.forString(dummyToken, "sign-?-o-?", SubstringIndices.SEARCH_PATTERN_DELIMITER)
       ).getConflict()
     );
 
@@ -93,7 +93,7 @@ public class SubstringIndicesTests {
       ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
       assertThrows(
         ItemPredicateParseException.class,
-        () -> SubstringIndices.forString(dummyToken, "?", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        () -> SubstringIndices.forString(dummyToken, "?", SubstringIndices.SEARCH_PATTERN_DELIMITER)
       ).getConflict()
     );
 
@@ -101,7 +101,7 @@ public class SubstringIndicesTests {
       ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD,
       assertThrows(
         ItemPredicateParseException.class,
-        () -> SubstringIndices.forString(dummyToken, "---?--", SubstringIndices.SEARCH_PATTERN_DELIMITERS)
+        () -> SubstringIndices.forString(dummyToken, "---?--", SubstringIndices.SEARCH_PATTERN_DELIMITER)
       ).getConflict()
     );
   }
@@ -116,7 +116,7 @@ public class SubstringIndicesTests {
   }
 
   private void makeIndicesGenCase(String input, List<SubstringIndices> expectedIndicesList) {
-    var indicesList = SubstringIndices.forString(dummyToken, input, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var indicesList = SubstringIndices.forString(dummyToken, input, SubstringIndices.SEARCH_PATTERN_DELIMITER);
 
     for (var i = 0; i < expectedIndicesList.size(); ++i) {
       if (i >= indicesList.size())
@@ -136,8 +136,8 @@ public class SubstringIndicesTests {
     String expectedRemainingText,
     @Nullable String expectedPendingQuery
   ) {
-    var textIndices = SubstringIndices.forString(null, text, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
-    var queryIndices = SubstringIndices.forString(dummyToken, query, SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var textIndices = SubstringIndices.forString(null, text, SubstringIndices.SEARCH_PATTERN_DELIMITER);
+    var queryIndices = SubstringIndices.forString(dummyToken, query, SubstringIndices.SEARCH_PATTERN_DELIMITER);
 
     var pendingQueryIndices = new ArrayList<>(queryIndices);
     var remainingTextIndices = new ArrayList<>(textIndices);

@@ -9,38 +9,20 @@ public class TranslatedTranslatable {
 
   public final TranslatableSource source;
   public final Translatable translatable;
-  public final String translation;
   public final String normalizedTranslation;
   public final List<SubstringIndices> partIndices;
 
   public int alphabeticalIndex = 0;
 
-  private TranslatedTranslatable(
-    TranslatableSource source,
-    Translatable translatable,
-    String translation,
-    String normalizedTranslation,
-    List<SubstringIndices> partIndices
-  ) {
-    this.source = source;
-    this.translatable = translatable;
-    this.translation = translation;
-    this.normalizedTranslation = normalizedTranslation;
-    this.partIndices = partIndices;
-  }
-
   public TranslatedTranslatable(
     TranslatableSource source,
     Translatable translatable,
-    String translation
+    String normalizedTranslation
   ) {
-    this(
-      source,
-      translatable,
-      translation,
-      normalize(translation),
-      SubstringIndices.forString(null, translation, SubstringIndices.LANGUAGE_FILE_DELIMITERS)
-    );
+    this.source = source;
+    this.translatable = translatable;
+    this.normalizedTranslation = normalizedTranslation;
+    this.partIndices = SubstringIndices.forString(null, normalizedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);
   }
 
   @Override

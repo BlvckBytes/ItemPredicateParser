@@ -11,9 +11,8 @@ public record SubstringIndices(
   boolean isNegated,
   boolean isPatternWildcardChar
 ) {
-  public static final char[] LANGUAGE_FILE_DELIMITERS = { '-', ' ', '_' };
-  public static final char[] SEARCH_PATTERN_DELIMITERS = { '-' };
-  public static final char[] FREE_TEXT_DELIMITERS = { ' ' };
+  public static final char SEARCH_PATTERN_DELIMITER = '-';
+  public static final char FREE_TEXT_DELIMITER = ' ';
 
   private static final char PATTERN_WILDCARD_CHAR = '?';
   private static final char PATTERN_NEGATION_CHAR = '!';
@@ -41,7 +40,7 @@ public record SubstringIndices(
   public static ArrayList<SubstringIndices> forString(
     @Nullable Token token,
     String input,
-    char[] delimiters
+    char delimiter
   ) {
     var result = new ArrayList<SubstringIndices>();
     var inputLength = input.length();
@@ -53,14 +52,7 @@ public record SubstringIndices(
 
     for (int i = 0; i < inputLength; ++i) {
       var currentChar = input.charAt(i);
-      boolean isDelimiter = false;
-
-      for (char delimiter : delimiters) {
-        if (currentChar == delimiter) {
-          isDelimiter = true;
-          break;
-        }
-      }
+      var isDelimiter = currentChar == delimiter;
 
       if (!isDelimiter) {
         encounteredNonDelimiter = true;

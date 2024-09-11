@@ -29,7 +29,7 @@ public class TranslationRegistry {
 
     this.entries = unsortedEntries
       .stream()
-      .sorted(Comparator.comparing(it -> it.translation))
+      .sorted(Comparator.comparing(it -> it.normalizedTranslation))
       .toArray(TranslatedTranslatable[]::new);
 
     for (var entryIndex = 0; entryIndex < this.entries.length; ++entryIndex)
@@ -51,7 +51,7 @@ public class TranslationRegistry {
     }
 
     var result = new ArrayList<TranslatedTranslatable>();
-    var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITERS);
+    var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITER);
 
     var isWildcardPresent = false;
 
@@ -61,7 +61,7 @@ public class TranslationRegistry {
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
         query.value(), pendingQueryParts,
-        entry.translation, pendingTextParts
+        entry.normalizedTranslation, pendingTextParts
       );
 
       if (!pendingQueryParts.isEmpty())
@@ -85,7 +85,9 @@ public class TranslationRegistry {
       if (translationValue == null)
         throw new IllegalStateException("Could not locate translation-value for key " + translationKey);
 
-      var entry = new TranslatedTranslatable(source, translatable, translationValue);
+      var normalizedTranslationValue = TranslatedTranslatable.normalize(translationValue);
+
+      var entry = new TranslatedTranslatable(source, translatable, normalizedTranslationValue);
       boolean hadCollision = false;
 
       for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
@@ -102,13 +104,13 @@ public class TranslationRegistry {
         output.set(outputIndex, new TranslatedTranslatable(
           existingEntry.source,
           existingEntry.translatable,
-          existingEntry.source.collisionPrefix() + existingEntry.translation
+          existingEntry.source.collisionPrefix() + existingEntry.normalizedTranslation
         ));
 
         output.add(new TranslatedTranslatable(
           source,
           translatable,
-          source.collisionPrefix() + translationValue
+          source.collisionPrefix() + normalizedTranslationValue
         ));
 
         hadCollision = true;

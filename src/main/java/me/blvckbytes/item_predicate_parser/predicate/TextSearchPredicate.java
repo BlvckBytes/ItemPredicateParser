@@ -17,7 +17,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
   public TextSearchPredicate(QuotedStringToken token) {
     this.text = token.value();
-    this.textIndices = SubstringIndices.forString(token, token.value(), SubstringIndices.FREE_TEXT_DELIMITERS);
+    this.textIndices = SubstringIndices.forString(token, token.value(), SubstringIndices.FREE_TEXT_DELIMITER);
   }
 
   @Override
@@ -36,7 +36,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
       SubstringIndices.matchQuerySubstrings(
         text, pendingTextIndices,
-        displayName, SubstringIndices.forString(null, displayName, SubstringIndices.FREE_TEXT_DELIMITERS)
+        displayName, SubstringIndices.forString(null, displayName, SubstringIndices.FREE_TEXT_DELIMITER)
       );
 
       if (pendingTextIndices.isEmpty())
@@ -51,7 +51,7 @@ public class TextSearchPredicate implements ItemPredicate {
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
         SubstringIndices.matchQuerySubstrings(
           text, pendingTextIndices,
-          loreLine, SubstringIndices.forString(null, loreLine, SubstringIndices.FREE_TEXT_DELIMITERS)
+          loreLine, SubstringIndices.forString(null, loreLine, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
         if (pendingTextIndices.isEmpty())
@@ -70,7 +70,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
         SubstringIndices.matchQuerySubstrings(
           text, pendingTextIndices,
-          author, SubstringIndices.forString(null, author, SubstringIndices.FREE_TEXT_DELIMITERS)
+          author, SubstringIndices.forString(null, author, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
         if (pendingTextIndices.isEmpty())
@@ -86,7 +86,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
         SubstringIndices.matchQuerySubstrings(
           text, pendingTextIndices,
-          title, SubstringIndices.forString(null, title, SubstringIndices.FREE_TEXT_DELIMITERS)
+          title, SubstringIndices.forString(null, title, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
         if (pendingTextIndices.isEmpty())
@@ -101,7 +101,7 @@ public class TextSearchPredicate implements ItemPredicate {
         for (var page : bookMeta.getPages()) {
           SubstringIndices.matchQuerySubstrings(
             text, pendingTextIndices,
-            page, SubstringIndices.forString(null, page, SubstringIndices.FREE_TEXT_DELIMITERS)
+            page, SubstringIndices.forString(null, page, SubstringIndices.FREE_TEXT_DELIMITER)
           );
 
           if (pendingTextIndices.isEmpty())
@@ -123,7 +123,7 @@ public class TextSearchPredicate implements ItemPredicate {
         if (ownerName != null) {
           SubstringIndices.matchQuerySubstrings(
             text, pendingTextIndices,
-            ownerName, SubstringIndices.forString(null, ownerName, SubstringIndices.FREE_TEXT_DELIMITERS)
+            ownerName, SubstringIndices.forString(null, ownerName, SubstringIndices.FREE_TEXT_DELIMITER)
           );
 
           if (pendingTextIndices.isEmpty())

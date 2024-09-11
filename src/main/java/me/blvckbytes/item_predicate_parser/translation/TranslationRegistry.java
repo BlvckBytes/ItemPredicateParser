@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
+import org.bukkit.Material;
 import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
@@ -138,8 +139,8 @@ public class TranslationRegistry {
     }
   }
 
-  public @Nullable String getTranslationOrNull(Translatable translatable) {
-    var translationValue = languageFile.get(translatable.getTranslationKey());
+  private @Nullable String accessLanguageKey(String key) {
+    var translationValue = languageFile.get(key);
 
     if (translationValue == null)
       return null;
@@ -148,5 +149,53 @@ public class TranslationRegistry {
       return null;
 
     return translationValue.getAsString();
+  }
+
+  private String normalizeDescriptionTranslation(String descriptionTranslation) {
+    return descriptionTranslation.replace(" - ", "-");
+  }
+
+  private @Nullable String tryGetSmithingTemplateDescriptionKey(Translatable translatable) {
+    /*
+      Various armor trims:
+      item.minecraft.>coast<_armor_trim_smithing_template => trim_pattern.minecraft.>coast<
+
+      The upgrade seems to be a completely different key:
+      item.minecraft.>netherite_upgrade<_smithing_template => upgrade.minecraft.>netherite_upgrade<
+     */
+
+    var translationKey = translatable.getTranslationKey();
+    var armorTrimMarker = "_armor_trim_smithing_template";
+    var itemMarker = "item.minecraft.";
+
+    int trimMarkerIndex;
+
+    if ((trimMarkerIndex = translationKey.indexOf(armorTrimMarker)) > 0) {
+      var trimPattern = translationKey.substring(itemMarker.length(), trimMarkerIndex);
+      return "trim_pattern.minecraft." + trimPattern;
+    }
+
+    if (translatable == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+      return "upgrade.minecraft.netherite_upgrade";
+
+    return null;
+  }
+
+  private @Nullable String getTranslationOrNull(Translatable translatable) {
+    var translationKey = translatable.getTranslationKey();
+
+    if (translatable instanceof Material) {
+      String descriptionTranslationKey = tryGetSmithingTemplateDescriptionKey(translatable);
+
+      if (descriptionTranslationKey == null)
+        descriptionTranslationKey = translationKey + ".desc";
+
+      var descriptionTranslation = accessLanguageKey(descriptionTranslationKey);
+
+      if (descriptionTranslation != null)
+        return accessLanguageKey(translationKey) + " " + normalizeDescriptionTranslation(descriptionTranslation);
+    }
+
+    return accessLanguageKey(translationKey);
   }
 }

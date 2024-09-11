@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParserFactory;
 import me.blvckbytes.item_predicate_parser.translation.*;
+import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,7 +50,10 @@ public abstract class TranslationRegistryDependentTests {
     return Arrays.asList(
       new TranslatableSource(Registry.ENCHANTMENT, "[Enchantment] "),
       new TranslatableSource(Registry.EFFECT, "[Effect] "),
-      new TranslatableSource(Registry.MATERIAL, "[Material] "),
+      new TranslatableSource(
+        Registry.MATERIAL.stream().filter(Material::isItem).toList(),
+        "[Material] "
+      ),
       new TranslatableSource(List.of(
         DeteriorationKey.INSTANCE,
         NegationKey.INSTANCE,

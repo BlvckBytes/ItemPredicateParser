@@ -13,8 +13,8 @@ public record TranslatedTranslatablePredicate(
     if (item.translatable != translatable)
       return false;
 
-    var vanillaTranslation = translationRegistry.getTranslationOrNull(item.translatable);
-    var normalizedPrefixed = TranslatedTranslatable.normalize(collisionPrefix + vanillaTranslation);
+    var unPrefixedTranslation = item.normalizedUnPrefixedTranslation;
+    var normalizedPrefixed = TranslatedTranslatable.normalize(collisionPrefix + unPrefixedTranslation);
 
     return item.normalizedPrefixedTranslation.equals(normalizedPrefixed);
   }

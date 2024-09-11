@@ -19,6 +19,6 @@ public record NegationNode(
     if (useTokens)
       return token.stringify() + " " + operand.stringify(true);
 
-    return translatedTranslatable.normalizedTranslation + " " + operand.stringify(false);
+    return translatedTranslatable.normalizedPrefixedTranslation + " " + operand.stringify(false);
   }
 }

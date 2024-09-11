@@ -382,7 +382,7 @@ public class PredicateParser {
 
     for (var matchIndex = 0; matchIndex < numberOfMatches; ++matchIndex) {
       var currentMatch = matches.get(matchIndex);
-      var currentLength = currentMatch.normalizedTranslation.length();
+      var currentLength = currentMatch.normalizedPrefixedTranslation.length();
 
       if (currentLength > shortestMatchLength)
         continue;

@@ -9,7 +9,8 @@ public class TranslatedTranslatable {
 
   public final TranslatableSource source;
   public final Translatable translatable;
-  public final String normalizedTranslation;
+  public final String normalizedUnPrefixedTranslation;
+  public final String normalizedPrefixedTranslation;
   public final List<SubstringIndices> partIndices;
 
   public int alphabeticalIndex = 0;
@@ -17,17 +18,19 @@ public class TranslatedTranslatable {
   public TranslatedTranslatable(
     TranslatableSource source,
     Translatable translatable,
-    String normalizedTranslation
+    String normalizedUnPrefixedTranslation,
+    String normalizedPrefixedTranslation
   ) {
     this.source = source;
     this.translatable = translatable;
-    this.normalizedTranslation = normalizedTranslation;
-    this.partIndices = SubstringIndices.forString(null, normalizedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);
+    this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
+    this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
+    this.partIndices = SubstringIndices.forString(null, normalizedPrefixedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);
   }
 
   @Override
   public String toString() {
-    return normalizedTranslation;
+    return normalizedPrefixedTranslation;
   }
 
   public static String normalize(String input) {

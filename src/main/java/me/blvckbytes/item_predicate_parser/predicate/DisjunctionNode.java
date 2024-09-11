@@ -20,6 +20,6 @@ public record DisjunctionNode(
     if (useTokens)
       return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
 
-    return lhs.stringify(false) + " " + translatedTranslatable.normalizedTranslation + " " + rhs.stringify(false);
+    return lhs.stringify(false) + " " + translatedTranslatable.normalizedPrefixedTranslation + " " + rhs.stringify(false);
   }
 }

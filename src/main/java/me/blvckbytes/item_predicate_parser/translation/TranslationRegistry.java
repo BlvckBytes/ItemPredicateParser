@@ -29,7 +29,7 @@ public class TranslationRegistry {
 
     this.entries = unsortedEntries
       .stream()
-      .sorted(Comparator.comparing(it -> it.normalizedTranslation))
+      .sorted(Comparator.comparing(it -> it.normalizedPrefixedTranslation))
       .toArray(TranslatedTranslatable[]::new);
 
     for (var entryIndex = 0; entryIndex < this.entries.length; ++entryIndex)
@@ -61,7 +61,7 @@ public class TranslationRegistry {
 
       isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
         query.value(), pendingQueryParts,
-        entry.normalizedTranslation, pendingTextParts
+        entry.normalizedPrefixedTranslation, pendingTextParts
       );
 
       if (!pendingQueryParts.isEmpty())
@@ -78,52 +78,68 @@ public class TranslationRegistry {
   }
 
   private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) throws IllegalStateException {
+    var buckets = new HashMap<String, ArrayList<Translatable>>();
+
     for (var translatable : source.items()) {
-      var translationKey = translatable.getTranslationKey();
-      var translationValue = getTranslationOrNull(languageFile, translationKey);
+      var translationValue = getTranslationOrNull(translatable);
 
       if (translationValue == null)
-        throw new IllegalStateException("Could not locate translation-value for key " + translationKey);
+        throw new IllegalStateException("Could not locate translation-value for key " + translatable.getTranslationKey());
 
       var normalizedTranslationValue = TranslatedTranslatable.normalize(translationValue);
 
-      var entry = new TranslatedTranslatable(source, translatable, normalizedTranslationValue);
-      boolean hadCollision = false;
+      var bucket = buckets.computeIfAbsent(normalizedTranslationValue, k -> new ArrayList<>());
+      bucket.add(translatable);
+    }
 
-      for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
-        var existingEntry = output.get(outputIndex);
+    for (var bucketEntry : buckets.entrySet()) {
+      var bucketNormalizedUnPrefixedTranslation = bucketEntry.getKey();
+      var bucketItems = bucketEntry.getValue();
+      var bucketSize = bucketItems.size();
 
-        if (!existingEntry.normalizedTranslation.equalsIgnoreCase(entry.normalizedTranslation))
-          continue;
+      // Prefix all items of other sources that would collide with the item about to be added
+      for (var itemIndex = 0; itemIndex < bucketSize; ++itemIndex) {
+        var bucketItem = bucketItems.get(itemIndex);
 
-        if (existingEntry.source == entry.source) {
-          // TODO: Add auto-incrementing collision-prefixes on colliding members within the same source
-          continue;
+        boolean hadCollision = false;
+
+        for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
+          var existingEntry = output.get(outputIndex);
+
+          // Do not add cross-source collision prefixes on same-source items, as the incrementing
+          // bucket index already takes care of these kinds of collision
+          if (existingEntry.source == source)
+            continue;
+
+          if (!existingEntry.normalizedUnPrefixedTranslation.equalsIgnoreCase(bucketNormalizedUnPrefixedTranslation))
+            continue;
+
+          output.set(outputIndex, new TranslatedTranslatable(
+            existingEntry.source,
+            existingEntry.translatable,
+            existingEntry.normalizedUnPrefixedTranslation,
+            existingEntry.source.collisionPrefix() + existingEntry.normalizedPrefixedTranslation
+          ));
+
+          hadCollision = true;
         }
 
-        output.set(outputIndex, new TranslatedTranslatable(
-          existingEntry.source,
-          existingEntry.translatable,
-          existingEntry.source.collisionPrefix() + existingEntry.normalizedTranslation
-        ));
+        var newItemPrefixedTranslation = bucketNormalizedUnPrefixedTranslation;
 
-        output.add(new TranslatedTranslatable(
-          source,
-          translatable,
-          source.collisionPrefix() + normalizedTranslationValue
-        ));
+        // Incrementing same-source prefixes should be nearest to the translation
+        if (bucketSize > 1)
+          newItemPrefixedTranslation = (itemIndex + 1) + "-" + newItemPrefixedTranslation;
 
-        hadCollision = true;
-        break;
+        if (hadCollision)
+          newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;
+
+        output.add(new TranslatedTranslatable(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
       }
-
-      if (!hadCollision)
-        output.add(entry);
     }
   }
 
-  private @Nullable String getTranslationOrNull(JsonObject languageFile, String translationKey) {
-    var translationValue = languageFile.get(translationKey);
+  public @Nullable String getTranslationOrNull(Translatable translatable) {
+    var translationValue = languageFile.get(translatable.getTranslationKey());
 
     if (translationValue == null)
       return null;

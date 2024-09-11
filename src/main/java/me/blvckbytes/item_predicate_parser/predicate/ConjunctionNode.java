@@ -34,6 +34,6 @@ public record ConjunctionNode(
     if (useTokens && token != null)
       return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
 
-    return lhs.stringify(useTokens) + " " + translatedTranslatable.normalizedTranslation + " " + rhs.stringify(useTokens);
+    return lhs.stringify(useTokens) + " " + translatedTranslatable.normalizedPrefixedTranslation + " " + rhs.stringify(useTokens);
   }
 }

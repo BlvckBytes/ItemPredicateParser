@@ -20,6 +20,6 @@ public record AmountPredicate(
     if (useTokens)
       return token.stringify() + " " + amountArgument.stringify();
 
-    return translatedTranslatable.normalizedTranslation + " " + amountArgument.stringify();
+    return translatedTranslatable.normalizedPrefixedTranslation + " " + amountArgument.stringify();
   }
 }

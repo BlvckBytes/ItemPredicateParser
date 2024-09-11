@@ -1,5 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.FileUtils;
@@ -16,6 +18,8 @@ import java.util.logging.Logger;
 
 public class LanguageRegistry implements ILanguageRegistry {
 
+  private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
   private final AssetIndex assetIndex;
   private final File languagesFolder;
   private final Logger logger;
@@ -25,7 +29,7 @@ public class LanguageRegistry implements ILanguageRegistry {
   public LanguageRegistry(Plugin plugin) throws Exception {
     this.registryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
-    this.assetIndex = new AssetIndex();
+    this.assetIndex = new AssetIndex(null);
     this.languagesFolder = Paths.get(plugin.getDataFolder().getAbsolutePath(), "languages", assetIndex.serverVersion).toFile();
 
     if (!this.languagesFolder.isDirectory()) {
@@ -36,39 +40,22 @@ public class LanguageRegistry implements ILanguageRegistry {
     }
   }
 
-  private String downloadLanguageFileContents(TranslationLanguage language) throws Exception {
-    // They don't seem to carry this entry in the index; we need to
-    // unzip the client.jar in order to access it - what a headache.
-    if (language == TranslationLanguage.ENGLISH_US)
-      return this.assetIndex.getClientEmbeddedLanguageFileContents();
-
-    var fileUrl = this.assetIndex.getLanguageFileUrl(language.assetFileName);
-
-    if (fileUrl == null)
-      throw new IllegalStateException("Could not look up URL for " + language.assetFileName);
-
-    return this.assetIndex.makePlainTextGetRequest(fileUrl);
-  }
-
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {
-    var localFile = new File(this.languagesFolder, language.assetFileName);
+    var localFile = new File(this.languagesFolder, language.assetFileNameWithoutExtension + ".json");
 
     if (overwrite && localFile.exists()) {
       if (!localFile.delete())
         throw new IllegalStateException("Could not delete existing language file " + localFile);
     }
 
-    String contents;
+    if (localFile.exists())
+      return gson.fromJson(FileUtils.readFileToString(localFile, StandardCharsets.UTF_8), JsonObject.class);
 
-    if (!localFile.exists()) {
-      logger.info("Downloading language-file " + language.assetFileName);
-      contents = downloadLanguageFileContents(language);
-      FileUtils.writeStringToFile(localFile, contents, StandardCharsets.UTF_8);
-    } else {
-      contents = FileUtils.readFileToString(localFile, StandardCharsets.UTF_8);
-    }
+    logger.info("Downloading language-file " + language.assetFileNameWithoutExtension);
 
-    return assetIndex.parseJson(contents);
+    var languageObject = assetIndex.getLanguageFile(language);
+    FileUtils.writeStringToFile(localFile, gson.toJson(languageObject), StandardCharsets.UTF_8);
+    return languageObject;
   }
 
   @Override
@@ -85,7 +72,7 @@ public class LanguageRegistry implements ILanguageRegistry {
       try {
         languageFile = accessOrDownloadLanguageFile(language, true);
       } catch (JsonSyntaxException e2) {
-        throw new IllegalStateException("Could not successfully parse language-file " + language.assetFileName);
+        throw new IllegalStateException("Could not successfully parse language-file " + language.assetFileNameWithoutExtension);
       }
     }
 

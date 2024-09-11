@@ -1,8 +1,8 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.*;
+import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,13 +30,81 @@ public class AssetIndex {
   private final VersionUrls versionUrls;
   private final Map<String, String> languageFileUrls;
 
-  public AssetIndex() throws Exception {
-    this.serverVersion = parseServerVersion();
+  public AssetIndex(String customVersion) throws Exception {
+    this.serverVersion = customVersion == null ? parseServerVersion() : customVersion;
     this.versionUrls = getUrlsForCurrentVersion();
     this.languageFileUrls = getLanguageFileUrlsForCurrentVersion();
   }
 
-  public String getClientEmbeddedLanguageFileContents() throws Exception {
+  public JsonObject getLanguageFile(TranslationLanguage language) throws Exception {
+    if (language == TranslationLanguage.ENGLISH_US) {
+      var fileInfo = getClientEmbeddedLanguageFileContents();
+
+      var fileContents = fileInfo.a();
+      var fileExtension = fileInfo.b();
+
+      if (fileExtension.equals("json"))
+        return parseJson(fileContents);
+
+      return convertLangContentsToJsonObject(fileContents);
+    }
+
+    String languageFileUrl;
+
+    if ((languageFileUrl = languageFileUrls.get(language.assetFileNameWithoutExtension + ".json")) != null)
+      return parseJson(makePlainTextGetRequest(languageFileUrl));
+
+    if ((languageFileUrl = languageFileUrls.get(language.assetFileNameWithoutExtension + ".lang")) != null)
+      return convertLangContentsToJsonObject(makePlainTextGetRequest(languageFileUrl));
+
+    throw new IllegalStateException("Could not locate language-file url for " + language.assetFileNameWithoutExtension);
+  }
+
+  // TODO: This *most definitely* needs a few test-cases
+  private JsonObject convertLangContentsToJsonObject(String langContents) {
+    var result = new JsonObject();
+
+    // I believe it was two back-to-back '#'-s...
+    var commentMarker = "##";
+    var lastNewlineIndex = -1;
+
+    do {
+      var lineBeginIndex = lastNewlineIndex + 1;
+      var nextNewlineIndex = langContents.indexOf('\n', lineBeginIndex);
+      lastNewlineIndex = nextNewlineIndex;
+
+      // Consecutive newlines - empty line
+      if (lineBeginIndex == nextNewlineIndex)
+        continue;
+
+      var commentBeginIndex = langContents.indexOf(commentMarker, lineBeginIndex);
+
+      // Fully commented line
+      if (commentBeginIndex == 0)
+        continue;
+
+      var pairSeparatorIndex = langContents.indexOf('=', lineBeginIndex);
+
+      // Make sure that there's no comment before the pair-separator character
+      if (pairSeparatorIndex <= 0 || (commentBeginIndex > 0 && commentBeginIndex <= pairSeparatorIndex))
+        continue;
+
+      var key = langContents.substring(lineBeginIndex, pairSeparatorIndex);
+
+      String value;
+
+      if (commentBeginIndex > 0)
+        value = langContents.substring(pairSeparatorIndex + 1, commentBeginIndex);
+      else
+        value = langContents.substring(pairSeparatorIndex + 1, nextNewlineIndex);
+
+      result.addProperty(key, value);
+    } while (lastNewlineIndex >= 0);
+
+    return result;
+  }
+
+  private Tuple<String, String> getClientEmbeddedLanguageFileContents() throws Exception {
     try (
       var inputStream = makeGetRequest(versionUrls.clientJarUrl());
       var jarStream = new JarInputStream(new ByteArrayInputStream(inputStream.readAllBytes()));
@@ -44,7 +112,9 @@ public class AssetIndex {
       JarEntry entry;
 
       while ((entry = jarStream.getNextJarEntry()) != null) {
-        if (!entry.getName().endsWith("lang/en_us.json"))
+        var entryName = entry.getName();
+
+        if (!entryName.startsWith("assets/minecraft/lang/en_us"))
           continue;
 
         byte[] fileData;
@@ -58,15 +128,13 @@ public class AssetIndex {
             throw new IllegalStateException("Could not read the whole language file");
         }
 
-        return new String(fileData);
+        var fileExtension = entryName.substring(entryName.lastIndexOf('.') + 1);
+
+        return new Tuple<>(new String(fileData), fileExtension);
       }
 
       throw new IllegalStateException("Could not find en_us.json within client.jar");
     }
-  }
-
-  public @Nullable String getLanguageFileUrl(String languageFile) {
-    return languageFileUrls.get(languageFile);
   }
 
   private InputStream makeGetRequest(String url) throws Exception {
@@ -85,7 +153,7 @@ public class AssetIndex {
     return response.body();
   }
 
-  public String makePlainTextGetRequest(String url) throws Exception {
+  private String makePlainTextGetRequest(String url) throws Exception {
     try (
       var inputStream = makeGetRequest(url)
     ) {
@@ -93,7 +161,7 @@ public class AssetIndex {
     }
   }
 
-  public JsonObject parseJson(String string) throws JsonSyntaxException {
+  private JsonObject parseJson(String string) throws JsonSyntaxException {
     return gson.fromJson(string, JsonObject.class);
   }
 
@@ -110,7 +178,7 @@ public class AssetIndex {
     return versionsArray;
   }
 
-  public Map<String, String> getLanguageFileUrlsForCurrentVersion() throws Exception {
+  private Map<String, String> getLanguageFileUrlsForCurrentVersion() throws Exception {
     var objectsNode = makeJsonGetRequest(versionUrls.assetIndexUrl()).get("objects");
 
     if (!(objectsNode instanceof JsonObject objectsObject))

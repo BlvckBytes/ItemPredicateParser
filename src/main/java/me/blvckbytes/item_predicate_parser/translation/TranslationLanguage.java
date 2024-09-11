@@ -7,23 +7,23 @@ public enum TranslationLanguage {
   //       uniformly across all consumers of this API, and secondly, I want to make sure that there are
   //       no parsing- or comparison-errors when it comes to Unicode-symbols.
 
-  ENGLISH_US("en_us.json", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
-  ENGLISH_GB("en_gb.json", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
-  GERMAN_DE("de_de.json", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
-  GERMAN_AT("de_at.json", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
-  GERMAN_CH("de_ch.json", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
+  ENGLISH_US("en_us", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
+  ENGLISH_GB("en_gb", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
+  GERMAN_DE("de_de", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
+  GERMAN_AT("de_at", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
+  GERMAN_CH("de_ch", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
   ;
 
-  public final String assetFileName;
+  public final String assetFileNameWithoutExtension;
   public final CollisionPrefixes collisionPrefixes;
   public final CustomTranslations customTranslations;
 
   TranslationLanguage(
-    String assetFileName,
+    String assetFileNameWithoutExtension,
     CollisionPrefixes collisionPrefixes,
     CustomTranslations customTranslations
   ) {
-    this.assetFileName = assetFileName;
+    this.assetFileNameWithoutExtension = assetFileNameWithoutExtension;
     this.collisionPrefixes = collisionPrefixes;
     this.customTranslations = customTranslations;
   }

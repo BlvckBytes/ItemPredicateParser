@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser.translation;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
@@ -100,7 +101,11 @@ public class LanguageRegistry implements ILanguageRegistry {
 
     result.add(new TranslatableSource(Registry.ENCHANTMENT, collisionPrefixes.forEnchantments()));
     result.add(new TranslatableSource(Registry.EFFECT, collisionPrefixes.forEffects()));
-    result.add(new TranslatableSource(Registry.MATERIAL, collisionPrefixes.forMaterials()));
+
+    result.add(new TranslatableSource(
+      Registry.MATERIAL.stream().filter(Material::isItem).toList(),
+      collisionPrefixes.forMaterials()
+    ));
 
     result.add(new TranslatableSource(List.of(
       DeteriorationKey.INSTANCE,

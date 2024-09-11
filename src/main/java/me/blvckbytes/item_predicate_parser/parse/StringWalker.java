@@ -31,7 +31,9 @@ public class StringWalker {
       result.append(args[partIndex]);
     }
 
-    return new StringWalker(result.toString());
+    var walker = new StringWalker(result.toString());
+    walker.spaceCounter += offset;
+    return walker;
   }
 
   private char getChar(int index) {

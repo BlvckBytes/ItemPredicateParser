@@ -6,7 +6,6 @@ import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.token.ComparisonMode;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
-import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import org.bukkit.Material;
@@ -132,22 +131,22 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "dia-ches", "unbr", "4", "night-v", "deter" },
       andJoin(true,
-        materialPredicate(Material.DIAMOND_CHESTPLATE, new UnquotedStringToken(0, 0, "dia-ches")),
+        materialPredicate(Material.DIAMOND_CHESTPLATE, unquotedStringToken(0, 0, "dia-ches")),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(2, 0, 4),
-          new UnquotedStringToken(1, 0, "unbr")
+          integerToken(2, 0, 4),
+          unquotedStringToken(1, 0, "unbr")
         ),
         potionEffectPredicate(
           PotionEffectType.NIGHT_VISION,
           null,
           null,
-          new UnquotedStringToken(3, 0, "night-v")
+          unquotedStringToken(3, 0, "night-v")
         ),
         deteriorationPredicate(
           null,
           null,
-          new UnquotedStringToken(4, 0, "deter")
+          unquotedStringToken(4, 0, "deter")
         )
       )
     );
@@ -158,12 +157,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "gold-boot", "not", "unbr" },
       andJoin(true,
-        materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(0, 0, "gold-boot")),
+        materialPredicate(Material.GOLDEN_BOOTS, unquotedStringToken(0, 0, "gold-boot")),
         negate(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
             null,
-            new UnquotedStringToken(2, 0, "unbr")
+            unquotedStringToken(2, 0, "unbr")
           )
         )
       )
@@ -172,24 +171,24 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "gold-boot", "not", "unbr", "not", "deter", "not", "\"test\"" },
       andJoin(true,
-        materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(0, 0, "gold-boot")),
+        materialPredicate(Material.GOLDEN_BOOTS, unquotedStringToken(0, 0, "gold-boot")),
         negate(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
             null,
-            new UnquotedStringToken(2, 0, "unbr")
+            unquotedStringToken(2, 0, "unbr")
           )
         ),
         negate(
           deteriorationPredicate(
             null,
             null,
-            new UnquotedStringToken(4, 0, "deter")
+            unquotedStringToken(4, 0, "deter")
           )
         ),
         negate(
           new TextSearchPredicate(
-            new QuotedStringToken(6, 0, "test")
+            quotedStringToken(6, 0, "test")
           )
         )
       )
@@ -204,17 +203,17 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         enchantmentPredicate(
           Enchantment.MENDING,
           null,
-          new UnquotedStringToken(0, 0, "mendi")
+          unquotedStringToken(0, 0, "mendi")
         ),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(3, 0, 3),
-          new UnquotedStringToken(2, 0, "unbr")
+          integerToken(3, 0, 3),
+          unquotedStringToken(2, 0, "unbr")
         ),
         deteriorationPredicate(
           null,
           null,
-          new UnquotedStringToken(5, 0, "deter")
+          unquotedStringToken(5, 0, "deter")
         )
       )
     );
@@ -225,14 +224,14 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "dia-shov", "or", "dia-pick", "or", "unbr", "2", "or", "gold-boot" },
       orJoin(
-        materialPredicate(Material.DIAMOND_SHOVEL, new UnquotedStringToken(0, 0, "dia-shov")),
-        materialPredicate(Material.DIAMOND_PICKAXE, new UnquotedStringToken(2, 0, "dia-pick")),
+        materialPredicate(Material.DIAMOND_SHOVEL, unquotedStringToken(0, 0, "dia-shov")),
+        materialPredicate(Material.DIAMOND_PICKAXE, unquotedStringToken(2, 0, "dia-pick")),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(5, 0, 2),
-          new UnquotedStringToken(4, 0, "unbr")
+          integerToken(5, 0, 2),
+          unquotedStringToken(4, 0, "unbr")
         ),
-        materialPredicate(Material.GOLDEN_BOOTS, new UnquotedStringToken(7, 0, "gold-boot"))
+        materialPredicate(Material.GOLDEN_BOOTS, unquotedStringToken(7, 0, "gold-boot"))
       )
     );
   }
@@ -244,7 +243,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         materialPredicate(
           Material.DIAMOND_SHOVEL,
-          new UnquotedStringToken(1, 0, "dia-shov")
+          unquotedStringToken(1, 0, "dia-shov")
         )
       )
     );
@@ -254,7 +253,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         materialPredicate(
           Material.DIAMOND_SHOVEL,
-          new UnquotedStringToken(0, 1, "dia-shov")
+          unquotedStringToken(0, 1, "dia-shov")
         )
       )
     );
@@ -264,7 +263,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         materialPredicate(
           Material.DIAMOND_SHOVEL,
-          new UnquotedStringToken(1, 0, "dia-shov")
+          unquotedStringToken(1, 0, "dia-shov")
         )
       )
     );
@@ -274,7 +273,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new ParenthesesNode(
         materialPredicate(
           Material.DIAMOND_SHOVEL,
-          new UnquotedStringToken(0, 1, "dia-shov")
+          unquotedStringToken(0, 1, "dia-shov")
         )
       )
     );
@@ -286,17 +285,17 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
           enchantmentPredicate(
             Enchantment.UNBREAKING,
             null,
-            new UnquotedStringToken(0, 1, "unbr")
+            unquotedStringToken(0, 1, "unbr")
           ),
           enchantmentPredicate(
             Enchantment.FIRE_PROTECTION,
-            new IntegerToken(2, 0, 3),
-            new UnquotedStringToken(1, 0, "fire-prot")
+            integerToken(2, 0, 3),
+            unquotedStringToken(1, 0, "fire-prot")
           ),
           enchantmentPredicate(
             Enchantment.THORNS,
             null,
-            new UnquotedStringToken(3, 0, "thorn")
+            unquotedStringToken(3, 0, "thorn")
           )
         )
       )
@@ -309,17 +308,17 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
           enchantmentPredicate(
             Enchantment.UNBREAKING,
             null,
-            new UnquotedStringToken(0, 1, "unbr")
+            unquotedStringToken(0, 1, "unbr")
           ),
           enchantmentPredicate(
             Enchantment.FIRE_PROTECTION,
-            new IntegerToken(3, 0, 3),
-            new UnquotedStringToken(2, 0, "fire-prot")
+            integerToken(3, 0, 3),
+            unquotedStringToken(2, 0, "fire-prot")
           ),
           enchantmentPredicate(
             Enchantment.THORNS,
             null,
-            new UnquotedStringToken(5, 0, "thorn")
+            unquotedStringToken(5, 0, "thorn")
           )
         )
       )
@@ -333,7 +332,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
             enchantmentPredicate(
               Enchantment.UNBREAKING,
               null,
-              new UnquotedStringToken(0, 3, "unbr")
+              unquotedStringToken(0, 3, "unbr")
             )
           )
         )
@@ -348,7 +347,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
             enchantmentPredicate(
               Enchantment.UNBREAKING,
               null,
-              new UnquotedStringToken(3, 0, "unbr")
+              unquotedStringToken(3, 0, "unbr")
             )
           )
         )
@@ -361,12 +360,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "dia-ches", "(unbr", "2)" },
       andJoin(true,
-        materialPredicate(Material.DIAMOND_CHESTPLATE, new UnquotedStringToken(0, 0, "dia-ches")),
+        materialPredicate(Material.DIAMOND_CHESTPLATE, unquotedStringToken(0, 0, "dia-ches")),
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            new IntegerToken(2, 0, 2),
-            new UnquotedStringToken(1, 1, "unbr")
+            integerToken(2, 0, 2),
+            unquotedStringToken(1, 1, "unbr")
           )
         )
       )
@@ -376,13 +375,13 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "(dia-ches)", "(unbr", "2)" },
       andJoin(true,
         new ParenthesesNode(
-          materialPredicate(Material.DIAMOND_CHESTPLATE, new UnquotedStringToken(0, 1, "dia-ches"))
+          materialPredicate(Material.DIAMOND_CHESTPLATE, unquotedStringToken(0, 1, "dia-ches"))
         ),
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            new IntegerToken(2, 0, 2),
-            new UnquotedStringToken(1, 1, "unbr")
+            integerToken(2, 0, 2),
+            unquotedStringToken(1, 1, "unbr")
           )
         )
       )
@@ -392,12 +391,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "(dia-ches", "(unbr", "2))" },
         new ParenthesesNode(
           andJoin(true,
-            materialPredicate(Material.DIAMOND_CHESTPLATE, new UnquotedStringToken(0, 1, "dia-ches")),
+            materialPredicate(Material.DIAMOND_CHESTPLATE, unquotedStringToken(0, 1, "dia-ches")),
             new ParenthesesNode(
               enchantmentPredicate(
                 Enchantment.UNBREAKING,
-                new IntegerToken(2, 0, 2),
-                new UnquotedStringToken(1, 1, "unbr")
+                integerToken(2, 0, 2),
+                unquotedStringToken(1, 1, "unbr")
               )
             )
          )
@@ -452,14 +451,14 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       },
       new ParenthesesNode(
         andJoin(true,
-          materialPredicate(Material.DIAMOND_SHOVEL, new UnquotedStringToken(0, 1, "dia-shov")),
+          materialPredicate(Material.DIAMOND_SHOVEL, unquotedStringToken(0, 1, "dia-shov")),
           new ParenthesesNode(
             andJoin(true,
-              materialPredicate(Material.DIAMOND_PICKAXE, new UnquotedStringToken(1, 1, "dia-pick")),
+              materialPredicate(Material.DIAMOND_PICKAXE, unquotedStringToken(1, 1, "dia-pick")),
               new ParenthesesNode(
-                materialPredicate(Material.DIAMOND_HOE, new UnquotedStringToken(2, 1, "dia-hoe"))
+                materialPredicate(Material.DIAMOND_HOE, unquotedStringToken(2, 1, "dia-hoe"))
               ),
-              materialPredicate(Material.DIAMOND_HELMET, new UnquotedStringToken(3, 0, "dia-hel"))
+              materialPredicate(Material.DIAMOND_HELMET, unquotedStringToken(3, 0, "dia-hel"))
             )
           )
         )
@@ -474,21 +473,21 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "dia", "and", "dia", "or", "dia" },
       orJoin(
         andJoin(false,
-          materialPredicate(Material.DIAMOND, new UnquotedStringToken(0, 0, "dia")),
-          materialPredicate(Material.DIAMOND, new UnquotedStringToken(2, 0, "dia"))
+          materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
+          materialPredicate(Material.DIAMOND, unquotedStringToken(2, 0, "dia"))
         ),
-        materialPredicate(Material.DIAMOND, new UnquotedStringToken(4, 0, "dia"))
+        materialPredicate(Material.DIAMOND, unquotedStringToken(4, 0, "dia"))
       )
     );
 
     makeCase(
       new String[] { "dia", "and", "(dia", "or", "dia)" },
       andJoin(false,
-        materialPredicate(Material.DIAMOND, new UnquotedStringToken(0, 0, "dia")),
+        materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
         new ParenthesesNode(
           orJoin(
-            materialPredicate(Material.DIAMOND, new UnquotedStringToken(2, 1, "dia")),
-            materialPredicate(Material.DIAMOND, new UnquotedStringToken(4, 0, "dia"))
+            materialPredicate(Material.DIAMOND, unquotedStringToken(2, 1, "dia")),
+            materialPredicate(Material.DIAMOND, unquotedStringToken(4, 0, "dia"))
           )
         )
       )
@@ -498,12 +497,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "dia", "and", "not", "dia", "or", "dia" },
       orJoin(
         andJoin(false,
-          materialPredicate(Material.DIAMOND, new UnquotedStringToken(0, 0, "dia")),
+          materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
           negate(
-            materialPredicate(Material.DIAMOND, new UnquotedStringToken(3, 0, "dia"))
+            materialPredicate(Material.DIAMOND, unquotedStringToken(3, 0, "dia"))
           )
         ),
-        materialPredicate(Material.DIAMOND, new UnquotedStringToken(5, 0, "dia"))
+        materialPredicate(Material.DIAMOND, unquotedStringToken(5, 0, "dia"))
       )
     );
 
@@ -511,12 +510,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "dia", "and", "not", "(dia", "or", "dia)" },
       orJoin(
         andJoin(false,
-          materialPredicate(Material.DIAMOND, new UnquotedStringToken(0, 0, "dia")),
+          materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
           negate(
             new ParenthesesNode(
               orJoin(
-                materialPredicate(Material.DIAMOND, new UnquotedStringToken(3, 1, "dia")),
-                materialPredicate(Material.DIAMOND, new UnquotedStringToken(5, 0, "dia"))
+                materialPredicate(Material.DIAMOND, unquotedStringToken(3, 1, "dia")),
+                materialPredicate(Material.DIAMOND, unquotedStringToken(5, 0, "dia"))
               )
             )
           )
@@ -536,7 +535,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "dia-ches" },
       materialPredicate(
         Material.DIAMOND_CHESTPLATE,
-        new UnquotedStringToken(0, 0, "dia-ches")
+        unquotedStringToken(0, 0, "dia-ches")
       )
     );
 
@@ -550,7 +549,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         PotionEffectType.REGENERATION,
         null,
         null,
-        new UnquotedStringToken(0, 0, "regen")
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -558,9 +557,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "2" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, 2),
+        integerToken(1, 0, 2),
         null,
-        new UnquotedStringToken(0, 0, "regen")
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -568,9 +567,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "*" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, null),
+        integerToken(1, 0, null),
         null,
-        new UnquotedStringToken(0, 0, "regen")
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -578,9 +577,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "2", "1600" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, 2),
-        new IntegerToken(2, 0, 1600),
-        new UnquotedStringToken(0, 0, "regen")
+        integerToken(1, 0, 2),
+        integerToken(2, 0, 1600),
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -588,9 +587,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "*", "1600" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, null),
-        new IntegerToken(2, 0, 1600),
-        new UnquotedStringToken(0, 0, "regen")
+        integerToken(1, 0, null),
+        integerToken(2, 0, 1600),
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -598,9 +597,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "2", "*" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, 2),
-        new IntegerToken(2, 0, null),
-        new UnquotedStringToken(0, 0, "regen")
+        integerToken(1, 0, 2),
+        integerToken(2, 0, null),
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -613,7 +612,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       enchantmentPredicate(
         Enchantment.THORNS,
         null,
-        new UnquotedStringToken(0, 0, "thorn")
+        unquotedStringToken(0, 0, "thorn")
       )
     );
 
@@ -621,8 +620,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "thorn", "2" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        new IntegerToken(1, 0, 2),
-        new UnquotedStringToken(0, 0, "thorn")
+        integerToken(1, 0, 2),
+        unquotedStringToken(0, 0, "thorn")
       )
     );
 
@@ -630,8 +629,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "thorn", "*" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        new IntegerToken(1, 0, null),
-        new UnquotedStringToken(0, 0, "thorn")
+        integerToken(1, 0, null),
+        unquotedStringToken(0, 0, "thorn")
       )
     );
 
@@ -642,35 +641,35 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "\"a", "long", "search\"" },
       new TextSearchPredicate(
-        new QuotedStringToken(0, 0, "a long search")
+        quotedStringToken(0, 0, "a long search")
       )
     );
 
     makeCase(
       new String[] { "\"short\"" },
       new TextSearchPredicate(
-        new QuotedStringToken(0, 0, "short")
+        quotedStringToken(0, 0, "short")
       )
     );
 
     makeCase(
       new String[] { "\"", "short\"" },
       new TextSearchPredicate(
-        new QuotedStringToken(0, 0, " short")
+        quotedStringToken(0, 0, " short")
       )
     );
 
     makeCase(
       new String[] { "\"short", "\"" },
       new TextSearchPredicate(
-        new QuotedStringToken(0, 0, "short ")
+        quotedStringToken(0, 0, "short ")
       )
     );
 
     makeCase(
       new String[] { "\"", "short", "\"" },
       new TextSearchPredicate(
-        new QuotedStringToken(0, 0, " short ")
+        quotedStringToken(0, 0, " short ")
       )
     );
 
@@ -683,52 +682,52 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       deteriorationPredicate(
         null,
         null,
-        new UnquotedStringToken(0, 0, "deter")
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
     makeCase(
       new String[] { "deter", "5" },
       deteriorationPredicate(
-        new IntegerToken(1, 0, 5),
+        integerToken(1, 0, 5),
         null,
-        new UnquotedStringToken(0, 0, "deter")
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
     makeCase(
       new String[] { "deter", "*" },
       deteriorationPredicate(
-        new IntegerToken(1, 0, null),
+        integerToken(1, 0, null),
         null,
-        new UnquotedStringToken(0, 0, "deter")
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
     makeCase(
       new String[] { "deter", "5", "85" },
       deteriorationPredicate(
-        new IntegerToken(1, 0, 5),
-        new IntegerToken(2, 0, 85),
-        new UnquotedStringToken(0, 0, "deter")
+        integerToken(1, 0, 5),
+        integerToken(2, 0, 85),
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
     makeCase(
       new String[] { "deter", "*", "85" },
       deteriorationPredicate(
-        new IntegerToken(1, 0, null),
-        new IntegerToken(2, 0, 85),
-        new UnquotedStringToken(0, 0, "deter")
+        integerToken(1, 0, null),
+        integerToken(2, 0, 85),
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
     makeCase(
       new String[] { "deter", "5", "*" },
       deteriorationPredicate(
-        new IntegerToken(1, 0, 5),
-        new IntegerToken(2, 0, null),
-        new UnquotedStringToken(0, 0, "deter")
+        integerToken(1, 0, 5),
+        integerToken(2, 0, null),
+        unquotedStringToken(0, 0, "deter")
       )
     );
 
@@ -739,8 +738,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         () -> makeCase(
           new String[] { "deter", ">5" },
           amountPredicate(
-            new IntegerToken(1, 0, 5, false, ComparisonMode.GREATER_THAN),
-            new UnquotedStringToken(0, 0, "deter")
+            integerToken(1, 0, 5, false, ComparisonMode.GREATER_THAN),
+            unquotedStringToken(0, 0, "deter")
           )
         )
       ).getConflict()
@@ -753,8 +752,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         () -> makeCase(
           new String[] { "deter", "*", "<5" },
           amountPredicate(
-            new IntegerToken(2, 0, 5, false, ComparisonMode.LESS_THAN),
-            new UnquotedStringToken(0, 0, "deter")
+            integerToken(2, 0, 5, false, ComparisonMode.LESS_THAN),
+            unquotedStringToken(0, 0, "deter")
           )
         )
       ).getConflict()
@@ -767,8 +766,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "amount", "32" },
       amountPredicate(
-        new IntegerToken(1, 0, 32),
-        new UnquotedStringToken(0, 0, "amount")
+        integerToken(1, 0, 32),
+        unquotedStringToken(0, 0, "amount")
       )
     );
 
@@ -779,8 +778,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         () -> makeCase(
           new String[] { "amount", "*" },
           amountPredicate(
-            new IntegerToken(1, 0, 32),
-            new UnquotedStringToken(0, 0, "amount")
+            integerToken(1, 0, 32),
+            unquotedStringToken(0, 0, "amount")
           )
         )
       ).getConflict()
@@ -793,8 +792,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         () -> makeCase(
           new String[] { "amount" },
           amountPredicate(
-            new IntegerToken(1, 0, 32),
-            new UnquotedStringToken(0, 0, "amount")
+            integerToken(1, 0, 32),
+            unquotedStringToken(0, 0, "amount")
           )
         )
       ).getConflict()
@@ -814,30 +813,30 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       },
       andJoin(true,
         deteriorationPredicate(
-          new IntegerToken(1, 0, 3),
+          integerToken(1, 0, 3),
           null,
-          new UnquotedStringToken(0, 0, "deter")
+          unquotedStringToken(0, 0, "deter")
         ),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(3, 0, null),
-          new UnquotedStringToken(2, 0, "unbr")
+          integerToken(3, 0, null),
+          unquotedStringToken(2, 0, "unbr")
         ),
         new TextSearchPredicate(
-          new QuotedStringToken(4, 0, "text a")
+          quotedStringToken(4, 0, "text a")
         ),
         potionEffectPredicate(
           PotionEffectType.REGENERATION,
-          new IntegerToken(7, 0, 4),
-          new IntegerToken(8, 0, null),
-          new UnquotedStringToken(6, 0, "regen")
+          integerToken(7, 0, 4),
+          integerToken(8, 0, null),
+          unquotedStringToken(6, 0, "regen")
         ),
         materialPredicate(
           Material.DIAMOND_PICKAXE,
-          new UnquotedStringToken(9, 0, "dia-pick")
+          unquotedStringToken(9, 0, "dia-pick")
         ),
         new TextSearchPredicate(
-          new QuotedStringToken(10, 0, "multi arg text b ")
+          quotedStringToken(10, 0, "multi arg text b ")
         )
       )
     );
@@ -849,9 +848,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "2", "2:30" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, 2),
-        new IntegerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
-        new UnquotedStringToken(0, 0, "regen")
+        integerToken(1, 0, 2),
+        integerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -859,9 +858,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "regen", "*", "2:30" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        new IntegerToken(1, 0, null),
-        new IntegerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
-        new UnquotedStringToken(0, 0, "regen")
+        integerToken(1, 0, null),
+        integerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
+        unquotedStringToken(0, 0, "regen")
       )
     );
 
@@ -899,7 +898,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "pickax-?" },
       materialsPredicate(
-        new UnquotedStringToken(0, 0, "pickax-?"),
+        unquotedStringToken(0, 0, "pickax-?"),
         Tag.ITEMS_PICKAXES.getValues()
       )
     );
@@ -907,7 +906,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "hoe-?" },
       materialsPredicate(
-        new UnquotedStringToken(0, 0, "hoe-?"),
+        unquotedStringToken(0, 0, "hoe-?"),
         Tag.ITEMS_HOES.getValues()
       )
     );
@@ -915,7 +914,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "boots-?" },
       materialsPredicate(
-        new UnquotedStringToken(0, 0, "boots-?"),
+        unquotedStringToken(0, 0, "boots-?"),
         Tag.ITEMS_FOOT_ARMOR.getValues()
       )
     );
@@ -923,7 +922,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "fen-gat-?" },
       materialsPredicate(
-        new UnquotedStringToken(0, 0, "fen-gat-?"),
+        unquotedStringToken(0, 0, "fen-gat-?"),
         Tag.FENCE_GATES.getValues()
       )
     );
@@ -932,7 +931,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     makeCase(
       new String[] { "arrow-?" },
       materialsPredicate(
-        new UnquotedStringToken(0, 0, "arrow-?"),
+        unquotedStringToken(0, 0, "arrow-?"),
         List.of(Material.SPECTRAL_ARROW, Material.TIPPED_ARROW)
       )
     );
@@ -945,8 +944,8 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       exact(
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          new IntegerToken(2, 0, 2),
-          new UnquotedStringToken(1, 0, "unbr")
+          integerToken(2, 0, 2),
+          unquotedStringToken(1, 0, "unbr")
         )
       )
     );
@@ -957,7 +956,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         andJoin(false,
           materialPredicate(
             Material.DIAMOND_CHESTPLATE,
-            new UnquotedStringToken(0, 0, "dia-ches")
+            unquotedStringToken(0, 0, "dia-ches")
           ),
           exact(
             new ParenthesesNode(
@@ -965,12 +964,12 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
                 enchantmentPredicate(
                   Enchantment.UNBREAKING,
                   null,
-                  new UnquotedStringToken(3, 0, "unbr")
+                  unquotedStringToken(3, 0, "unbr")
                 ),
                 enchantmentPredicate(
                   Enchantment.FIRE_PROTECTION,
-                  new IntegerToken(5, 0, 1),
-                  new UnquotedStringToken(4, 0, "fire-prot")
+                  integerToken(5, 0, 1),
+                  unquotedStringToken(4, 0, "fire-prot")
                 )
               )
             )
@@ -981,7 +980,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
             enchantmentPredicate(
               Enchantment.FEATHER_FALLING,
               null,
-              new UnquotedStringToken(9, 0, "feather-fall")
+              unquotedStringToken(9, 0, "feather-fall")
             )
           )
         )
@@ -997,7 +996,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
         PotionEffectType.LUCK,
         null,
         null,
-        new UnquotedStringToken(0, 0, "lu")
+        unquotedStringToken(0, 0, "lu")
       )
     );
 
@@ -1005,7 +1004,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "bu" }, // Bucket, Bundle
       materialPredicate(
         Material.BUCKET,
-        new UnquotedStringToken(0, 0, "bu")
+        unquotedStringToken(0, 0, "bu")
       )
     );
 
@@ -1013,7 +1012,7 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       new String[] { "wh" }, // Wheat, White
       materialPredicate(
         Material.WHEAT,
-        new UnquotedStringToken(0, 0, "wh")
+        unquotedStringToken(0, 0, "wh")
       )
     );
   }
@@ -1033,6 +1032,9 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
     assertEquals(expected.getClass(), actual.getClass(), () -> (
       Objects.requireNonNull(rootExpected).stringify(false) + " =/= " + Objects.requireNonNull(rootActual).stringify(false)
     ));
+
+    // TODO: This is an unacceptable solution; only ignored fields should be handled manually, as this may easily
+    //       lead to new properties being not accounted for in the tests, if they are forgotten to be added.
 
     switch (expected) {
       case ConjunctionNode expectedConjunction -> {
@@ -1063,13 +1065,43 @@ public class PredicateParserTests extends TranslationRegistryDependentTests {
       case MaterialPredicate expectedMaterial -> {
         var actualMaterial = (MaterialPredicate) actual;
         assertEquals(expectedMaterial.translatedTranslatable(), actualMaterial.translatedTranslatable());
-        assertEquals(expectedMaterial.token(), actualMaterial.token());
+        compareTokens(expectedMaterial.token(), actualMaterial.token());
         assertEquals(actualMaterial.materials().size(), expectedMaterial.materials().size());
         assertThat(actualMaterial.materials(), Matchers.containsInAnyOrder(expectedMaterial.materials().toArray()));
       }
-      default -> {
-        assertEquals(expected, actual);
+      case EnchantmentPredicate expectedEnchant -> {
+        var actualEnchant = (EnchantmentPredicate) actual;
+        assertEquals(expectedEnchant.translatedTranslatable(), actualEnchant.translatedTranslatable());
+        compareTokens(expectedEnchant.token(), actualEnchant.token());
+        assertEquals(expectedEnchant.enchantment(), actualEnchant.enchantment());
+        compareTokens(expectedEnchant.levelArgument(), actualEnchant.levelArgument());
       }
+      case PotionEffectPredicate expectedEffect -> {
+        var actualEffect = (PotionEffectPredicate) actual;
+        assertEquals(expectedEffect.translatedTranslatable(), actualEffect.translatedTranslatable());
+        compareTokens(expectedEffect.token(), actualEffect.token());
+        assertEquals(expectedEffect.type(), actualEffect.type());
+        compareTokens(expectedEffect.amplifierArgument(), actualEffect.amplifierArgument());
+        compareTokens(expectedEffect.durationArgument(), actualEffect.durationArgument());
+      }
+      case TextSearchPredicate expectedSearch -> {
+        var actualSearch = (TextSearchPredicate) actual;
+        assertEquals(expectedSearch.text, actualSearch.text);
+      }
+      case DeteriorationPredicate expectedDeterioration -> {
+        var actualDeterioration = (DeteriorationPredicate) actual;
+        assertEquals(expectedDeterioration.translatedTranslatable(), actualDeterioration.translatedTranslatable());
+        compareTokens(expectedDeterioration.token(), actualDeterioration.token());
+        compareTokens(expectedDeterioration.deteriorationPercentageMin(), actualDeterioration.deteriorationPercentageMin());
+        compareTokens(expectedDeterioration.deteriorationPercentageMax(), actualDeterioration.deteriorationPercentageMax());
+      }
+      case AmountPredicate expectedAmount -> {
+        var actualAmount = (AmountPredicate) actual;
+        assertEquals(expectedAmount.translatedTranslatable(), actualAmount.translatedTranslatable());
+        compareTokens(expectedAmount.token(), actualAmount.token());
+        compareTokens(expectedAmount.amountArgument(), actualAmount.amountArgument());
+      }
+      default -> throw new IllegalStateException("Do not know how to compare " + expected.getClass());
     }
   }
 

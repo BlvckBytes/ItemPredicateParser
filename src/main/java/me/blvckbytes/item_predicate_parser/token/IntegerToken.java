@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.token;
 
+import me.blvckbytes.item_predicate_parser.parse.ParserInput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,14 +9,11 @@ import org.jetbrains.annotations.Nullable;
 public record IntegerToken(
   int commandArgumentIndex,
   int firstCharIndex,
+  ParserInput parserInput,
   @Nullable Integer value,
   boolean wasTimeNotation,
   ComparisonMode comparisonMode
 ) implements Token {
-
-  public IntegerToken(int commandArgumentIndex, int firstCharIndex, @Nullable Integer value) {
-    this(commandArgumentIndex, firstCharIndex, value, false, ComparisonMode.EQUALS);
-  }
 
   public boolean matches(@Nullable Integer value) {
     if (this.value == null)

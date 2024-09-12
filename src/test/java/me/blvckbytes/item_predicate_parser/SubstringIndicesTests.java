@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SubstringIndicesTests {
 
-  private static final Token dummyToken = new UnquotedStringToken(0, 0, "");
+  private static final Token dummyToken = new UnquotedStringToken(0, 0, null, "");
 
   @Test
   public void testIndicesGeneration() {

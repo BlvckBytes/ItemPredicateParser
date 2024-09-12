@@ -1,11 +1,15 @@
 package me.blvckbytes.item_predicate_parser.parse;
 
-public class StringWalker {
+public class StringWalker implements ParserInput {
 
   private final String string;
   private int nextCharIndex = 0;
   private int spaceCounter = 0;
   private int charsSinceLastSpace = 0;
+
+  // Avoid needlessly splitting if the input was in args-format already
+  private String[] inputArguments = null;
+  private int argumentsOffset = 0;
 
   public StringWalker(String string) {
     this.string = string;
@@ -33,6 +37,8 @@ public class StringWalker {
 
     var walker = new StringWalker(result.toString());
     walker.spaceCounter += offset;
+    walker.argumentsOffset = offset;
+    walker.inputArguments = args;
     return walker;
   }
 
@@ -108,5 +114,18 @@ public class StringWalker {
 
   public int getArgumentIndex() {
     return spaceCounter;
+  }
+
+  @Override
+  public String[] getInputAsArguments() {
+    if (inputArguments == null)
+      inputArguments = this.string.split(" ");
+
+    return inputArguments;
+  }
+
+  @Override
+  public int getArgumentsOffset() {
+    return argumentsOffset;
   }
 }

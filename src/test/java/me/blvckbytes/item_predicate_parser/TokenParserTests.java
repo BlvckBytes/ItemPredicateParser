@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TokenParserTests {
+public class TokenParserTests extends MakeAndCompareTokens {
 
   @Test
   public void shouldParseAllTokenTypes() {
@@ -22,14 +22,14 @@ public class TokenParserTests {
         "\"single-arg-quoted-string-b\"", "\"multi", "arg", "quoted", "string-2\""
       },
       new Token[] {
-        new UnquotedStringToken(0, 0, "my-unquoted-string-a"),
-        new IntegerToken(1, 0, 512),
-        new QuotedStringToken(2, 0, "single-arg-quoted-string-a"),
-        new QuotedStringToken(3, 0, "multi arg quoted string"),
-        new IntegerToken(7, 0, 32),
-        new UnquotedStringToken(8, 0, "my-unquoted-string-b"),
-        new QuotedStringToken(9, 0, "single-arg-quoted-string-b"),
-        new QuotedStringToken(10, 0, "multi arg quoted string-2"),
+        unquotedStringToken(0, 0, "my-unquoted-string-a"),
+        integerToken(1, 0, 512),
+        quotedStringToken(2, 0, "single-arg-quoted-string-a"),
+        quotedStringToken(3, 0, "multi arg quoted string"),
+        integerToken(7, 0, 32),
+        unquotedStringToken(8, 0, "my-unquoted-string-b"),
+        quotedStringToken(9, 0, "single-arg-quoted-string-b"),
+        quotedStringToken(10, 0, "multi arg quoted string-2"),
       }
     );
 
@@ -37,7 +37,7 @@ public class TokenParserTests {
     makeCase(
       new String[] { "\"hello", "world", "\"" },
       new Token[] {
-        new QuotedStringToken(0, 0, "hello world "),
+        quotedStringToken(0, 0, "hello world "),
       }
     );
 
@@ -45,7 +45,7 @@ public class TokenParserTests {
     makeCase(
       new String[] { "\"", "hello", "world\"" },
       new Token[] {
-        new QuotedStringToken(0, 0, " hello world"),
+        quotedStringToken(0, 0, " hello world"),
       }
     );
 
@@ -53,7 +53,7 @@ public class TokenParserTests {
     makeCase(
       new String[] { "\"", "hello", "world", "\"" },
       new Token[] {
-        new QuotedStringToken(0, 0, " hello world "),
+        quotedStringToken(0, 0, " hello world "),
       }
     );
 
@@ -61,9 +61,9 @@ public class TokenParserTests {
     makeCase(
       new String[] { "b\"hello", "\"a" },
       new Token[] {
-        new UnquotedStringToken(0, 0, "b"),
-        new QuotedStringToken(0, 1, "hello "),
-        new UnquotedStringToken(1, 1, "a")
+        unquotedStringToken(0, 0, "b"),
+        quotedStringToken(0, 1, "hello "),
+        unquotedStringToken(1, 1, "a")
       }
     );
 
@@ -72,7 +72,7 @@ public class TokenParserTests {
         "\"This", "string", "contains", "\\\"", "escaped", "quotes", "\\\"\""
       },
       new Token[] {
-        new QuotedStringToken(0, 0, "This string contains \" escaped quotes \"")
+        quotedStringToken(0, 0, "This string contains \" escaped quotes \"")
       }
     );
   }
@@ -117,13 +117,13 @@ public class TokenParserTests {
     makeCase(
       new String[] { "abc(def(geh))" },
       new Token[] {
-        new UnquotedStringToken(0, 0, "abc"),
-        new ParenthesisToken(0, 3, true),
-        new UnquotedStringToken(0, 4, "def"),
-        new ParenthesisToken(0, 7, true),
-        new UnquotedStringToken(0, 8, "geh"),
-        new ParenthesisToken(0, 11, false),
-        new ParenthesisToken(0, 12, false)
+        unquotedStringToken(0, 0, "abc"),
+        parenthesisToken(0, 3, true),
+        unquotedStringToken(0, 4, "def"),
+        parenthesisToken(0, 7, true),
+        unquotedStringToken(0, 8, "geh"),
+        parenthesisToken(0, 11, false),
+        parenthesisToken(0, 12, false)
       }
     );
   }
@@ -143,28 +143,28 @@ public class TokenParserTests {
     makeCase(
       new String[] { "2:30" },
       new Token[] {
-        new IntegerToken(0, 0, 2*60 + 30, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 2*60 + 30, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12:23" },
       new Token[] {
-        new IntegerToken(0, 0, 12*60 + 23, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 12*60 + 23, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12:34:56" },
       new Token[] {
-        new IntegerToken(0, 0, 12*60*60 + 34*60 + 56, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 12*60*60 + 34*60 + 56, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12::56" },
       new Token[] {
-        new IntegerToken(0, 0, 12*60*60 + 56, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 12*60*60 + 56, true, ComparisonMode.EQUALS)
       }
     );
   }
@@ -174,28 +174,28 @@ public class TokenParserTests {
     makeCase(
       new String[] { ">200" },
       new Token[] {
-        new IntegerToken(0, 0, 200, false, ComparisonMode.GREATER_THAN)
+        integerToken(0, 0, 200, false, ComparisonMode.GREATER_THAN)
       }
     );
 
     makeCase(
       new String[] { ">2:20" },
       new Token[] {
-        new IntegerToken(0, 0, 2*60+20, true, ComparisonMode.GREATER_THAN)
+        integerToken(0, 0, 2*60+20, true, ComparisonMode.GREATER_THAN)
       }
     );
 
     makeCase(
       new String[] { "<200" },
       new Token[] {
-        new IntegerToken(0, 0, 200, false, ComparisonMode.LESS_THAN)
+        integerToken(0, 0, 200, false, ComparisonMode.LESS_THAN)
       }
     );
 
     makeCase(
       new String[] { "<2:20" },
       new Token[] {
-        new IntegerToken(0, 0, 2*60+20, true, ComparisonMode.LESS_THAN)
+        integerToken(0, 0, 2*60+20, true, ComparisonMode.LESS_THAN)
       }
     );
 
@@ -211,75 +211,75 @@ public class TokenParserTests {
     makeCase(
       new String[] { "(abc-de", "f", "\"free", "text", ")", "(", "searc)h\")" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new UnquotedStringToken(0, 1, "abc-de"),
-        new UnquotedStringToken(1, 0, "f"),
-        new QuotedStringToken(2, 0, "free text ) ( searc)h"),
-        new ParenthesisToken(6, 8, false)
+        parenthesisToken(0, 0, true),
+        unquotedStringToken(0, 1, "abc-de"),
+        unquotedStringToken(1, 0, "f"),
+        quotedStringToken(2, 0, "free text ) ( searc)h"),
+        parenthesisToken(6, 8, false)
       }
     );
 
     makeCase(
       new String[] { "(abc-de)" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new UnquotedStringToken(0, 1, "abc-de"),
-        new ParenthesisToken(0, 7, false),
+        parenthesisToken(0, 0, true),
+        unquotedStringToken(0, 1, "abc-de"),
+        parenthesisToken(0, 7, false),
       }
     );
 
     makeCase(
       new String[] { "(\"hello\")" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new QuotedStringToken(0, 1, "hello"),
-        new ParenthesisToken(0, 8, false),
+        parenthesisToken(0, 0, true),
+        quotedStringToken(0, 1, "hello"),
+        parenthesisToken(0, 8, false),
       }
     );
 
     makeCase(
       new String[] { "(", "abc-de", "\"a", "test\"", ")" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new UnquotedStringToken(1, 0, "abc-de"),
-        new QuotedStringToken(2, 0, "a test"),
-        new ParenthesisToken(4, 0, false),
+        parenthesisToken(0, 0, true),
+        unquotedStringToken(1, 0, "abc-de"),
+        quotedStringToken(2, 0, "a test"),
+        parenthesisToken(4, 0, false),
       }
     );
 
     makeCase(
       new String[] { "(((test))))" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new ParenthesisToken(0, 1, true),
-        new ParenthesisToken(0, 2, true),
-        new UnquotedStringToken(0, 3, "test"),
-        new ParenthesisToken(0, 7, false),
-        new ParenthesisToken(0, 8, false),
-        new ParenthesisToken(0, 9, false),
-        new ParenthesisToken(0, 10, false),
+        parenthesisToken(0, 0, true),
+        parenthesisToken(0, 1, true),
+        parenthesisToken(0, 2, true),
+        unquotedStringToken(0, 3, "test"),
+        parenthesisToken(0, 7, false),
+        parenthesisToken(0, 8, false),
+        parenthesisToken(0, 9, false),
+        parenthesisToken(0, 10, false),
       }
     );
 
     makeCase(
       new String[] { "(", "(", "(", "test", ")", ")", ")", ")" },
       new Token[] {
-        new ParenthesisToken(0, 0, true),
-        new ParenthesisToken(1, 0, true),
-        new ParenthesisToken(2, 0, true),
-        new UnquotedStringToken(3, 0, "test"),
-        new ParenthesisToken(4, 0, false),
-        new ParenthesisToken(5, 0, false),
-        new ParenthesisToken(6, 0, false),
-        new ParenthesisToken(7, 0, false),
+        parenthesisToken(0, 0, true),
+        parenthesisToken(1, 0, true),
+        parenthesisToken(2, 0, true),
+        unquotedStringToken(3, 0, "test"),
+        parenthesisToken(4, 0, false),
+        parenthesisToken(5, 0, false),
+        parenthesisToken(6, 0, false),
+        parenthesisToken(7, 0, false),
       }
     );
 
     makeCase(
       new String[] { "exact(" },
       new Token[] {
-        new UnquotedStringToken(0, 0, "exact"),
-        new ParenthesisToken(0, 5, true)
+        unquotedStringToken(0, 0, "exact"),
+        parenthesisToken(0, 5, true)
       }
     );
   }
@@ -300,6 +300,6 @@ public class TokenParserTests {
     assertEquals(expectedTokens.length, actualTokens.size());
 
     for (var i = 0; i < expectedTokens.length; ++i)
-      assertEquals(expectedTokens[i], actualTokens.get(i));
+      compareTokens(expectedTokens[i], actualTokens.get(i));
   }
 }

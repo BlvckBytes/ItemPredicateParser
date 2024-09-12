@@ -39,7 +39,7 @@ public class CollisionPrefixCaseBuilder {
   public void execute(String search) {
     translationRegistry.initialize(sources);
 
-    var searchToken = new UnquotedStringToken(0, 0, search);
+    var searchToken = new UnquotedStringToken(0, 0, null, search);
     var searchResult = translationRegistry.search(searchToken);
 
     var remainingPredicates = new ArrayList<>(predicates);

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-public abstract class TranslationRegistryDependentTests {
+public abstract class TranslationRegistryDependentTests extends MakeAndCompareTokens {
 
   private static final Gson gson = new GsonBuilder().create();
   protected static final Logger logger = Logger.getAnonymousLogger();

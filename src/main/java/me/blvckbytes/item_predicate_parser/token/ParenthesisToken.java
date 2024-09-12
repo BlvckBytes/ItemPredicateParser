@@ -1,6 +1,13 @@
 package me.blvckbytes.item_predicate_parser.token;
 
-public record ParenthesisToken (int commandArgumentIndex, int firstCharIndex, boolean isOpening) implements Token {
+import me.blvckbytes.item_predicate_parser.parse.ParserInput;
+
+public record ParenthesisToken (
+  int commandArgumentIndex,
+  int firstCharIndex,
+  ParserInput parserInput,
+  boolean isOpening
+) implements Token {
 
   @Override
   public String stringify() {

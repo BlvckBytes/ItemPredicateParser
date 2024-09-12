@@ -30,7 +30,7 @@ public class TokenParser {
         break;
 
       if (c == '(' || c == ')') {
-        result.add(new ParenthesisToken(walker.getArgumentIndex(), walker.getCharsSinceLastSpace(), c == '('));
+        result.add(new ParenthesisToken(walker.getArgumentIndex(), walker.getCharsSinceLastSpace(), walker, c == '('));
         walker.nextChar();
         continue;
       }
@@ -87,7 +87,7 @@ public class TokenParser {
     if (stringValue.isBlank())
       throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING);
 
-    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, stringValue);
+    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, walker, stringValue);
   }
 
   private static @Nullable IntegerToken tryConsumeInteger(StringWalker walker) {
@@ -96,7 +96,7 @@ public class TokenParser {
 
     if (firstChar == INTEGER_WILDCARD_CHAR) {
       walker.nextChar();
-      return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, null);
+      return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, null, false, ComparisonMode.EQUALS);
     }
 
     var comparisonMode = ComparisonMode.EQUALS;
@@ -162,7 +162,7 @@ public class TokenParser {
       resultingNumber += blocks[blockIndex] * (int) Math.pow(60, blockPower++);
     }
 
-    return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, resultingNumber, blockPower > 1, comparisonMode);
+    return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, resultingNumber, blockPower > 1, comparisonMode);
   }
 
   private static @Nullable UnquotedStringToken tryConsumeUnquotedString(StringWalker walker) {
@@ -182,6 +182,6 @@ public class TokenParser {
     if (walker.getNextCharIndex() == beginIndex)
       return null;
 
-    return new UnquotedStringToken(walker.getArgumentIndex(), firstCharIndex, walker.makeSubstring(beginIndex));
+    return new UnquotedStringToken(walker.getArgumentIndex(), firstCharIndex, walker, walker.makeSubstring(beginIndex));
   }
 }

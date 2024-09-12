@@ -46,7 +46,7 @@ public class AssetIndex {
       if (fileExtension.equals("json"))
         return parseJson(fileContents);
 
-      return convertLangContentsToJsonObject(fileContents);
+      return LangToJsonUtil.convertLangContentsToJsonObject(fileContents);
     }
 
     String languageFileUrl;
@@ -55,53 +55,9 @@ public class AssetIndex {
       return parseJson(makePlainTextGetRequest(languageFileUrl));
 
     if ((languageFileUrl = languageFileUrls.get(language.assetFileNameWithoutExtension + ".lang")) != null)
-      return convertLangContentsToJsonObject(makePlainTextGetRequest(languageFileUrl));
+      return LangToJsonUtil.convertLangContentsToJsonObject(makePlainTextGetRequest(languageFileUrl));
 
     throw new IllegalStateException("Could not locate language-file url for " + language.assetFileNameWithoutExtension);
-  }
-
-  // TODO: This *most definitely* needs a few test-cases
-  private JsonObject convertLangContentsToJsonObject(String langContents) {
-    var result = new JsonObject();
-
-    // I believe it was two back-to-back '#'-s...
-    var commentMarker = "##";
-    var lastNewlineIndex = -1;
-
-    do {
-      var lineBeginIndex = lastNewlineIndex + 1;
-      var nextNewlineIndex = langContents.indexOf('\n', lineBeginIndex);
-      lastNewlineIndex = nextNewlineIndex;
-
-      // Consecutive newlines - empty line
-      if (lineBeginIndex == nextNewlineIndex)
-        continue;
-
-      var commentBeginIndex = langContents.indexOf(commentMarker, lineBeginIndex);
-
-      // Fully commented line
-      if (commentBeginIndex == 0)
-        continue;
-
-      var pairSeparatorIndex = langContents.indexOf('=', lineBeginIndex);
-
-      // Make sure that there's no comment before the pair-separator character
-      if (pairSeparatorIndex <= 0 || (commentBeginIndex > 0 && commentBeginIndex <= pairSeparatorIndex))
-        continue;
-
-      var key = langContents.substring(lineBeginIndex, pairSeparatorIndex);
-
-      String value;
-
-      if (commentBeginIndex > 0)
-        value = langContents.substring(pairSeparatorIndex + 1, commentBeginIndex);
-      else
-        value = langContents.substring(pairSeparatorIndex + 1, nextNewlineIndex);
-
-      result.addProperty(key, value);
-    } while (lastNewlineIndex >= 0);
-
-    return result;
   }
 
   private Tuple<String, String> getClientEmbeddedLanguageFileContents() throws Exception {

@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
-public abstract class TranslationRegistryDependentTests {
+public abstract class ParseTestBase {
 
   protected static final RecursiveInterceptedEqualityChecker equalityChecker = new RecursiveInterceptedEqualityChecker()
     .expectTypePrefix("me.blvckbytes")

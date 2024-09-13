@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PredicateParserTests extends TranslationRegistryDependentTests {
+public class PredicateParserTests extends ParseTestBase {
 
   @Test
   public void shouldNormalizeTranslatables() {

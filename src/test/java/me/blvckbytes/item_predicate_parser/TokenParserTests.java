@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TokenParserTests extends TranslationRegistryDependentTests {
+public class TokenParserTests extends ParseTestBase {
 
   @Test
   public void shouldParseAllTokenTypes() {

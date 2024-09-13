@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class TranslationRegistryTests extends TranslationRegistryDependentTests {
+public class TranslationRegistryTests extends ParseTestBase {
 
   @Test
   public void shouldAppendCollisionPrefixesBetweenSources() {

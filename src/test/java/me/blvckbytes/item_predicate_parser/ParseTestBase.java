@@ -11,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import org.bukkit.Material;
 import org.bukkit.Registry;
+import org.bukkit.Translatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
@@ -31,25 +32,34 @@ public abstract class ParseTestBase {
     .expectTypePrefix("me.blvckbytes")
     // Will always be null when creating test-tokens
     .interceptAndReturnTrue(ParserInput.class)
-    // Nothing to be intercepted in this subtree of fields
-    .interceptAndUseAssertEquals(TranslatedTranslatable.class)
-    .interceptAndUseAssertEquals(TextSearchPredicate.class)
-    // Bukkit types
+    // Bukkit types are outside the scope of testing
     .interceptAndUseAssertEquals(Enchantment.class)
     .interceptAndUseAssertEquals(PotionEffectType.class)
-    // Manual list content comparison
+    .interceptAndUseAssertEquals(Translatable.class)
     .intercept(List.class, (rootActualType, pathParts, expected, actual) -> {
       var lastPathPart = pathParts.getLast();
 
+      // Manual list content comparison
       if (MaterialPredicate.class == lastPathPart.getDeclaringClass()) {
         RecursiveInterceptedEqualityChecker.containsInAnyOrder(actual, expected);
         return true;
       }
 
-      // Do not compare text-indices, that has nothing to do with the text-cases
-      return lastPathPart.getName().equals("textIndices");
-    });
+      // Do not compare syllable-indices, that has nothing to do with the corresponding test-cases
+      return (
+        lastPathPart.getName().equals("textIndices") ||
+        lastPathPart.getName().equals("partIndices")
+      );
+    })
+    .intercept(Iterable.class, (rootActualType, pathParts, expected, actual) -> {
+      var lastPathPart = pathParts.getLast();
 
+      // There's no need to compare the items of a source, as the collision-prefix will always be unique
+      return (
+        lastPathPart.getDeclaringClass() == TranslatableSource.class &&
+        lastPathPart.getName().equals("items")
+      );
+    });
 
   private static final Gson gson = new GsonBuilder().create();
   protected static final Logger logger = Logger.getAnonymousLogger();

@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TokenParserTests extends MakeAndCompareTokens {
+public class TokenParserTests extends TranslationRegistryDependentTests {
 
   @Test
   public void shouldParseAllTokenTypes() {
@@ -300,6 +300,6 @@ public class TokenParserTests extends MakeAndCompareTokens {
     assertEquals(expectedTokens.length, actualTokens.size());
 
     for (var i = 0; i < expectedTokens.length; ++i)
-      compareTokens(expectedTokens[i], actualTokens.get(i));
+      equalityChecker.check(expectedTokens[i], actualTokens.get(i));
   }
 }

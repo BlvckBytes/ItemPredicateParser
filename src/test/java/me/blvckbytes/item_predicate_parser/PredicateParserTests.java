@@ -21,6 +21,79 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PredicateParserTests extends ParseTestBase {
 
   @Test
+  public void shouldHighlightInput() {
+    assertEquals(
+      "§cback-to-back§4\"unterminated stringinput-data",
+      makeExceptionCase(
+        new String[] {
+          "back-to-back\"unterminated", "stringinput-data",
+        },
+        0, ParseConflict.MISSING_STRING_TERMINATION
+      )
+    );
+
+    assertEquals(
+      "§cback-to-back§4\"   \"§c51",
+      makeExceptionCase(
+        new String[] {
+          "back-to-back\"", "", "", "\"51"
+        },
+        0, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+      )
+    );
+
+    assertEquals(
+      "§cback-to-back§4\"\"§c51",
+      makeExceptionCase(
+        new String[] {
+          "back-to-back\"\"51"
+        },
+        0, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+      )
+    );
+
+    assertEquals(
+      "§csearch-term §4\"\" §c51",
+      makeExceptionCase(
+        new String[] {
+          "search-term", "\"\"", "51"
+        },
+        1, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+      )
+    );
+
+    assertEquals(
+      "§csearch-term §4\" \" §c51",
+      makeExceptionCase(
+        new String[] {
+          "search-term", "\"", "\"", "51"
+        },
+        1, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+      )
+    );
+
+    assertEquals(
+      "§4\" \" §c51",
+      makeExceptionCase(
+        new String[] {
+          "\"", "\"", "51"
+        },
+        0, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING
+      )
+    );
+
+    assertEquals(
+      "§451a §csearch-term",
+      makeExceptionCase(
+        new String[] {
+          "51a", "search-term"
+        },
+        0, ParseConflict.EXPECTED_CORRECT_INTEGER
+      )
+    );
+  }
+
+  @Test
   public void shouldNormalizeTranslatables() {
     assertEquals(
       "[My-custom]-item-':]'",

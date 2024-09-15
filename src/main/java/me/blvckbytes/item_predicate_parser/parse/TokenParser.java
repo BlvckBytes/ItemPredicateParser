@@ -81,14 +81,24 @@ public class TokenParser {
 
     var stringValue = stringContents.toString();
 
+    var lastCharIndexWithoutQuote = walker.getCharsSinceLastSpace() - 1;
+
+    if (walker.nextChar() != '"') {
+      throw new ItemPredicateParseException(
+        new QuotedStringToken(
+          beginArgumentIndex, firstCharIndex,
+          walker.getArgumentIndex(), lastCharIndexWithoutQuote,
+          walker, stringValue
+        ),
+        ParseConflict.MISSING_STRING_TERMINATION
+      );
+    }
+
     var token = new QuotedStringToken(
       beginArgumentIndex, firstCharIndex,
-      walker.getArgumentIndex(), walker.getCharsSinceLastSpace(),
+      walker.getArgumentIndex(), walker.getCharsSinceLastSpace() - 1,
       walker, stringValue
     );
-
-    if (walker.nextChar() != '"')
-      throw new ItemPredicateParseException(token, ParseConflict.MISSING_STRING_TERMINATION);
 
     if (stringValue.isBlank())
       throw new ItemPredicateParseException(token, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING);
@@ -102,7 +112,7 @@ public class TokenParser {
 
     if (firstChar == INTEGER_WILDCARD_CHAR) {
       walker.nextChar();
-      return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, null, false, ComparisonMode.EQUALS);
+      return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, firstCharIndex, walker, null, false, ComparisonMode.EQUALS);
     }
 
     var comparisonMode = ComparisonMode.EQUALS;
@@ -174,7 +184,15 @@ public class TokenParser {
       resultingNumber += blocks[blockIndex] * (int) Math.pow(60, blockPower++);
     }
 
-    var token = new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, resultingNumber, blockPower > 1, comparisonMode);
+    var token = new IntegerToken(
+      walker.getArgumentIndex(),
+      firstCharIndex,
+      walker.getCharsSinceLastSpace() - 1,
+      walker,
+      resultingNumber,
+      blockPower > 1,
+      comparisonMode
+    );
 
     if (conflict != null)
       throw new ItemPredicateParseException(token, conflict);

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public record IntegerToken(
   int beginCommandArgumentIndex,
   int beginFirstCharIndex,
+  int endLastCharIndex,
   ParserInput parserInput,
   @Nullable Integer value,
   boolean wasTimeNotation,
@@ -32,11 +33,6 @@ public record IntegerToken(
   @Override
   public int endCommandArgumentIndex() {
     return beginCommandArgumentIndex;
-  }
-
-  @Override
-  public int endLastCharIndex() {
-    return beginFirstCharIndex;
   }
 
   public String stringify() {

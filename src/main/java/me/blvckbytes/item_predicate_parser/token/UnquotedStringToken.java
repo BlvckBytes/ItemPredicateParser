@@ -16,7 +16,7 @@ public record UnquotedStringToken(
 
   @Override
   public int endLastCharIndex() {
-    return beginFirstCharIndex;
+    return beginFirstCharIndex + (value.length() - 1);
   }
 
   @Override

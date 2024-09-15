@@ -146,7 +146,7 @@ public class PredicateParserTests extends ParseTestBase {
         materialPredicate(Material.DIAMOND_CHESTPLATE, unquotedStringToken(0, 0, "dia-ches")),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          integerToken(2, 0, 4),
+          integerToken(2, 0, 0, 4),
           unquotedStringToken(1, 0, "unbr")
         ),
         potionEffectPredicate(
@@ -233,7 +233,7 @@ public class PredicateParserTests extends ParseTestBase {
         ),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          integerToken(3, 0, 3),
+          integerToken(3, 0, 0, 3),
           unquotedStringToken(2, 0, "unbr")
         ),
         deteriorationPredicate(
@@ -259,7 +259,7 @@ public class PredicateParserTests extends ParseTestBase {
         materialPredicate(Material.DIAMOND_PICKAXE, unquotedStringToken(2, 0, "dia-pick")),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          integerToken(5, 0, 2),
+          integerToken(5, 0, 0, 2),
           unquotedStringToken(4, 0, "unbr")
         ),
         materialPredicate(Material.GOLDEN_BOOTS, unquotedStringToken(7, 0, "gold-boot"))
@@ -323,7 +323,7 @@ public class PredicateParserTests extends ParseTestBase {
           ),
           enchantmentPredicate(
             Enchantment.FIRE_PROTECTION,
-            integerToken(2, 0, 3),
+            integerToken(2, 0, 0, 3),
             unquotedStringToken(1, 0, "fire-prot")
           ),
           enchantmentPredicate(
@@ -350,7 +350,7 @@ public class PredicateParserTests extends ParseTestBase {
           ),
           enchantmentPredicate(
             Enchantment.FIRE_PROTECTION,
-            integerToken(3, 0, 3),
+            integerToken(3, 0, 0, 3),
             unquotedStringToken(2, 0, "fire-prot")
           ),
           enchantmentPredicate(
@@ -405,7 +405,7 @@ public class PredicateParserTests extends ParseTestBase {
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            integerToken(2, 0, 2),
+            integerToken(2, 0, 0, 2),
             unquotedStringToken(1, 1, "unbr")
           )
         )
@@ -424,7 +424,7 @@ public class PredicateParserTests extends ParseTestBase {
         new ParenthesesNode(
           enchantmentPredicate(
             Enchantment.UNBREAKING,
-            integerToken(2, 0, 2),
+            integerToken(2, 0, 0, 2),
             unquotedStringToken(1, 1, "unbr")
           )
         )
@@ -442,7 +442,7 @@ public class PredicateParserTests extends ParseTestBase {
             new ParenthesesNode(
               enchantmentPredicate(
                 Enchantment.UNBREAKING,
-                integerToken(2, 0, 2),
+                integerToken(2, 0, 0, 2),
                 unquotedStringToken(1, 1, "unbr")
               )
             )
@@ -634,7 +634,7 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "2" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, 2),
+        integerToken(1, 0, 0, 2),
         null,
         unquotedStringToken(0, 0, "regen")
       )
@@ -644,7 +644,7 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "*" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, null),
+        integerToken(1, 0, 0, null),
         null,
         unquotedStringToken(0, 0, "regen")
       )
@@ -654,8 +654,8 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "2", "1600" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, 2),
-        integerToken(2, 0, 1600),
+        integerToken(1, 0, 0, 2),
+        integerToken(2, 0, 3, 1600),
         unquotedStringToken(0, 0, "regen")
       )
     );
@@ -664,8 +664,8 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "*", "1600" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, null),
-        integerToken(2, 0, 1600),
+        integerToken(1, 0, 0, null),
+        integerToken(2, 0, 3, 1600),
         unquotedStringToken(0, 0, "regen")
       )
     );
@@ -674,8 +674,8 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "2", "*" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, 2),
-        integerToken(2, 0, null),
+        integerToken(1, 0, 0, 2),
+        integerToken(2, 0, 0, null),
         unquotedStringToken(0, 0, "regen")
       )
     );
@@ -697,7 +697,7 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "thorn", "2" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        integerToken(1, 0, 2),
+        integerToken(1, 0, 0, 2),
         unquotedStringToken(0, 0, "thorn")
       )
     );
@@ -706,7 +706,7 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "thorn", "*" },
       enchantmentPredicate(
         Enchantment.THORNS,
-        integerToken(1, 0, null),
+        integerToken(1, 0, 0, null),
         unquotedStringToken(0, 0, "thorn")
       )
     );
@@ -766,7 +766,7 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "deter", "5" },
       deteriorationPredicate(
-        integerToken(1, 0, 5),
+        integerToken(1, 0, 0, 5),
         null,
         unquotedStringToken(0, 0, "deter")
       )
@@ -775,7 +775,7 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "deter", "*" },
       deteriorationPredicate(
-        integerToken(1, 0, null),
+        integerToken(1, 0, 0, null),
         null,
         unquotedStringToken(0, 0, "deter")
       )
@@ -784,8 +784,8 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "deter", "5", "85" },
       deteriorationPredicate(
-        integerToken(1, 0, 5),
-        integerToken(2, 0, 85),
+        integerToken(1, 0, 0, 5),
+        integerToken(2, 0, 1, 85),
         unquotedStringToken(0, 0, "deter")
       )
     );
@@ -793,8 +793,8 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "deter", "*", "85" },
       deteriorationPredicate(
-        integerToken(1, 0, null),
-        integerToken(2, 0, 85),
+        integerToken(1, 0, 0, null),
+        integerToken(2, 0, 1, 85),
         unquotedStringToken(0, 0, "deter")
       )
     );
@@ -802,8 +802,8 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "deter", "5", "*" },
       deteriorationPredicate(
-        integerToken(1, 0, 5),
-        integerToken(2, 0, null),
+        integerToken(1, 0, 0, 5),
+        integerToken(2, 0, 0, null),
         unquotedStringToken(0, 0, "deter")
       )
     );
@@ -815,7 +815,7 @@ public class PredicateParserTests extends ParseTestBase {
         () -> makeCase(
           new String[] { "deter", ">5" },
           amountPredicate(
-            integerToken(1, 0, 5, false, ComparisonMode.GREATER_THAN),
+            integerToken(1, 0, 1, 5, false, ComparisonMode.GREATER_THAN),
             unquotedStringToken(0, 0, "deter")
           )
         )
@@ -829,7 +829,7 @@ public class PredicateParserTests extends ParseTestBase {
         () -> makeCase(
           new String[] { "deter", "*", "<5" },
           amountPredicate(
-            integerToken(2, 0, 5, false, ComparisonMode.LESS_THAN),
+            integerToken(2, 0, 1, 5, false, ComparisonMode.LESS_THAN),
             unquotedStringToken(0, 0, "deter")
           )
         )
@@ -843,7 +843,7 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "amount", "32" },
       amountPredicate(
-        integerToken(1, 0, 32),
+        integerToken(1, 0, 1, 32),
         unquotedStringToken(0, 0, "amount")
       )
     );
@@ -855,7 +855,7 @@ public class PredicateParserTests extends ParseTestBase {
         () -> makeCase(
           new String[] { "amount", "*" },
           amountPredicate(
-            integerToken(1, 0, 32),
+            integerToken(1, 0, 0, 32),
             unquotedStringToken(0, 0, "amount")
           )
         )
@@ -869,7 +869,7 @@ public class PredicateParserTests extends ParseTestBase {
         () -> makeCase(
           new String[] { "amount" },
           amountPredicate(
-            integerToken(1, 0, 32),
+            integerToken(1, 0, 1, 32),
             unquotedStringToken(0, 0, "amount")
           )
         )
@@ -893,13 +893,13 @@ public class PredicateParserTests extends ParseTestBase {
           null, null, null, null, null
         },
         deteriorationPredicate(
-          integerToken(1, 0, 3),
+          integerToken(1, 0, 0, 3),
           null,
           unquotedStringToken(0, 0, "deter")
         ),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          integerToken(3, 0, null),
+          integerToken(3, 0, 0, null),
           unquotedStringToken(2, 0, "unbr")
         ),
         new TextSearchPredicate(
@@ -907,8 +907,8 @@ public class PredicateParserTests extends ParseTestBase {
         ),
         potionEffectPredicate(
           PotionEffectType.REGENERATION,
-          integerToken(7, 0, 4),
-          integerToken(8, 0, null),
+          integerToken(7, 0, 0, 4),
+          integerToken(8, 0, 0, null),
           unquotedStringToken(6, 0, "regen")
         ),
         materialPredicate(
@@ -928,8 +928,8 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "2", "2:30" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, 2),
-        integerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
+        integerToken(1, 0, 0, 2),
+        integerToken(2, 0, 3, 2 * 60 + 30, true, ComparisonMode.EQUALS),
         unquotedStringToken(0, 0, "regen")
       )
     );
@@ -938,8 +938,8 @@ public class PredicateParserTests extends ParseTestBase {
       new String[] { "regen", "*", "2:30" },
       potionEffectPredicate(
         PotionEffectType.REGENERATION,
-        integerToken(1, 0, null),
-        integerToken(2, 0, 2 * 60 + 30, true, ComparisonMode.EQUALS),
+        integerToken(1, 0, 0, null),
+        integerToken(2, 0, 3, 2 * 60 + 30, true, ComparisonMode.EQUALS),
         unquotedStringToken(0, 0, "regen")
       )
     );
@@ -1025,7 +1025,7 @@ public class PredicateParserTests extends ParseTestBase {
         unquotedStringToken(0, 0, "exact"),
         enchantmentPredicate(
           Enchantment.UNBREAKING,
-          integerToken(2, 0, 2),
+          integerToken(2, 0, 0, 2),
           unquotedStringToken(1, 0, "unbr")
         )
       )
@@ -1059,7 +1059,7 @@ public class PredicateParserTests extends ParseTestBase {
                 ),
                 enchantmentPredicate(
                   Enchantment.FIRE_PROTECTION,
-                  integerToken(5, 0, 1),
+                  integerToken(5, 0, 0, 1),
                   unquotedStringToken(4, 0, "fire-prot")
                 )
               )
@@ -1110,11 +1110,16 @@ public class PredicateParserTests extends ParseTestBase {
     );
   }
 
-  private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
-    var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
-    var exception = assertThrows(ItemPredicateParseException.class, predicateParser::parseAst);
+  private String makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
+    var exception = assertThrows(ItemPredicateParseException.class, () -> {
+      var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
+      predicateParser.parseAst();
+    });
+
     assertEquals(expectedArgumentIndex, exception.getToken().beginCommandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
+
+    return exception.highlightedInput("§c", "§4");
   }
 
   private void makeStringificationCase(String[] args, String expected, boolean allowMissingClosingParentheses, boolean stringifyTokens) {

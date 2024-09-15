@@ -23,10 +23,10 @@ public class TokenParserTests extends ParseTestBase {
       },
       new Token[] {
         unquotedStringToken(0, 0, "my-unquoted-string-a"),
-        integerToken(1, 0, 512),
+        integerToken(1, 0, 2, 512),
         quotedStringToken(2, 0, 2, 27, "single-arg-quoted-string-a"),
         quotedStringToken(3, 0, 6, 6, "multi arg quoted string"),
-        integerToken(7, 0, 32),
+        integerToken(7, 0, 1, 32),
         unquotedStringToken(8, 0, "my-unquoted-string-b"),
         quotedStringToken(9, 0, 9, 27, "single-arg-quoted-string-b"),
         quotedStringToken(10, 0, 13, 8, "multi arg quoted string-2"),
@@ -143,28 +143,28 @@ public class TokenParserTests extends ParseTestBase {
     makeCase(
       new String[] { "2:30" },
       new Token[] {
-        integerToken(0, 0, 2*60 + 30, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 3, 2*60 + 30, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12:23" },
       new Token[] {
-        integerToken(0, 0, 12*60 + 23, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 4, 12*60 + 23, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12:34:56" },
       new Token[] {
-        integerToken(0, 0, 12*60*60 + 34*60 + 56, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 7, 12*60*60 + 34*60 + 56, true, ComparisonMode.EQUALS)
       }
     );
 
     makeCase(
       new String[] { "12::56" },
       new Token[] {
-        integerToken(0, 0, 12*60*60 + 56, true, ComparisonMode.EQUALS)
+        integerToken(0, 0, 5, 12*60*60 + 56, true, ComparisonMode.EQUALS)
       }
     );
   }
@@ -174,28 +174,28 @@ public class TokenParserTests extends ParseTestBase {
     makeCase(
       new String[] { ">200" },
       new Token[] {
-        integerToken(0, 0, 200, false, ComparisonMode.GREATER_THAN)
+        integerToken(0, 0, 3, 200, false, ComparisonMode.GREATER_THAN)
       }
     );
 
     makeCase(
       new String[] { ">2:20" },
       new Token[] {
-        integerToken(0, 0, 2*60+20, true, ComparisonMode.GREATER_THAN)
+        integerToken(0, 0, 4, 2*60+20, true, ComparisonMode.GREATER_THAN)
       }
     );
 
     makeCase(
       new String[] { "<200" },
       new Token[] {
-        integerToken(0, 0, 200, false, ComparisonMode.LESS_THAN)
+        integerToken(0, 0, 3, 200, false, ComparisonMode.LESS_THAN)
       }
     );
 
     makeCase(
       new String[] { "<2:20" },
       new Token[] {
-        integerToken(0, 0, 2*60+20, true, ComparisonMode.LESS_THAN)
+        integerToken(0, 0, 4, 2*60+20, true, ComparisonMode.LESS_THAN)
       }
     );
 

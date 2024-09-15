@@ -57,7 +57,7 @@ public class StringWalker implements ParserInput {
       charsSinceLastSpace = 0;
       ++spaceCounter;
     }
-    else
+    else if (result != 0)
       ++charsSinceLastSpace;
 
     return result;

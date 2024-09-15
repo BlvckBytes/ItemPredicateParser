@@ -88,18 +88,19 @@ public abstract class ParseTestBase {
     MockBukkit.unmock();
   }
 
-  protected IntegerToken integerToken(int commandArgumentIndex, int firstCharIndex, @Nullable Integer value) {
-    return integerToken(commandArgumentIndex, firstCharIndex, value, false, ComparisonMode.EQUALS);
+  protected IntegerToken integerToken(int commandArgumentIndex, int firstCharIndex, int lastCharIndex, @Nullable Integer value) {
+    return integerToken(commandArgumentIndex, firstCharIndex, lastCharIndex, value, false, ComparisonMode.EQUALS);
   }
 
   protected IntegerToken integerToken(
     int commandArgumentIndex,
     int firstCharIndex,
+    int lastCharIndex,
     @Nullable Integer value,
     boolean wasTimeNotation,
     ComparisonMode comparisonMode
   ) {
-    return new IntegerToken(commandArgumentIndex, firstCharIndex, null, value, wasTimeNotation, comparisonMode);
+    return new IntegerToken(commandArgumentIndex, firstCharIndex, lastCharIndex, null, value, wasTimeNotation, comparisonMode);
   }
 
   protected ParenthesisToken parenthesisToken(int commandArgumentIndex, int firstCharIndex, boolean isOpening) {

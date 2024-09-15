@@ -92,7 +92,7 @@ public class PredicateParser {
       var rhs = parser.get();
 
       if (rhs == null)
-        throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
+        throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
 
       result = constructor.call(token, translated, result, rhs);
     }
@@ -127,7 +127,7 @@ public class PredicateParser {
     var operand = parser.get();
 
     if (operand == null)
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR);
 
     return constructor.call(token, translated, operand);
   }
@@ -142,7 +142,7 @@ public class PredicateParser {
       return parseItemPredicate();
 
     if (!openingToken.isOpening())
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_OPENING_PARENTHESIS);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_OPENING_PARENTHESIS);
 
     tokens.removeFirst();
 
@@ -151,13 +151,13 @@ public class PredicateParser {
     // The next invocation will expect ( but gets ) and thus throws a parentheses-mismatch.
     // This way, it becomes clear that the content within the pair is what's actually missing.
     if (!tokens.isEmpty() && tokens.getFirst() instanceof ParenthesisToken parenthesisToken && !parenthesisToken.isOpening())
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_SEARCH_PATTERN);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_SEARCH_PATTERN);
 
     // Invoke the lowest precedence parser
     var inner = parseDisjunctionNode();
 
     if (inner == null)
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_SEARCH_PATTERN);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_SEARCH_PATTERN);
 
     // Takes care of parentheses which immediately followed the next higher precedence inside the current
     // parentheses - example: (dia-ches (unbr)). The ( of (unbr) would be left by the predicate parser,
@@ -173,7 +173,7 @@ public class PredicateParser {
       if (allowMissingClosingParentheses)
         return new ParenthesesNode(inner);
 
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
     }
 
     token = tokens.getFirst();
@@ -196,7 +196,7 @@ public class PredicateParser {
         return new ParenthesesNode(inner);
       }
 
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
+      throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
     }
 
     tokens.removeFirst();
@@ -234,7 +234,7 @@ public class PredicateParser {
         break;
 
       if (!(currentToken instanceof UnquotedStringToken translationSearch))
-        throw new ItemPredicateParseException(currentToken.commandArgumentIndex(), currentToken.firstCharIndex(), ParseConflict.EXPECTED_SEARCH_PATTERN);
+        throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_SEARCH_PATTERN);
 
       var searchResult = translationRegistry.search(translationSearch);
       var searchResultEntries = searchResult.result();
@@ -250,7 +250,7 @@ public class PredicateParser {
         }
 
         if (materials.isEmpty())
-          throw new ItemPredicateParseException(currentToken.commandArgumentIndex(), currentToken.firstCharIndex(), ParseConflict.NO_SEARCH_MATCH);
+          throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
         predicates.add(new MaterialPredicate(translationSearch, null, materials));
         tokens.removeFirst();
@@ -260,7 +260,7 @@ public class PredicateParser {
       var shortestMatch = getShortestMatch(searchResultEntries);
 
       if (shortestMatch == null)
-        throw new ItemPredicateParseException(currentToken.commandArgumentIndex(), currentToken.firstCharIndex(), ParseConflict.NO_SEARCH_MATCH);
+        throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
       if (shortestMatch.translatable instanceof Material predicateMaterial) {
         predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(predicateMaterial)));
@@ -312,7 +312,7 @@ public class PredicateParser {
         throwOnTimeNotation(amount);
 
         if (amount == null || amount.value() == null)
-          throw new ItemPredicateParseException(currentToken.commandArgumentIndex(), currentToken.firstCharIndex(), ParseConflict.EXPECTED_FOLLOWING_INTEGER);
+          throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
 
         predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
         continue;
@@ -340,7 +340,7 @@ public class PredicateParser {
     if (token.comparisonMode() == ComparisonMode.EQUALS)
       return;
 
-    throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON);
+    throw new ItemPredicateParseException(token, ParseConflict.DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON);
   }
 
   private static void throwOnTimeNotation(@Nullable IntegerToken token) {
@@ -350,7 +350,7 @@ public class PredicateParser {
     if (!token.wasTimeNotation())
       return;
 
-    throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
+    throw new ItemPredicateParseException(token, ParseConflict.DOES_NOT_ACCEPT_TIME_NOTATION);
   }
 
   private static @Nullable IntegerToken tryConsumeIntegerArgument(List<Token> tokens) {

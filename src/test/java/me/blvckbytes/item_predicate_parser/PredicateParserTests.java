@@ -1098,7 +1098,7 @@ public class PredicateParserTests extends ParseTestBase {
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
     var exception = assertThrows(ItemPredicateParseException.class, predicateParser::parseAst);
-    assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
+    assertEquals(expectedArgumentIndex, exception.getToken().commandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 

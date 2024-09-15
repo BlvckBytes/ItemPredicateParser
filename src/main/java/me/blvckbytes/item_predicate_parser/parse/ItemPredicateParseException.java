@@ -1,26 +1,52 @@
 package me.blvckbytes.item_predicate_parser.parse;
 
+import me.blvckbytes.item_predicate_parser.token.Token;
+
+import java.util.StringJoiner;
+
 public class ItemPredicateParseException extends RuntimeException {
 
-  private final int argumentIndex;
-  private final int firstCharIndex;
+  private final Token token;
   private final ParseConflict conflict;
 
-  public ItemPredicateParseException(int argumentIndex, int firstCharIndex, ParseConflict conflict) {
-    this.argumentIndex = argumentIndex;
-    this.firstCharIndex = firstCharIndex;
+  public ItemPredicateParseException(Token token, ParseConflict conflict) {
+    this.token = token;
     this.conflict = conflict;
   }
 
-  public int getArgumentIndex() {
-    return argumentIndex;
-  }
-
-  public int getFirstCharIndex() {
-    return firstCharIndex;
+  public Token getToken() {
+    return token;
   }
 
   public ParseConflict getConflict() {
     return conflict;
+  }
+
+  public String highlightedInput(String nonHighlightPrefix, String highlightPrefix) {
+    var markedExpression = new StringJoiner(" ");
+
+    var input = token.parserInput();
+    var args = input.getInputAsArguments();
+
+    for (var argIndex = input.getArgumentsOffset(); argIndex < args.length; ++argIndex) {
+      var arg = args[argIndex];
+
+      if (token.commandArgumentIndex() != argIndex) {
+        markedExpression.add(nonHighlightPrefix + arg);
+        continue;
+      }
+
+      if (token.firstCharIndex() == 0) {
+        markedExpression.add(highlightPrefix + arg);
+        continue;
+      }
+
+      markedExpression.add(
+        nonHighlightPrefix + arg.substring(0, token.firstCharIndex()) +
+        highlightPrefix + arg.substring(token.firstCharIndex())
+      );
+    }
+
+    return markedExpression.toString();
   }
 }

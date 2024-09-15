@@ -67,7 +67,7 @@ public record SubstringIndices(
         if (nextIndices.isPatternWildcardChar) {
           if (token != null) {
             if (encounteredSearchPatternWildcard)
-              throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+              throw new ItemPredicateParseException(token, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
             encounteredSearchPatternWildcard = true;
           }
         }
@@ -82,7 +82,7 @@ public record SubstringIndices(
     }
 
     if (encounteredSearchPatternWildcard && !encounteredNonSearchPatternWildcard)
-      throw new ItemPredicateParseException(token.commandArgumentIndex(), token.firstCharIndex(), ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
+      throw new ItemPredicateParseException(token, ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
 
     return result;
   }

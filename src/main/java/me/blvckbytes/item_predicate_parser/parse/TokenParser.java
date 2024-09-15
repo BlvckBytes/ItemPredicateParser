@@ -79,15 +79,16 @@ public class TokenParser {
       stringContents.append(walker.nextChar());
     }
 
-    if (walker.nextChar() != '"')
-      throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.MISSING_STRING_TERMINATION);
-
     var stringValue = stringContents.toString();
+    var token = new QuotedStringToken(beginArgumentIndex, firstCharIndex, walker, stringValue);
+
+    if (walker.nextChar() != '"')
+      throw new ItemPredicateParseException(token, ParseConflict.MISSING_STRING_TERMINATION);
 
     if (stringValue.isBlank())
-      throw new ItemPredicateParseException(beginArgumentIndex, firstCharIndex, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING);
+      throw new ItemPredicateParseException(token, ParseConflict.EMPTY_OR_BLANK_QUOTED_STRING);
 
-    return new QuotedStringToken(beginArgumentIndex, firstCharIndex, walker, stringValue);
+    return token;
   }
 
   private static @Nullable IntegerToken tryConsumeInteger(StringWalker walker) {
@@ -120,6 +121,8 @@ public class TokenParser {
     var blockBeginIndex = walker.getNextCharIndex();
     char currentChar;
 
+    ParseConflict conflict = null;
+
     while (true) {
       var currentCharIndex = walker.getNextCharIndex();
       currentChar = walker.peekChar();
@@ -136,8 +139,10 @@ public class TokenParser {
         for (int index = currentCharIndex - 1; index >= blockBeginIndex; --index)
           currentBlockValue += (walker.charAt(index) - '0') * (int) Math.pow(10, digitPlaceValue++);
 
-        if (blocksIndex == blocks.length)
-          throw new ItemPredicateParseException(walker.getArgumentIndex(), firstCharIndex, ParseConflict.TOO_MANY_TIME_NOTATION_BLOCKS);
+        if (blocksIndex == blocks.length) {
+          conflict = ParseConflict.TOO_MANY_TIME_NOTATION_BLOCKS;
+          break;
+        }
 
         blocks[blocksIndex++] = currentBlockValue;
 
@@ -148,8 +153,10 @@ public class TokenParser {
         continue;
       }
 
-      if (!(currentChar >= '0' && currentChar <= '9'))
-        throw new ItemPredicateParseException(walker.getArgumentIndex(), firstCharIndex, ParseConflict.EXPECTED_CORRECT_INTEGER);
+      if (!(currentChar >= '0' && currentChar <= '9')) {
+        conflict = ParseConflict.EXPECTED_CORRECT_INTEGER;
+        break;
+      }
     }
 
     var blockPower = 0;
@@ -162,7 +169,12 @@ public class TokenParser {
       resultingNumber += blocks[blockIndex] * (int) Math.pow(60, blockPower++);
     }
 
-    return new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, resultingNumber, blockPower > 1, comparisonMode);
+    var token = new IntegerToken(walker.getArgumentIndex(), firstCharIndex, walker, resultingNumber, blockPower > 1, comparisonMode);
+
+    if (conflict != null)
+      throw new ItemPredicateParseException(token, conflict);
+
+    return token;
   }
 
   private static @Nullable UnquotedStringToken tryConsumeUnquotedString(StringWalker walker) {

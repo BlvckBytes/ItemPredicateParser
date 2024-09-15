@@ -286,7 +286,7 @@ public class TokenParserTests extends ParseTestBase {
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var exception = assertThrows(ItemPredicateParseException.class, () -> TokenParser.parseTokens(args, 0));
-    assertEquals(expectedArgumentIndex, exception.getArgumentIndex());
+    assertEquals(expectedArgumentIndex, exception.getToken().commandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 

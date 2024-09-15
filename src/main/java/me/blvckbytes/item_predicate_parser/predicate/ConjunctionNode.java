@@ -8,18 +8,8 @@ public record ConjunctionNode(
   @Nullable Token token,
   TranslatedTranslatable translatedTranslatable,
   ItemPredicate lhs,
-  ItemPredicate rhs,
-  boolean wasImplicit
+  ItemPredicate rhs
 ) implements ItemPredicate {
-
-  public ConjunctionNode(
-    @Nullable Token token,
-    TranslatedTranslatable translatedTranslatable,
-    ItemPredicate lhs,
-    ItemPredicate rhs
-  ) {
-    this(token, translatedTranslatable, lhs, rhs, false);
-  }
 
   @Override
   public boolean test(PredicateState state) {
@@ -28,12 +18,12 @@ public record ConjunctionNode(
 
   @Override
   public String stringify(boolean useTokens) {
-    if (wasImplicit)
+    if (token == null)
       return lhs.stringify(useTokens) + " " + rhs.stringify(useTokens);
 
-    if (useTokens && token != null)
+    if (useTokens)
       return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
 
-    return lhs.stringify(useTokens) + " " + translatedTranslatable.normalizedPrefixedTranslation + " " + rhs.stringify(useTokens);
+    return lhs.stringify(false) + " " + translatedTranslatable.normalizedPrefixedTranslation + " " + rhs.stringify(false);
   }
 }

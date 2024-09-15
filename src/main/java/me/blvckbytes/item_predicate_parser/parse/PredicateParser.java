@@ -56,7 +56,7 @@ public class PredicateParser {
         break;
 
       // Consecutive predicates are implicitly joined by AND
-      result = new ConjunctionNode(null, conjunctionTranslation, result, nextExpression, true);
+      result = new ConjunctionNode(null, conjunctionTranslation, result, nextExpression);
     }
 
     return result;
@@ -166,7 +166,7 @@ public class PredicateParser {
       if (!((tokens.getFirst() instanceof ParenthesisToken nextToken) && nextToken.isOpening()))
         break;
 
-      inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseParenthesesNode(), true);
+      inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseParenthesesNode());
     }
 
     if (tokens.isEmpty()) {
@@ -190,7 +190,7 @@ public class PredicateParser {
           // Re-climb the precedence ladder
           // This way, missing closing parentheses will be added to the very end, which makes it
           // possible to actually get the desired result, until closing-parens are added in while typing
-          inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseDisjunctionNode(), true);
+          inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseDisjunctionNode());
         }
 
         return new ParenthesesNode(inner);
@@ -328,7 +328,7 @@ public class PredicateParser {
 
     // Consecutive predicates are implicitly joined by AND
     while (!predicates.isEmpty())
-      result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.removeFirst(), true);
+      result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.removeFirst());
 
     return result;
   }

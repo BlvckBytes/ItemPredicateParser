@@ -128,9 +128,8 @@ public abstract class ParseTestBase {
     var result = predicates[0];
 
     for (var i = 1; i < predicates.length; ++i) {
-      // TODO: Why do we need *both* the nullable token and the wasImplicit flag?
       var token = keywordTokens[i - 1];
-      result = new ConjunctionNode(token, translationRegistry.lookup(ConjunctionKey.INSTANCE), result, predicates[i], token == null);
+      result = new ConjunctionNode(token, translationRegistry.lookup(ConjunctionKey.INSTANCE), result, predicates[i]);
     }
 
     return result;

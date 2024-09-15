@@ -46,6 +46,21 @@ public class PredicateParserTests extends ParseTestBase {
   }
 
   @Test
+  public void shouldStringifyQuotedStringsWithEscapeSequences() {
+    makeStringificationCase(
+      new String[] { "\"my-\\\"-string\"" },
+      "\"my-\\\"-string\"",
+      false, false
+    );
+
+    makeStringificationCase(
+      new String[] { "\"my", "\\\"", "string\"" },
+      "\"my \\\" string\"",
+      false, false
+    );
+  }
+
+  @Test
   public void shouldStringifyAsParsed() {
     makeStringificationCase(
       new String[] { "dia-ches", "unbr", "2", "regen", "3", "sign-?" },

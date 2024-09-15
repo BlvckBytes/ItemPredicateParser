@@ -2,7 +2,6 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
-import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -12,11 +11,11 @@ import java.util.Objects;
 
 public class TextSearchPredicate implements ItemPredicate {
 
-  public final String text;
+  public final QuotedStringToken token;
   private final List<SubstringIndices> textIndices;
 
   public TextSearchPredicate(QuotedStringToken token) {
-    this.text = token.value();
+    this.token = token;
     this.textIndices = SubstringIndices.forString(token, token.value(), SubstringIndices.FREE_TEXT_DELIMITER);
   }
 
@@ -35,7 +34,7 @@ public class TextSearchPredicate implements ItemPredicate {
       var displayName = state.meta.getDisplayName();
 
       SubstringIndices.matchQuerySubstrings(
-        text, pendingTextIndices,
+        token.value(), pendingTextIndices,
         displayName, SubstringIndices.forString(null, displayName, SubstringIndices.FREE_TEXT_DELIMITER)
       );
 
@@ -50,7 +49,7 @@ public class TextSearchPredicate implements ItemPredicate {
     if (state.meta.hasLore()) {
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
         SubstringIndices.matchQuerySubstrings(
-          text, pendingTextIndices,
+          token.value(), pendingTextIndices,
           loreLine, SubstringIndices.forString(null, loreLine, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
@@ -69,7 +68,7 @@ public class TextSearchPredicate implements ItemPredicate {
         var author = Objects.requireNonNull(bookMeta.getAuthor());
 
         SubstringIndices.matchQuerySubstrings(
-          text, pendingTextIndices,
+          token.value(), pendingTextIndices,
           author, SubstringIndices.forString(null, author, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
@@ -85,7 +84,7 @@ public class TextSearchPredicate implements ItemPredicate {
         var title = Objects.requireNonNull(bookMeta.getTitle());
 
         SubstringIndices.matchQuerySubstrings(
-          text, pendingTextIndices,
+          token.value(), pendingTextIndices,
           title, SubstringIndices.forString(null, title, SubstringIndices.FREE_TEXT_DELIMITER)
         );
 
@@ -100,7 +99,7 @@ public class TextSearchPredicate implements ItemPredicate {
       if (bookMeta.hasPages()) {
         for (var page : bookMeta.getPages()) {
           SubstringIndices.matchQuerySubstrings(
-            text, pendingTextIndices,
+            token.value(), pendingTextIndices,
             page, SubstringIndices.forString(null, page, SubstringIndices.FREE_TEXT_DELIMITER)
           );
 
@@ -122,7 +121,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
         if (ownerName != null) {
           SubstringIndices.matchQuerySubstrings(
-            text, pendingTextIndices,
+            token.value(), pendingTextIndices,
             ownerName, SubstringIndices.forString(null, ownerName, SubstringIndices.FREE_TEXT_DELIMITER)
           );
 
@@ -137,18 +136,18 @@ public class TextSearchPredicate implements ItemPredicate {
 
   @Override
   public String stringify(boolean useTokens) {
-    return "\"" + UnquotedStringToken.escapeDoubleQuotes(text) + "\"";
+    return token.stringify();
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof TextSearchPredicate that)) return false;
-    return Objects.equals(text, that.text);
+    return Objects.equals(token.value(), that.token.value());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(text);
+    return Objects.hashCode(token.value());
   }
 }

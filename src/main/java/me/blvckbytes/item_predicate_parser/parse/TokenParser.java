@@ -80,7 +80,12 @@ public class TokenParser {
     }
 
     var stringValue = stringContents.toString();
-    var token = new QuotedStringToken(beginArgumentIndex, firstCharIndex, walker, stringValue);
+
+    var token = new QuotedStringToken(
+      beginArgumentIndex, firstCharIndex,
+      walker.getArgumentIndex(), walker.getCharsSinceLastSpace(),
+      walker, stringValue
+    );
 
     if (walker.nextChar() != '"')
       throw new ItemPredicateParseException(token, ParseConflict.MISSING_STRING_TERMINATION);

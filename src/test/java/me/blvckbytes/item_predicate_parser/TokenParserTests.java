@@ -24,12 +24,12 @@ public class TokenParserTests extends ParseTestBase {
       new Token[] {
         unquotedStringToken(0, 0, "my-unquoted-string-a"),
         integerToken(1, 0, 512),
-        quotedStringToken(2, 0, "single-arg-quoted-string-a"),
-        quotedStringToken(3, 0, "multi arg quoted string"),
+        quotedStringToken(2, 0, 2, 27, "single-arg-quoted-string-a"),
+        quotedStringToken(3, 0, 6, 6, "multi arg quoted string"),
         integerToken(7, 0, 32),
         unquotedStringToken(8, 0, "my-unquoted-string-b"),
-        quotedStringToken(9, 0, "single-arg-quoted-string-b"),
-        quotedStringToken(10, 0, "multi arg quoted string-2"),
+        quotedStringToken(9, 0, 9, 27, "single-arg-quoted-string-b"),
+        quotedStringToken(10, 0, 13, 8, "multi arg quoted string-2"),
       }
     );
 
@@ -37,7 +37,7 @@ public class TokenParserTests extends ParseTestBase {
     makeCase(
       new String[] { "\"hello", "world", "\"" },
       new Token[] {
-        quotedStringToken(0, 0, "hello world "),
+        quotedStringToken(0, 0, 2, 0, "hello world "),
       }
     );
 
@@ -45,7 +45,7 @@ public class TokenParserTests extends ParseTestBase {
     makeCase(
       new String[] { "\"", "hello", "world\"" },
       new Token[] {
-        quotedStringToken(0, 0, " hello world"),
+        quotedStringToken(0, 0, 2, 5, " hello world"),
       }
     );
 
@@ -53,7 +53,7 @@ public class TokenParserTests extends ParseTestBase {
     makeCase(
       new String[] { "\"", "hello", "world", "\"" },
       new Token[] {
-        quotedStringToken(0, 0, " hello world "),
+        quotedStringToken(0, 0, 3, 0, " hello world "),
       }
     );
 
@@ -62,7 +62,7 @@ public class TokenParserTests extends ParseTestBase {
       new String[] { "b\"hello", "\"a" },
       new Token[] {
         unquotedStringToken(0, 0, "b"),
-        quotedStringToken(0, 1, "hello "),
+        quotedStringToken(0, 1, 1, 0, "hello "),
         unquotedStringToken(1, 1, "a")
       }
     );
@@ -72,7 +72,7 @@ public class TokenParserTests extends ParseTestBase {
         "\"This", "string", "contains", "\\\"", "escaped", "quotes", "\\\"\""
       },
       new Token[] {
-        quotedStringToken(0, 0, "This string contains \" escaped quotes \"")
+        quotedStringToken(0, 0, 6, 2, "This string contains \" escaped quotes \"")
       }
     );
   }
@@ -214,7 +214,7 @@ public class TokenParserTests extends ParseTestBase {
         parenthesisToken(0, 0, true),
         unquotedStringToken(0, 1, "abc-de"),
         unquotedStringToken(1, 0, "f"),
-        quotedStringToken(2, 0, "free text ) ( searc)h"),
+        quotedStringToken(2, 0, 6, 7, "free text ) ( searc)h"),
         parenthesisToken(6, 8, false)
       }
     );
@@ -232,7 +232,7 @@ public class TokenParserTests extends ParseTestBase {
       new String[] { "(\"hello\")" },
       new Token[] {
         parenthesisToken(0, 0, true),
-        quotedStringToken(0, 1, "hello"),
+        quotedStringToken(0, 1, 0, 7, "hello"),
         parenthesisToken(0, 8, false),
       }
     );
@@ -242,7 +242,7 @@ public class TokenParserTests extends ParseTestBase {
       new Token[] {
         parenthesisToken(0, 0, true),
         unquotedStringToken(1, 0, "abc-de"),
-        quotedStringToken(2, 0, "a test"),
+        quotedStringToken(2, 0, 3, 4, "a test"),
         parenthesisToken(4, 0, false),
       }
     );
@@ -286,7 +286,7 @@ public class TokenParserTests extends ParseTestBase {
 
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var exception = assertThrows(ItemPredicateParseException.class, () -> TokenParser.parseTokens(args, 0));
-    assertEquals(expectedArgumentIndex, exception.getToken().commandArgumentIndex());
+    assertEquals(expectedArgumentIndex, exception.getToken().beginCommandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 

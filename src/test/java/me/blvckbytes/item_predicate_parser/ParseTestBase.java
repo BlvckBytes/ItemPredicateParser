@@ -106,8 +106,14 @@ public abstract class ParseTestBase {
     return new ParenthesisToken(commandArgumentIndex, firstCharIndex, null, isOpening);
   }
 
-  protected QuotedStringToken quotedStringToken(int commandArgumentIndex, int firstCharIndex, String value) {
-    return new QuotedStringToken(commandArgumentIndex, firstCharIndex, null, value);
+  protected QuotedStringToken quotedStringToken(
+    int beginCommandArgumentIndex,
+    int beginFirstCharIndex,
+    int endCommandArgumentIndex,
+    int endLastCharIndex,
+    String value
+  ) {
+    return new QuotedStringToken(beginCommandArgumentIndex, beginFirstCharIndex, endCommandArgumentIndex, endLastCharIndex, null, value);
   }
 
   protected UnquotedStringToken unquotedStringToken(int commandArgumentIndex, int firstCharIndex, String value) {

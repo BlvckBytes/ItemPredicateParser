@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
  * @param value The null-value represents a wildcard
  */
 public record IntegerToken(
-  int commandArgumentIndex,
-  int firstCharIndex,
+  int beginCommandArgumentIndex,
+  int beginFirstCharIndex,
   ParserInput parserInput,
   @Nullable Integer value,
   boolean wasTimeNotation,
@@ -27,6 +27,16 @@ public record IntegerToken(
       case GREATER_THAN -> this.value < value;
       case LESS_THAN -> this.value > value;
     };
+  }
+
+  @Override
+  public int endCommandArgumentIndex() {
+    return beginCommandArgumentIndex;
+  }
+
+  @Override
+  public int endLastCharIndex() {
+    return beginFirstCharIndex;
   }
 
   public String stringify() {

@@ -31,19 +31,19 @@ public class ItemPredicateParseException extends RuntimeException {
     for (var argIndex = input.getArgumentsOffset(); argIndex < args.length; ++argIndex) {
       var arg = args[argIndex];
 
-      if (token.commandArgumentIndex() != argIndex) {
+      if (token.beginCommandArgumentIndex() != argIndex) {
         markedExpression.add(nonHighlightPrefix + arg);
         continue;
       }
 
-      if (token.firstCharIndex() == 0) {
+      if (token.beginFirstCharIndex() == 0) {
         markedExpression.add(highlightPrefix + arg);
         continue;
       }
 
       markedExpression.add(
-        nonHighlightPrefix + arg.substring(0, token.firstCharIndex()) +
-        highlightPrefix + arg.substring(token.firstCharIndex())
+        nonHighlightPrefix + arg.substring(0, token.beginFirstCharIndex()) +
+        highlightPrefix + arg.substring(token.beginFirstCharIndex())
       );
     }
 

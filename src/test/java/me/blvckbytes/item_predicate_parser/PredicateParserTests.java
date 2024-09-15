@@ -210,7 +210,7 @@ public class PredicateParserTests extends ParseTestBase {
         negate(
           unquotedStringToken(5, 0, "not"),
           new TextSearchPredicate(
-            quotedStringToken(6, 0, "test")
+            quotedStringToken(6, 0, 6, 5, "test")
           )
         )
       )
@@ -718,35 +718,35 @@ public class PredicateParserTests extends ParseTestBase {
     makeCase(
       new String[] { "\"a", "long", "search\"" },
       new TextSearchPredicate(
-        quotedStringToken(0, 0, "a long search")
+        quotedStringToken(0, 0, 2, 6, "a long search")
       )
     );
 
     makeCase(
       new String[] { "\"short\"" },
       new TextSearchPredicate(
-        quotedStringToken(0, 0, "short")
+        quotedStringToken(0, 0, 0, 6, "short")
       )
     );
 
     makeCase(
       new String[] { "\"", "short\"" },
       new TextSearchPredicate(
-        quotedStringToken(0, 0, " short")
+        quotedStringToken(0, 0, 1, 5, " short")
       )
     );
 
     makeCase(
       new String[] { "\"short", "\"" },
       new TextSearchPredicate(
-        quotedStringToken(0, 0, "short ")
+        quotedStringToken(0, 0, 1, 0, "short ")
       )
     );
 
     makeCase(
       new String[] { "\"", "short", "\"" },
       new TextSearchPredicate(
-        quotedStringToken(0, 0, " short ")
+        quotedStringToken(0, 0, 2, 0, " short ")
       )
     );
 
@@ -903,7 +903,7 @@ public class PredicateParserTests extends ParseTestBase {
           unquotedStringToken(2, 0, "unbr")
         ),
         new TextSearchPredicate(
-          quotedStringToken(4, 0, "text a")
+          quotedStringToken(4, 0, 5, 1, "text a")
         ),
         potionEffectPredicate(
           PotionEffectType.REGENERATION,
@@ -916,7 +916,7 @@ public class PredicateParserTests extends ParseTestBase {
           unquotedStringToken(9, 0, "dia-pick")
         ),
         new TextSearchPredicate(
-          quotedStringToken(10, 0, "multi arg text b ")
+          quotedStringToken(10, 0, 14, 0, "multi arg text b ")
         )
       )
     );
@@ -1113,7 +1113,7 @@ public class PredicateParserTests extends ParseTestBase {
   private void makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
     var exception = assertThrows(ItemPredicateParseException.class, predicateParser::parseAst);
-    assertEquals(expectedArgumentIndex, exception.getToken().commandArgumentIndex());
+    assertEquals(expectedArgumentIndex, exception.getToken().beginCommandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
   }
 

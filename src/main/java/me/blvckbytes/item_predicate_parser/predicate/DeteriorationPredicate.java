@@ -48,7 +48,10 @@ public record DeteriorationPredicate(
   public String stringify(boolean useTokens) {
     var result = new StringJoiner(" ");
 
-    result.add(translatedTranslatable.normalizedPrefixedTranslation);
+    if (useTokens)
+      result.add(token.stringify());
+    else
+      result.add(translatedTranslatable.normalizedPrefixedTranslation);
 
     if (deteriorationPercentageMin != null)
       result.add(deteriorationPercentageMin.stringify());

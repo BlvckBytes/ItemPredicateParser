@@ -15,7 +15,7 @@ public class TokenUtil {
   public static @Nullable List<String> createSuggestions(
     TranslationRegistry registry,
     int maxResults,
-    Function<Integer, String> moreResultsLineGenerator,
+    @Nullable Function<Integer, String> moreResultsLineGenerator,
     List<Token> tokens
   ) {
     if (tokens.isEmpty())
@@ -62,7 +62,7 @@ public class TokenUtil {
   private static List<String> executeSearch(
     TranslationRegistry registry,
     int maxResults,
-    Function<Integer, String> moreResultsLineGenerator,
+    @Nullable Function<Integer, String> moreResultsLineGenerator,
     UnquotedStringToken search,
     String itemPrefix
   ) {
@@ -88,7 +88,7 @@ public class TokenUtil {
       .map(it -> itemPrefix + it.normalizedPrefixedTranslation)
       .collect(Collectors.toList());
 
-    if (resultCount > maxResults)
+    if (resultCount > maxResults && moreResultsLineGenerator != null)
       resultTexts.add(moreResultsLineGenerator.apply(resultCount - maxResults));
 
     return resultTexts;

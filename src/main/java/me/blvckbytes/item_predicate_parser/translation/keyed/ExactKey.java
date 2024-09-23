@@ -1,8 +1,7 @@
-package me.blvckbytes.item_predicate_parser.translation;
-
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+package me.blvckbytes.item_predicate_parser.translation.keyed;
 
 public class ExactKey implements LangKeyed<ExactKey> {
+
   public static final ExactKey INSTANCE = new ExactKey();
 
   private ExactKey() {}
@@ -15,5 +14,10 @@ public class ExactKey implements LangKeyed<ExactKey> {
   @Override
   public ExactKey getWrapped() {
     return this;
+  }
+
+  @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.NOT_A_PREDICATE;
   }
 }

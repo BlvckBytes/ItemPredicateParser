@@ -9,10 +9,7 @@ import me.blvckbytes.item_predicate_parser.parse.PredicateParserFactory;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantment;
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedItemMaterial;
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedPotionEffectType;
+import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
@@ -44,6 +41,9 @@ public abstract class ParseTestBase {
 
       // Manual list content comparison
       if (MaterialPredicate.class == lastPathPart.getDeclaringClass()) {
+        if (expected == null && actual == null)
+          return true;
+
         RecursiveInterceptedEqualityChecker.containsInAnyOrder(actual, expected);
         return true;
       }
@@ -163,8 +163,9 @@ public abstract class ParseTestBase {
     return new EnchantmentPredicate(search, (TranslatedLangKeyed<LangKeyedEnchantment>) translationRegistry.lookup(new LangKeyedEnchantment(enchantment)), level);
   }
 
+  @SuppressWarnings("unchecked")
   protected MaterialPredicate materialPredicate(Material material, UnquotedStringToken token) {
-    return new MaterialPredicate(token, translationRegistry.lookup(new LangKeyedItemMaterial(material)), List.of(material));
+    return new MaterialPredicate(token, (TranslatedLangKeyed<LangKeyedItemMaterial>) translationRegistry.lookup(new LangKeyedItemMaterial(material)), null);
   }
 
   protected MaterialPredicate materialsPredicate(UnquotedStringToken search, Collection<Material> materials) {

@@ -6,4 +6,6 @@ public interface LangKeyed<T> {
 
   T getWrapped();
 
+  LangKeyedPredicateType getPredicateType();
+
 }

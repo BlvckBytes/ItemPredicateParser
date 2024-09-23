@@ -27,6 +27,11 @@ public class LangKeyedPotionEffectType implements LangKeyed<PotionEffectType> {
   }
 
   @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.POTION_EFFECT_TYPE;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof LangKeyedPotionEffectType that)) return false;

@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.JsonObject;
+import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 
 public record CustomTranslations(
   String deterioration,

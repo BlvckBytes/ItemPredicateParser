@@ -27,6 +27,11 @@ public class LangKeyedEnchantment implements LangKeyed<Enchantment> {
   }
 
   @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.ENCHANTMENT;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof LangKeyedEnchantment that)) return false;

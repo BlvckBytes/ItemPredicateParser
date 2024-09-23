@@ -2,7 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.DeteriorationKey;
+import me.blvckbytes.item_predicate_parser.translation.keyed.DeteriorationKey;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;

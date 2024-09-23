@@ -1,8 +1,7 @@
-package me.blvckbytes.item_predicate_parser.translation;
-
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+package me.blvckbytes.item_predicate_parser.translation.keyed;
 
 public class AmountKey implements LangKeyed<AmountKey> {
+
   public static final AmountKey INSTANCE = new AmountKey();
 
   private AmountKey() {}
@@ -15,5 +14,10 @@ public class AmountKey implements LangKeyed<AmountKey> {
   @Override
   public AmountKey getWrapped() {
     return this;
+  }
+
+  @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.AMOUNT;
   }
 }

@@ -1,6 +1,4 @@
-package me.blvckbytes.item_predicate_parser.translation;
-
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+package me.blvckbytes.item_predicate_parser.translation.keyed;
 
 public class DisjunctionKey implements LangKeyed<DisjunctionKey> {
 
@@ -16,5 +14,10 @@ public class DisjunctionKey implements LangKeyed<DisjunctionKey> {
   @Override
   public DisjunctionKey getWrapped() {
     return this;
+  }
+
+  @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.NOT_A_PREDICATE;
   }
 }

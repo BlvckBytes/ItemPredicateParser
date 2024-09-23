@@ -27,6 +27,11 @@ public class LangKeyedMusicInstrument implements LangKeyed<MusicInstrument> {
   }
 
   @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.MUSIC_INSTRUMENT;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof LangKeyedMusicInstrument that)) return false;

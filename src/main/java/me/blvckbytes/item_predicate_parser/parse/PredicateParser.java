@@ -216,6 +216,7 @@ public class PredicateParser {
     });
   }
 
+  @SuppressWarnings("unchecked")
   private @Nullable ItemPredicate parseItemPredicate() {
     var predicates = new ArrayList<ItemPredicate>();
 
@@ -260,25 +261,22 @@ public class PredicateParser {
       if (shortestMatch == null)
         throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
-      switch (shortestMatch.langKeyed) {
-        case LangKeyedItemMaterial material -> {
-          predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(material.getWrapped())));
+      switch (shortestMatch.langKeyed.getPredicateType()) {
+        case ITEM_MATERIAL -> {
+          predicates.add(new MaterialPredicate(translationSearch, (TranslatedLangKeyed<LangKeyedItemMaterial>) shortestMatch, null));
           tokens.removeFirst();
           continue;
         }
-        case LangKeyedEnchantment ignored -> {
+        case ENCHANTMENT -> {
           tokens.removeFirst();
 
           IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(enchantmentLevel);
 
-          @SuppressWarnings("unchecked")
-          var castedMatch = (TranslatedLangKeyed<LangKeyedEnchantment>) shortestMatch;
-
-          predicates.add(new EnchantmentPredicate(currentToken, castedMatch, enchantmentLevel));
+          predicates.add(new EnchantmentPredicate(currentToken, (TranslatedLangKeyed<LangKeyedEnchantment>) shortestMatch, enchantmentLevel));
           continue;
         }
-        case LangKeyedPotionEffectType ignored -> {
+        case POTION_EFFECT_TYPE -> {
           tokens.removeFirst();
 
           IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
@@ -286,13 +284,10 @@ public class PredicateParser {
 
           IntegerToken potionEffectDuration = tryConsumeIntegerArgument(tokens);
 
-          @SuppressWarnings("unchecked")
-          var castedMatch = (TranslatedLangKeyed<LangKeyedPotionEffectType>) shortestMatch;
-
-          predicates.add(new PotionEffectPredicate(currentToken, castedMatch, potionEffectAmplifier, potionEffectDuration));
+          predicates.add(new PotionEffectPredicate(currentToken, (TranslatedLangKeyed<LangKeyedPotionEffectType>) shortestMatch, potionEffectAmplifier, potionEffectDuration));
           continue;
         }
-        case DeteriorationKey ignored -> {
+        case DETERIORATION -> {
           tokens.removeFirst();
 
           IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
@@ -303,13 +298,10 @@ public class PredicateParser {
           throwOnTimeNotation(deteriorationPercentageMax);
           throwOnNonEqualsComparison(deteriorationPercentageMax);
 
-          @SuppressWarnings("unchecked")
-          var castedMatch = (TranslatedLangKeyed<DeteriorationKey>) shortestMatch;
-
-          predicates.add(new DeteriorationPredicate(currentToken, castedMatch, deteriorationPercentageMin, deteriorationPercentageMax));
+          predicates.add(new DeteriorationPredicate(currentToken, (TranslatedLangKeyed<DeteriorationKey>) shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
           continue;
         }
-        case AmountKey ignored -> {
+        case AMOUNT -> {
           tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
@@ -318,19 +310,13 @@ public class PredicateParser {
           if (amount == null || amount.value() == null)
             throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
 
-          @SuppressWarnings("unchecked")
-          var castedMatch = (TranslatedLangKeyed<AmountKey>) shortestMatch;
-
-          predicates.add(new AmountPredicate(currentToken, castedMatch, amount));
+          predicates.add(new AmountPredicate(currentToken, (TranslatedLangKeyed<AmountKey>) shortestMatch, amount));
           continue;
         }
-        case LangKeyedMusicInstrument ignored -> {
+        case MUSIC_INSTRUMENT -> {
           tokens.removeFirst();
 
-          @SuppressWarnings("unchecked")
-          var castedMatch = (TranslatedLangKeyed<LangKeyedMusicInstrument>) shortestMatch;
-
-          predicates.add(new MusicInstrumentPredicate(currentToken, castedMatch));
+          predicates.add(new MusicInstrumentPredicate(currentToken, (TranslatedLangKeyed<LangKeyedMusicInstrument>) shortestMatch));
           continue;
         }
         default -> {}

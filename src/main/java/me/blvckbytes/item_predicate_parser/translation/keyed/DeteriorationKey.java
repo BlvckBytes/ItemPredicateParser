@@ -1,6 +1,4 @@
-package me.blvckbytes.item_predicate_parser.translation;
-
-import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+package me.blvckbytes.item_predicate_parser.translation.keyed;
 
 public class DeteriorationKey implements LangKeyed<DeteriorationKey> {
 
@@ -16,5 +14,10 @@ public class DeteriorationKey implements LangKeyed<DeteriorationKey> {
   @Override
   public DeteriorationKey getWrapped() {
     return this;
+  }
+
+  @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.DETERIORATION;
   }
 }

@@ -31,6 +31,11 @@ public class LangKeyedItemMaterial implements LangKeyed<Material> {
   }
 
   @Override
+  public LangKeyedPredicateType getPredicateType() {
+    return LangKeyedPredicateType.ITEM_MATERIAL;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof LangKeyedItemMaterial that)) return false;

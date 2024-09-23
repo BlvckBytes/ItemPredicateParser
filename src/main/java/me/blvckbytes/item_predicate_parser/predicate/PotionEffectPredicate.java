@@ -3,17 +3,16 @@ package me.blvckbytes.item_predicate_parser.predicate;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedPotionEffectType;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
 
 public record PotionEffectPredicate(
   Token token,
-  TranslatedLangKeyed translatedLangKeyed,
-  PotionEffectType type,
+  TranslatedLangKeyed<LangKeyedPotionEffectType> translatedLangKeyed,
   @Nullable IntegerToken amplifierArgument,
   @Nullable IntegerToken durationArgument
 ) implements ItemPredicate {
@@ -23,7 +22,7 @@ public record PotionEffectPredicate(
     for (var effectIterator = state.getEffects().iterator(); effectIterator.hasNext();) {
       var effect = effectIterator.next();
 
-      if (!effect.getType().equals(this.type))
+      if (!effect.getType().equals(this.translatedLangKeyed.langKeyed.getWrapped()))
         continue;
 
       if (doesAmplifierMismatch(effect.getAmplifier()))

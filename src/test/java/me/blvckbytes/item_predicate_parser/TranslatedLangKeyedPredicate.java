@@ -9,7 +9,7 @@ public record TranslatedLangKeyedPredicate(
   LangKeyed<?> langKeyed,
   String collisionPrefix
 ) {
-  public boolean test(TranslatedLangKeyed item) {
+  public boolean test(TranslatedLangKeyed<?> item) {
     if (!item.langKeyed.equals(langKeyed))
       return false;
 

@@ -6,10 +6,10 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TranslatedLangKeyed {
+public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
   public final LangKeyedSource source;
-  public final LangKeyed<?> langKeyed;
+  public final T langKeyed;
   public final String normalizedUnPrefixedTranslation;
   public final String normalizedPrefixedTranslation;
   private final List<SubstringIndices> partIndices;
@@ -18,7 +18,7 @@ public class TranslatedLangKeyed {
 
   public TranslatedLangKeyed(
     LangKeyedSource source,
-    LangKeyed<?> langKeyed,
+    T langKeyed,
     String normalizedUnPrefixedTranslation,
     String normalizedPrefixedTranslation
   ) {

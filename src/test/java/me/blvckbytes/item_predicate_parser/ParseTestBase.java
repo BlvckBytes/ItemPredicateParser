@@ -158,8 +158,9 @@ public abstract class ParseTestBase {
     return new ExactNode(keywordToken, translationRegistry.lookup(ExactKey.INSTANCE), predicate);
   }
 
+  @SuppressWarnings("unchecked")
   protected EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level, UnquotedStringToken search) {
-    return new EnchantmentPredicate(search, translationRegistry.lookup(new LangKeyedEnchantment(enchantment)), enchantment, level);
+    return new EnchantmentPredicate(search, (TranslatedLangKeyed<LangKeyedEnchantment>) translationRegistry.lookup(new LangKeyedEnchantment(enchantment)), level);
   }
 
   protected MaterialPredicate materialPredicate(Material material, UnquotedStringToken token) {
@@ -170,16 +171,19 @@ public abstract class ParseTestBase {
     return new MaterialPredicate(search, null, new ArrayList<>(materials));
   }
 
+  @SuppressWarnings("unchecked")
   protected PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken token) {
-    return new PotionEffectPredicate(token, translationRegistry.lookup(new LangKeyedPotionEffectType(type)), type, amplifier, duration);
+    return new PotionEffectPredicate(token, (TranslatedLangKeyed<LangKeyedPotionEffectType>) translationRegistry.lookup(new LangKeyedPotionEffectType(type)), amplifier, duration);
   }
 
+  @SuppressWarnings("unchecked")
   protected DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken token) {
-    return new DeteriorationPredicate(token, translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
+    return new DeteriorationPredicate(token, (TranslatedLangKeyed<DeteriorationKey>) translationRegistry.lookup(DeteriorationKey.INSTANCE), min, max);
   }
 
+  @SuppressWarnings("unchecked")
   protected AmountPredicate amountPredicate(@Nullable IntegerToken amount, UnquotedStringToken token) {
-    return new AmountPredicate(token, translationRegistry.lookup(AmountKey.INSTANCE), amount);
+    return new AmountPredicate(token, (TranslatedLangKeyed<AmountKey>) translationRegistry.lookup(AmountKey.INSTANCE), amount);
   }
 
   private static Iterable<LangKeyedSource> makeSources() {

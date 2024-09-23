@@ -15,7 +15,7 @@ public class TranslationRegistry {
 
   private final JsonObject languageFile;
   private final Logger logger;
-  private TranslatedLangKeyed[] entries;
+  private TranslatedLangKeyed<?>[] entries;
 
   public TranslationRegistry(JsonObject languageFile, Logger logger) {
     this.languageFile = languageFile;
@@ -23,7 +23,7 @@ public class TranslationRegistry {
   }
 
   public void initialize(Iterable<LangKeyedSource> sources) throws IllegalStateException {
-    var unsortedEntries = new ArrayList<TranslatedLangKeyed>();
+    var unsortedEntries = new ArrayList<TranslatedLangKeyed<?>>();
 
     for (var source : sources)
       createEntries(source, unsortedEntries);
@@ -37,7 +37,7 @@ public class TranslationRegistry {
       this.entries[entryIndex].alphabeticalIndex = entryIndex;
   }
 
-  public @Nullable TranslatedLangKeyed lookup(LangKeyed<?> langKeyed) {
+  public @Nullable TranslatedLangKeyed<?> lookup(LangKeyed<?> langKeyed) {
     for (var entry : entries) {
       if (entry.langKeyed.equals(langKeyed))
         return entry;
@@ -52,7 +52,7 @@ public class TranslationRegistry {
       return new SearchResult(List.of(), false);
     }
 
-    var result = new ArrayList<TranslatedLangKeyed>();
+    var result = new ArrayList<TranslatedLangKeyed<?>>();
     var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITER);
 
     var isWildcardPresent = false;
@@ -79,7 +79,7 @@ public class TranslationRegistry {
     return new SearchResult(result, isWildcardPresent);
   }
 
-  private void createEntries(LangKeyedSource source, ArrayList<TranslatedLangKeyed> output) throws IllegalStateException {
+  private void createEntries(LangKeyedSource source, ArrayList<TranslatedLangKeyed<?>> output) throws IllegalStateException {
     var buckets = new HashMap<String, ArrayList<LangKeyed<?>>>();
 
     for (var langKeyed : source.items()) {
@@ -116,7 +116,7 @@ public class TranslationRegistry {
           if (!existingEntry.normalizedUnPrefixedTranslation.equalsIgnoreCase(bucketNormalizedUnPrefixedTranslation))
             continue;
 
-          output.set(outputIndex, new TranslatedLangKeyed(
+          output.set(outputIndex, new TranslatedLangKeyed<>(
             existingEntry.source,
             existingEntry.langKeyed,
             existingEntry.normalizedUnPrefixedTranslation,
@@ -135,7 +135,7 @@ public class TranslationRegistry {
         if (hadCollision)
           newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;
 
-        output.add(new TranslatedLangKeyed(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
+        output.add(new TranslatedLangKeyed<>(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
       }
     }
   }

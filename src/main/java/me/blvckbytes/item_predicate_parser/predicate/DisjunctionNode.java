@@ -5,7 +5,7 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 
 public record DisjunctionNode(
   Token token,
-  TranslatedLangKeyed translatedLangKeyed,
+  TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate lhs,
   ItemPredicate rhs
 ) implements ItemPredicate {

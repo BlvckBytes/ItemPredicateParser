@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record ConjunctionNode(
   @Nullable Token token,
-  TranslatedLangKeyed translatedLangKeyed,
+  TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate lhs,
   ItemPredicate rhs
 ) implements ItemPredicate {

@@ -5,7 +5,7 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 
 public record ExactNode(
   Token token,
-  TranslatedLangKeyed translatedLangKeyed,
+  TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate operand
 ) implements ItemPredicate {
 

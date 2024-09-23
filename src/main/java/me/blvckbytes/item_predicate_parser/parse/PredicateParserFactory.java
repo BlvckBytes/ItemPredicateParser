@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class PredicateParserFactory {
 
   public final TranslationRegistry registry;
-  private final TranslatedLangKeyed conjunctionTranslation;
+  private final TranslatedLangKeyed<?> conjunctionTranslation;
 
   public PredicateParserFactory(TranslationRegistry registry) {
     this.registry = registry;

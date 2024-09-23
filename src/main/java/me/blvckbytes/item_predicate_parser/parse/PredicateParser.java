@@ -17,23 +17,23 @@ public class PredicateParser {
 
   @FunctionalInterface
   private interface BinaryNodeConstructor {
-    ItemPredicate call(Token token, TranslatedLangKeyed langKeyed, ItemPredicate lhs, ItemPredicate rhs);
+    ItemPredicate call(Token token, TranslatedLangKeyed<?> langKeyed, ItemPredicate lhs, ItemPredicate rhs);
   }
 
   @FunctionalInterface
   private interface UnaryNodeConstructor {
-    ItemPredicate call(Token token, TranslatedLangKeyed langKeyed, ItemPredicate operand);
+    ItemPredicate call(Token token, TranslatedLangKeyed<?> langKeyed, ItemPredicate operand);
   }
 
   private final TranslationRegistry translationRegistry;
-  private final TranslatedLangKeyed conjunctionTranslation;
+  private final TranslatedLangKeyed<?> conjunctionTranslation;
   private final ArrayList<Token> tokens;
-  private final Map<Token, TranslatedLangKeyed> resolveCache;
+  private final Map<Token, TranslatedLangKeyed<?>> resolveCache;
   private final boolean allowMissingClosingParentheses;
 
   public PredicateParser(
     TranslationRegistry translationRegistry,
-    TranslatedLangKeyed conjunctionTranslation,
+    TranslatedLangKeyed<?> conjunctionTranslation,
     ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
@@ -202,7 +202,7 @@ public class PredicateParser {
     return new ParenthesesNode(inner);
   }
 
-  private @Nullable TranslatedLangKeyed resolveTranslated(Token token) {
+  private @Nullable TranslatedLangKeyed<?> resolveTranslated(Token token) {
     if (!(token instanceof UnquotedStringToken stringToken))
       return null;
 
@@ -266,17 +266,19 @@ public class PredicateParser {
           tokens.removeFirst();
           continue;
         }
-        case LangKeyedEnchantment enchantment -> {
-          // TODO: Do I really need both the shortestMatch and the predicateEnchantment on the same object?!
+        case LangKeyedEnchantment ignored -> {
           tokens.removeFirst();
 
           IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(enchantmentLevel);
 
-          predicates.add(new EnchantmentPredicate(currentToken, shortestMatch, enchantment.getWrapped(), enchantmentLevel));
+          @SuppressWarnings("unchecked")
+          var castedMatch = (TranslatedLangKeyed<LangKeyedEnchantment>) shortestMatch;
+
+          predicates.add(new EnchantmentPredicate(currentToken, castedMatch, enchantmentLevel));
           continue;
         }
-        case LangKeyedPotionEffectType effect -> {
+        case LangKeyedPotionEffectType ignored -> {
           tokens.removeFirst();
 
           IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
@@ -284,10 +286,13 @@ public class PredicateParser {
 
           IntegerToken potionEffectDuration = tryConsumeIntegerArgument(tokens);
 
-          predicates.add(new PotionEffectPredicate(currentToken, shortestMatch, effect.getWrapped(), potionEffectAmplifier, potionEffectDuration));
+          @SuppressWarnings("unchecked")
+          var castedMatch = (TranslatedLangKeyed<LangKeyedPotionEffectType>) shortestMatch;
+
+          predicates.add(new PotionEffectPredicate(currentToken, castedMatch, potionEffectAmplifier, potionEffectDuration));
           continue;
         }
-        case DeteriorationKey deteriorationKey -> {
+        case DeteriorationKey ignored -> {
           tokens.removeFirst();
 
           IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
@@ -298,10 +303,13 @@ public class PredicateParser {
           throwOnTimeNotation(deteriorationPercentageMax);
           throwOnNonEqualsComparison(deteriorationPercentageMax);
 
-          predicates.add(new DeteriorationPredicate(currentToken, shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
+          @SuppressWarnings("unchecked")
+          var castedMatch = (TranslatedLangKeyed<DeteriorationKey>) shortestMatch;
+
+          predicates.add(new DeteriorationPredicate(currentToken, castedMatch, deteriorationPercentageMin, deteriorationPercentageMax));
           continue;
         }
-        case AmountKey amountKey -> {
+        case AmountKey ignored -> {
           tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
@@ -310,12 +318,19 @@ public class PredicateParser {
           if (amount == null || amount.value() == null)
             throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
 
-          predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
+          @SuppressWarnings("unchecked")
+          var castedMatch = (TranslatedLangKeyed<AmountKey>) shortestMatch;
+
+          predicates.add(new AmountPredicate(currentToken, castedMatch, amount));
           continue;
         }
-        case LangKeyedMusicInstrument instrument -> {
+        case LangKeyedMusicInstrument ignored -> {
           tokens.removeFirst();
-          predicates.add(new MusicInstrumentPredicate(currentToken, shortestMatch, instrument.getWrapped()));
+
+          @SuppressWarnings("unchecked")
+          var castedMatch = (TranslatedLangKeyed<LangKeyedMusicInstrument>) shortestMatch;
+
+          predicates.add(new MusicInstrumentPredicate(currentToken, castedMatch));
           continue;
         }
         default -> {}
@@ -371,7 +386,7 @@ public class PredicateParser {
     return integerToken;
   }
 
-  private static @Nullable TranslatedLangKeyed getShortestMatch(List<TranslatedLangKeyed> matches) {
+  private static @Nullable TranslatedLangKeyed<?> getShortestMatch(List<TranslatedLangKeyed<?>> matches) {
     if (matches.isEmpty())
       return null;
 
@@ -381,7 +396,7 @@ public class PredicateParser {
       return matches.getFirst();
 
     var shortestMatchLength = Integer.MAX_VALUE;
-    TranslatedLangKeyed shortestMatch = null;
+    TranslatedLangKeyed<?> shortestMatch = null;
 
     for (var matchIndex = 0; matchIndex < numberOfMatches; ++matchIndex) {
       var currentMatch = matches.get(matchIndex);

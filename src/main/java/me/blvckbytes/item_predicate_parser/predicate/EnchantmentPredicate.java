@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,8 +11,7 @@ import java.util.*;
 
 public record EnchantmentPredicate(
   Token token,
-  TranslatedLangKeyed translatedLangKeyed,
-  Enchantment enchantment,
+  TranslatedLangKeyed<LangKeyedEnchantment> translatedLangKeyed,
   @Nullable IntegerToken levelArgument
 ) implements ItemPredicate {
 
@@ -32,7 +32,7 @@ public record EnchantmentPredicate(
   }
 
   private boolean doesEnchantmentMatch(Enchantment enchantment, int level) {
-    if (!enchantment.equals(this.enchantment))
+    if (!translatedLangKeyed.langKeyed.getWrapped().equals(enchantment))
       return false;
 
     return this.levelArgument == null || this.levelArgument.matches(level);

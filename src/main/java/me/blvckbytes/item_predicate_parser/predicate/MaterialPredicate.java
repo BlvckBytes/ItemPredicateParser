@@ -9,7 +9,7 @@ import java.util.List;
 
 public record MaterialPredicate(
   Token token,
-  @Nullable TranslatedLangKeyed translatedLangKeyed,
+  @Nullable TranslatedLangKeyed<?> translatedLangKeyed,
   List<Material> materials
 ) implements ItemPredicate {
 

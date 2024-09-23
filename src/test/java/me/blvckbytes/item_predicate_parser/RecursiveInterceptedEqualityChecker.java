@@ -178,9 +178,13 @@ public class RecursiveInterceptedEqualityChecker {
       else {
         // Avoid IntelliJ printing diff-style mid-sentence by constructing the message manually
         AssertionFailedError assertionFailedError = (AssertionFailedError) e;
+
+        var failureExpected = assertionFailedError.getExpected();
+        var failureActual = assertionFailedError.getExpected();
+
         message = (
-          "expected " + assertionFailedError.getExpected().getStringRepresentation() +
-          " but got " + assertionFailedError.getActual().getStringRepresentation()
+          "expected " + (failureExpected == null ? null : failureExpected.getStringRepresentation()) +
+          " but got " + (failureActual == null ? null : failureActual.getStringRepresentation())
         );
       }
 

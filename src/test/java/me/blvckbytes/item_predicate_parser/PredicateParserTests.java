@@ -97,7 +97,7 @@ public class PredicateParserTests extends ParseTestBase {
   public void shouldNormalizeTranslatables() {
     assertEquals(
       "[My-custom]-item-':]'",
-      TranslatedTranslatable.normalize(
+      TranslatedLangKeyed.normalize(
         "(My_custom) item \":)\""
       )
     );

@@ -2,11 +2,11 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 
 public record AmountPredicate(
   Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   IntegerToken amountArgument
 ) implements ItemPredicate {
 
@@ -20,6 +20,6 @@ public record AmountPredicate(
     if (useTokens)
       return token.stringify() + " " + amountArgument.stringify();
 
-    return translatedTranslatable.normalizedPrefixedTranslation + " " + amountArgument.stringify();
+    return translatedLangKeyed.normalizedPrefixedTranslation + " " + amountArgument.stringify();
   }
 }

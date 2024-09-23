@@ -18,7 +18,7 @@ public enum ParseConflict {
    */
   EXPECTED_SEARCH_PATTERN,
   /**
-   * The specified pattern did not fully apply to any existing translatable
+   * The specified pattern did not fully apply to any existing translation
    */
   NO_SEARCH_MATCH,
   /**

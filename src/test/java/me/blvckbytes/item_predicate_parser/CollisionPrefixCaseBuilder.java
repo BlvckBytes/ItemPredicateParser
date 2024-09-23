@@ -1,9 +1,9 @@
 package me.blvckbytes.item_predicate_parser;
 
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
-import me.blvckbytes.item_predicate_parser.translation.TranslatableSource;
+import me.blvckbytes.item_predicate_parser.translation.LangKeyedSource;
 import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
-import org.bukkit.Translatable;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import java.util.List;
 public class CollisionPrefixCaseBuilder {
 
   private final TranslationRegistry translationRegistry;
-  private final List<TranslatableSource> sources;
-  private final List<TranslatedTranslatablePredicate> predicates;
+  private final List<LangKeyedSource> sources;
+  private final List<TranslatedLangKeyedPredicate> predicates;
 
   public CollisionPrefixCaseBuilder(TranslationRegistry translationRegistry) {
     this.translationRegistry = translationRegistry;
@@ -21,18 +21,18 @@ public class CollisionPrefixCaseBuilder {
     this.predicates = new ArrayList<>();
   }
 
-  public CollisionPrefixCaseBuilder withSource(TranslatableSource source) {
+  public CollisionPrefixCaseBuilder withSource(LangKeyedSource source) {
     this.sources.add(source);
     return this;
   }
 
-  public CollisionPrefixCaseBuilder withSingleSource(Translatable translatable, String collisionPrefix) {
-    this.sources.add(new TranslatableSource(Collections.singletonList(translatable), collisionPrefix));
+  public CollisionPrefixCaseBuilder withSingleSource(LangKeyed<?> langKeyed, String collisionPrefix) {
+    this.sources.add(new LangKeyedSource(Collections.singletonList(langKeyed), collisionPrefix));
     return this;
   }
 
-  public CollisionPrefixCaseBuilder expectResult(Translatable translatable, String prefix) {
-    this.predicates.add(new TranslatedTranslatablePredicate(translationRegistry, translatable, prefix));
+  public CollisionPrefixCaseBuilder expectResult(LangKeyed<?> langKeyed, String prefix) {
+    this.predicates.add(new TranslatedLangKeyedPredicate(translationRegistry, langKeyed, prefix));
     return this;
   }
 

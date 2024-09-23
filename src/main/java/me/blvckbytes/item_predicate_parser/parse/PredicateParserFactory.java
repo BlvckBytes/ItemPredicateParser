@@ -2,7 +2,7 @@ package me.blvckbytes.item_predicate_parser.parse;
 
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.ConjunctionKey;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class PredicateParserFactory {
 
   public final TranslationRegistry registry;
-  private final TranslatedTranslatable conjunctionTranslation;
+  private final TranslatedLangKeyed conjunctionTranslation;
 
   public PredicateParserFactory(TranslationRegistry registry) {
     this.registry = registry;

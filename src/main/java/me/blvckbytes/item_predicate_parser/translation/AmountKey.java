@@ -1,15 +1,19 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import org.bukkit.Translatable;
-import org.jetbrains.annotations.NotNull;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 
-public class AmountKey implements Translatable {
+public class AmountKey implements LangKeyed<AmountKey> {
   public static final AmountKey INSTANCE = new AmountKey();
 
   private AmountKey() {}
 
   @Override
-  public @NotNull String getTranslationKey() {
+  public String getLanguageFileKey() {
     return "custom.item-predicate-parser.amount-key";
+  }
+
+  @Override
+  public AmountKey getWrapped() {
+    return this;
   }
 }

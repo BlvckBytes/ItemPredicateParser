@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import org.bukkit.Material;
-import org.bukkit.Translatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -15,15 +15,15 @@ public class TranslationRegistry {
 
   private final JsonObject languageFile;
   private final Logger logger;
-  private TranslatedTranslatable[] entries;
+  private TranslatedLangKeyed[] entries;
 
   public TranslationRegistry(JsonObject languageFile, Logger logger) {
     this.languageFile = languageFile;
     this.logger = logger;
   }
 
-  public void initialize(Iterable<TranslatableSource> sources) throws IllegalStateException {
-    var unsortedEntries = new ArrayList<TranslatedTranslatable>();
+  public void initialize(Iterable<LangKeyedSource> sources) throws IllegalStateException {
+    var unsortedEntries = new ArrayList<TranslatedLangKeyed>();
 
     for (var source : sources)
       createEntries(source, unsortedEntries);
@@ -31,17 +31,18 @@ public class TranslationRegistry {
     this.entries = unsortedEntries
       .stream()
       .sorted(Comparator.comparing(it -> it.normalizedPrefixedTranslation))
-      .toArray(TranslatedTranslatable[]::new);
+      .toArray(TranslatedLangKeyed[]::new);
 
     for (var entryIndex = 0; entryIndex < this.entries.length; ++entryIndex)
       this.entries[entryIndex].alphabeticalIndex = entryIndex;
   }
 
-  public @Nullable TranslatedTranslatable lookup(Translatable translatable) {
+  public @Nullable TranslatedLangKeyed lookup(LangKeyed<?> langKeyed) {
     for (var entry : entries) {
-      if (entry.translatable == translatable)
+      if (entry.langKeyed.equals(langKeyed))
         return entry;
     }
+
     return null;
   }
 
@@ -51,7 +52,7 @@ public class TranslationRegistry {
       return new SearchResult(List.of(), false);
     }
 
-    var result = new ArrayList<TranslatedTranslatable>();
+    var result = new ArrayList<TranslatedLangKeyed>();
     var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITER);
 
     var isWildcardPresent = false;
@@ -78,19 +79,19 @@ public class TranslationRegistry {
     return new SearchResult(result, isWildcardPresent);
   }
 
-  private void createEntries(TranslatableSource source, ArrayList<TranslatedTranslatable> output) throws IllegalStateException {
-    var buckets = new HashMap<String, ArrayList<Translatable>>();
+  private void createEntries(LangKeyedSource source, ArrayList<TranslatedLangKeyed> output) throws IllegalStateException {
+    var buckets = new HashMap<String, ArrayList<LangKeyed<?>>>();
 
-    for (var translatable : source.items()) {
-      var translationValue = getTranslationOrNull(translatable);
+    for (var langKeyed : source.items()) {
+      var translationValue = getTranslationOrNull(langKeyed);
 
       if (translationValue == null)
-        throw new IllegalStateException("Could not locate translation-value for key " + translatable.getTranslationKey());
+        throw new IllegalStateException("Could not locate translation-value for key " + langKeyed.getLanguageFileKey());
 
-      var normalizedTranslationValue = TranslatedTranslatable.normalize(translationValue);
+      var normalizedTranslationValue = TranslatedLangKeyed.normalize(translationValue);
 
       var bucket = buckets.computeIfAbsent(normalizedTranslationValue, k -> new ArrayList<>());
-      bucket.add(translatable);
+      bucket.add(langKeyed);
     }
 
     for (var bucketEntry : buckets.entrySet()) {
@@ -115,9 +116,9 @@ public class TranslationRegistry {
           if (!existingEntry.normalizedUnPrefixedTranslation.equalsIgnoreCase(bucketNormalizedUnPrefixedTranslation))
             continue;
 
-          output.set(outputIndex, new TranslatedTranslatable(
+          output.set(outputIndex, new TranslatedLangKeyed(
             existingEntry.source,
-            existingEntry.translatable,
+            existingEntry.langKeyed,
             existingEntry.normalizedUnPrefixedTranslation,
             existingEntry.source.collisionPrefix() + existingEntry.normalizedPrefixedTranslation
           ));
@@ -134,7 +135,7 @@ public class TranslationRegistry {
         if (hadCollision)
           newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;
 
-        output.add(new TranslatedTranslatable(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
+        output.add(new TranslatedLangKeyed(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
       }
     }
   }
@@ -155,7 +156,7 @@ public class TranslationRegistry {
     return descriptionTranslation.replace(" - ", "-");
   }
 
-  private @Nullable String tryGetSmithingTemplateDescriptionKey(Translatable translatable) {
+  private @Nullable String tryGetSmithingTemplateDescriptionKey(LangKeyed<?> langKeyed) {
     /*
       Various armor trims:
       item.minecraft.>coast<_armor_trim_smithing_template => trim_pattern.minecraft.>coast<
@@ -164,38 +165,38 @@ public class TranslationRegistry {
       item.minecraft.>netherite_upgrade<_smithing_template => upgrade.minecraft.>netherite_upgrade<
      */
 
-    var translationKey = translatable.getTranslationKey();
+    var fileKey = langKeyed.getLanguageFileKey();
     var armorTrimMarker = "_armor_trim_smithing_template";
     var itemMarker = "item.minecraft.";
 
     int trimMarkerIndex;
 
-    if ((trimMarkerIndex = translationKey.indexOf(armorTrimMarker)) > 0) {
-      var trimPattern = translationKey.substring(itemMarker.length(), trimMarkerIndex);
+    if ((trimMarkerIndex = fileKey.indexOf(armorTrimMarker)) > 0) {
+      var trimPattern = fileKey.substring(itemMarker.length(), trimMarkerIndex);
       return "trim_pattern.minecraft." + trimPattern;
     }
 
-    if (translatable == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+    if (langKeyed.getWrapped() == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
       return "upgrade.minecraft.netherite_upgrade";
 
     return null;
   }
 
-  private @Nullable String getTranslationOrNull(Translatable translatable) {
-    var translationKey = translatable.getTranslationKey();
+  private @Nullable String getTranslationOrNull(LangKeyed<?> langKeyed) {
+    var fileKey = langKeyed.getLanguageFileKey();
 
-    if (translatable instanceof Material) {
-      String descriptionTranslationKey = tryGetSmithingTemplateDescriptionKey(translatable);
+    if (langKeyed.getWrapped() instanceof Material) {
+      String descriptionTranslationKey = tryGetSmithingTemplateDescriptionKey(langKeyed);
 
       if (descriptionTranslationKey == null)
-        descriptionTranslationKey = translationKey + ".desc";
+        descriptionTranslationKey = fileKey + ".desc";
 
       var descriptionTranslation = accessLanguageKey(descriptionTranslationKey);
 
       if (descriptionTranslation != null)
-        return accessLanguageKey(translationKey) + " " + normalizeDescriptionTranslation(descriptionTranslation);
+        return accessLanguageKey(fileKey) + " " + normalizeDescriptionTranslation(descriptionTranslation);
     }
 
-    return accessLanguageKey(translationKey);
+    return accessLanguageKey(fileKey);
   }
 }

@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantment;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedItemMaterial;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedMusicInstrument;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedPotionEffectType;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
 import org.bukkit.Registry;
@@ -83,18 +87,30 @@ public class LanguageRegistry implements ILanguageRegistry {
     registryByLanguage.put(language, registry);
   }
 
-  private List<TranslatableSource> makeSources(CollisionPrefixes collisionPrefixes) {
-    var result = new ArrayList<TranslatableSource>();
+  private List<LangKeyedSource> makeSources(CollisionPrefixes collisionPrefixes) {
+    var result = new ArrayList<LangKeyedSource>();
 
-    result.add(new TranslatableSource(Registry.ENCHANTMENT, collisionPrefixes.forEnchantments()));
-    result.add(new TranslatableSource(Registry.EFFECT, collisionPrefixes.forEffects()));
+    result.add(new LangKeyedSource(
+      Registry.ENCHANTMENT.stream().map(LangKeyedEnchantment::new).toList(),
+      collisionPrefixes.forEnchantments())
+    );
 
-    result.add(new TranslatableSource(
-      Registry.MATERIAL.stream().filter(Material::isItem).toList(),
+    result.add(new LangKeyedSource(
+      Registry.EFFECT.stream().map(LangKeyedPotionEffectType::new).toList(),
+      collisionPrefixes.forEffects())
+    );
+
+    result.add(new LangKeyedSource(
+      Registry.MATERIAL.stream().filter(Material::isItem).map(LangKeyedItemMaterial::new).toList(),
       collisionPrefixes.forMaterials()
     ));
 
-    result.add(new TranslatableSource(List.of(
+    result.add(new LangKeyedSource(
+      Registry.INSTRUMENT.stream().map(LangKeyedMusicInstrument::new).toList(),
+      collisionPrefixes.forMaterials()
+    ));
+
+    result.add(new LangKeyedSource(List.of(
       DeteriorationKey.INSTANCE,
       NegationKey.INSTANCE,
       DisjunctionKey.INSTANCE,

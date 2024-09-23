@@ -1,11 +1,11 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 
 public record ExactNode(
   Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   ItemPredicate operand
 ) implements ItemPredicate {
 
@@ -26,6 +26,6 @@ public record ExactNode(
     if (useTokens)
       return token.stringify() + " " + operand.stringify(true);
 
-    return translatedTranslatable.normalizedPrefixedTranslation + " " + operand.stringify(false);
+    return translatedLangKeyed.normalizedPrefixedTranslation + " " + operand.stringify(false);
   }
 }

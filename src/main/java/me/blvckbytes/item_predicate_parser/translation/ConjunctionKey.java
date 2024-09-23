@@ -1,16 +1,20 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import org.bukkit.Translatable;
-import org.jetbrains.annotations.NotNull;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 
-public class ConjunctionKey implements Translatable {
+public class ConjunctionKey implements LangKeyed<ConjunctionKey> {
 
   public static final ConjunctionKey INSTANCE = new ConjunctionKey();
 
   private ConjunctionKey() {}
 
   @Override
-  public @NotNull String getTranslationKey() {
+  public String getLanguageFileKey() {
     return "custom.item-predicate-parser.conjunction-key";
+  }
+
+  @Override
+  public ConjunctionKey getWrapped() {
+    return this;
   }
 }

@@ -2,7 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +10,7 @@ import java.util.StringJoiner;
 
 public record DeteriorationPredicate(
   Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   @Nullable IntegerToken deteriorationPercentageMin,
   @Nullable IntegerToken deteriorationPercentageMax
 ) implements ItemPredicate {
@@ -51,7 +51,7 @@ public record DeteriorationPredicate(
     if (useTokens)
       result.add(token.stringify());
     else
-      result.add(translatedTranslatable.normalizedPrefixedTranslation);
+      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
 
     if (deteriorationPercentageMin != null)
       result.add(deteriorationPercentageMin.stringify());

@@ -9,9 +9,12 @@ import me.blvckbytes.item_predicate_parser.parse.PredicateParserFactory;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantment;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedItemMaterial;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedPotionEffectType;
 import org.bukkit.Material;
 import org.bukkit.Registry;
-import org.bukkit.Translatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +38,7 @@ public abstract class ParseTestBase {
     // Bukkit types are outside the scope of testing
     .interceptAndUseAssertEquals(Enchantment.class)
     .interceptAndUseAssertEquals(PotionEffectType.class)
-    .interceptAndUseAssertEquals(Translatable.class)
+    .interceptAndUseAssertEquals(LangKeyed.class)
     .intercept(List.class, (rootActualType, pathParts, expected, actual) -> {
       var lastPathPart = pathParts.getLast();
 
@@ -56,7 +59,7 @@ public abstract class ParseTestBase {
 
       // There's no need to compare the items of a source, as the collision-prefix will always be unique
       return (
-        lastPathPart.getDeclaringClass() == TranslatableSource.class &&
+        lastPathPart.getDeclaringClass() == LangKeyedSource.class &&
         lastPathPart.getName().equals("items")
       );
     });
@@ -156,11 +159,11 @@ public abstract class ParseTestBase {
   }
 
   protected EnchantmentPredicate enchantmentPredicate(Enchantment enchantment, @Nullable IntegerToken level, UnquotedStringToken search) {
-    return new EnchantmentPredicate(search, translationRegistry.lookup(enchantment), enchantment, level);
+    return new EnchantmentPredicate(search, translationRegistry.lookup(new LangKeyedEnchantment(enchantment)), enchantment, level);
   }
 
   protected MaterialPredicate materialPredicate(Material material, UnquotedStringToken token) {
-    return new MaterialPredicate(token, translationRegistry.lookup(material), List.of(material));
+    return new MaterialPredicate(token, translationRegistry.lookup(new LangKeyedItemMaterial(material)), List.of(material));
   }
 
   protected MaterialPredicate materialsPredicate(UnquotedStringToken search, Collection<Material> materials) {
@@ -168,7 +171,7 @@ public abstract class ParseTestBase {
   }
 
   protected PotionEffectPredicate potionEffectPredicate(PotionEffectType type, @Nullable IntegerToken amplifier, @Nullable IntegerToken duration, UnquotedStringToken token) {
-    return new PotionEffectPredicate(token, translationRegistry.lookup(type), type, amplifier, duration);
+    return new PotionEffectPredicate(token, translationRegistry.lookup(new LangKeyedPotionEffectType(type)), type, amplifier, duration);
   }
 
   protected DeteriorationPredicate deteriorationPredicate(@Nullable IntegerToken min, @Nullable IntegerToken max, UnquotedStringToken token) {
@@ -179,15 +182,21 @@ public abstract class ParseTestBase {
     return new AmountPredicate(token, translationRegistry.lookup(AmountKey.INSTANCE), amount);
   }
 
-  private static Iterable<TranslatableSource> makeSources() {
+  private static Iterable<LangKeyedSource> makeSources() {
     return Arrays.asList(
-      new TranslatableSource(Registry.ENCHANTMENT, "[Enchantment] "),
-      new TranslatableSource(Registry.EFFECT, "[Effect] "),
-      new TranslatableSource(
-        Registry.MATERIAL.stream().filter(Material::isItem).toList(),
+      new LangKeyedSource(
+        Registry.ENCHANTMENT.stream().map(LangKeyedEnchantment::new).toList(),
+        "[Enchantment] "
+      ),
+      new LangKeyedSource(
+        Registry.EFFECT.stream().map(LangKeyedPotionEffectType::new).toList(),
+        "[Effect] "
+      ),
+      new LangKeyedSource(
+        Registry.MATERIAL.stream().filter(Material::isItem).map(LangKeyedItemMaterial::new).toList(),
         "[Material] "
       ),
-      new TranslatableSource(List.of(
+      new LangKeyedSource(List.of(
         DeteriorationKey.INSTANCE,
         NegationKey.INSTANCE,
         DisjunctionKey.INSTANCE,

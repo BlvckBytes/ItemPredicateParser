@@ -1,29 +1,29 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
-import org.bukkit.Translatable;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TranslatedTranslatable {
+public class TranslatedLangKeyed {
 
-  public final TranslatableSource source;
-  public final Translatable translatable;
+  public final LangKeyedSource source;
+  public final LangKeyed<?> langKeyed;
   public final String normalizedUnPrefixedTranslation;
   public final String normalizedPrefixedTranslation;
   private final List<SubstringIndices> partIndices;
 
   public int alphabeticalIndex = 0;
 
-  public TranslatedTranslatable(
-    TranslatableSource source,
-    Translatable translatable,
+  public TranslatedLangKeyed(
+    LangKeyedSource source,
+    LangKeyed<?> langKeyed,
     String normalizedUnPrefixedTranslation,
     String normalizedPrefixedTranslation
   ) {
     this.source = source;
-    this.translatable = translatable;
+    this.langKeyed = langKeyed;
     this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
     this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
     this.partIndices = SubstringIndices.forString(null, normalizedPrefixedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);

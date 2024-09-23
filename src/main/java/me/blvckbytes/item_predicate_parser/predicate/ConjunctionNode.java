@@ -1,12 +1,12 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
 public record ConjunctionNode(
   @Nullable Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   ItemPredicate lhs,
   ItemPredicate rhs
 ) implements ItemPredicate {
@@ -24,6 +24,6 @@ public record ConjunctionNode(
     if (useTokens)
       return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
 
-    return lhs.stringify(false) + " " + translatedTranslatable.normalizedPrefixedTranslation + " " + rhs.stringify(false);
+    return lhs.stringify(false) + " " + translatedLangKeyed.normalizedPrefixedTranslation + " " + rhs.stringify(false);
   }
 }

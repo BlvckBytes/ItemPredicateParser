@@ -2,7 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +10,7 @@ import java.util.*;
 
 public record EnchantmentPredicate(
   Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   Enchantment enchantment,
   @Nullable IntegerToken levelArgument
 ) implements ItemPredicate {
@@ -45,7 +45,7 @@ public record EnchantmentPredicate(
     if (useTokens)
       result.add(token.stringify());
     else
-      result.add(translatedTranslatable.normalizedPrefixedTranslation);
+      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
 
     if (this.levelArgument != null)
       result.add(this.levelArgument.stringify());

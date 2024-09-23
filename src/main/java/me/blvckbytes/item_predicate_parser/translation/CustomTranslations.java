@@ -29,11 +29,11 @@ public record CustomTranslations(
   );
 
   public void apply(JsonObject languageFile) {
-    languageFile.addProperty(DeteriorationKey.INSTANCE.getTranslationKey(), deterioration);
-    languageFile.addProperty(NegationKey.INSTANCE.getTranslationKey(), negation);
-    languageFile.addProperty(DisjunctionKey.INSTANCE.getTranslationKey(), disjunction);
-    languageFile.addProperty(ConjunctionKey.INSTANCE.getTranslationKey(), conjunction);
-    languageFile.addProperty(ExactKey.INSTANCE.getTranslationKey(), exact);
-    languageFile.addProperty(AmountKey.INSTANCE.getTranslationKey(), amount);
+    languageFile.addProperty(DeteriorationKey.INSTANCE.getLanguageFileKey(), deterioration);
+    languageFile.addProperty(NegationKey.INSTANCE.getLanguageFileKey(), negation);
+    languageFile.addProperty(DisjunctionKey.INSTANCE.getLanguageFileKey(), disjunction);
+    languageFile.addProperty(ConjunctionKey.INSTANCE.getLanguageFileKey(), conjunction);
+    languageFile.addProperty(ExactKey.INSTANCE.getLanguageFileKey(), exact);
+    languageFile.addProperty(AmountKey.INSTANCE.getLanguageFileKey(), amount);
   }
 }

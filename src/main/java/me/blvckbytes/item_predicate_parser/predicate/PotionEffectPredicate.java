@@ -2,7 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
-import me.blvckbytes.item_predicate_parser.translation.TranslatedTranslatable;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 
 public record PotionEffectPredicate(
   Token token,
-  TranslatedTranslatable translatedTranslatable,
+  TranslatedLangKeyed translatedLangKeyed,
   PotionEffectType type,
   @Nullable IntegerToken amplifierArgument,
   @Nullable IntegerToken durationArgument
@@ -48,7 +48,7 @@ public record PotionEffectPredicate(
     if (useTokens)
       result.add(token.stringify());
     else
-      result.add(translatedTranslatable.normalizedPrefixedTranslation);
+      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
 
     if (this.amplifierArgument != null)
       result.add(this.amplifierArgument.stringify());

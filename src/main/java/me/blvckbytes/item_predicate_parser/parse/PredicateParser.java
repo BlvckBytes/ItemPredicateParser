@@ -3,10 +3,8 @@ package me.blvckbytes.item_predicate_parser.parse;
 import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
+import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.bukkit.Material;
-import org.bukkit.Translatable;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -19,23 +17,23 @@ public class PredicateParser {
 
   @FunctionalInterface
   private interface BinaryNodeConstructor {
-    ItemPredicate call(Token token, TranslatedTranslatable translatable, ItemPredicate lhs, ItemPredicate rhs);
+    ItemPredicate call(Token token, TranslatedLangKeyed langKeyed, ItemPredicate lhs, ItemPredicate rhs);
   }
 
   @FunctionalInterface
   private interface UnaryNodeConstructor {
-    ItemPredicate call(Token token, TranslatedTranslatable translatable, ItemPredicate operand);
+    ItemPredicate call(Token token, TranslatedLangKeyed langKeyed, ItemPredicate operand);
   }
 
   private final TranslationRegistry translationRegistry;
-  private final TranslatedTranslatable conjunctionTranslation;
+  private final TranslatedLangKeyed conjunctionTranslation;
   private final ArrayList<Token> tokens;
-  private final Map<Token, TranslatedTranslatable> resolveCache;
+  private final Map<Token, TranslatedLangKeyed> resolveCache;
   private final boolean allowMissingClosingParentheses;
 
   public PredicateParser(
     TranslationRegistry translationRegistry,
-    TranslatedTranslatable conjunctionTranslation,
+    TranslatedLangKeyed conjunctionTranslation,
     ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
@@ -72,7 +70,7 @@ public class PredicateParser {
 
   private @Nullable ItemPredicate parseBinaryNode(
     Supplier<ItemPredicate> parser,
-    Class<? extends Translatable> operatorType,
+    Class<? extends LangKeyed<?>> operatorType,
     BinaryNodeConstructor constructor
   ) {
     var result = parser.get();
@@ -84,7 +82,7 @@ public class PredicateParser {
       var token = tokens.getFirst();
       var translated = resolveTranslated(token);
 
-      if (translated == null || !operatorType.isInstance(translated.translatable))
+      if (translated == null || !operatorType.isInstance(translated.langKeyed))
         break;
 
       tokens.removeFirst();
@@ -110,7 +108,7 @@ public class PredicateParser {
 
   private @Nullable ItemPredicate parseUnaryNode(
     Supplier<ItemPredicate> parser,
-    Class<? extends Translatable> operatorType,
+    Class<? extends LangKeyed<?>> operatorType,
     UnaryNodeConstructor constructor
   ) {
     if (tokens.isEmpty())
@@ -119,7 +117,7 @@ public class PredicateParser {
     var token = tokens.getFirst();
     var translated = resolveTranslated(token);
 
-    if (translated == null || !operatorType.isInstance(translated.translatable))
+    if (translated == null || !operatorType.isInstance(translated.langKeyed))
       return parser.get();
 
     tokens.removeFirst();
@@ -204,7 +202,7 @@ public class PredicateParser {
     return new ParenthesesNode(inner);
   }
 
-  private @Nullable TranslatedTranslatable resolveTranslated(Token token) {
+  private @Nullable TranslatedLangKeyed resolveTranslated(Token token) {
     if (!(token instanceof UnquotedStringToken stringToken))
       return null;
 
@@ -245,7 +243,7 @@ public class PredicateParser {
         var materials = new ArrayList<Material>();
 
         for (var resultEntry : searchResultEntries) {
-          if (resultEntry.translatable instanceof Material material)
+          if (resultEntry.langKeyed.getWrapped() instanceof Material material)
             materials.add(material);
         }
 
@@ -262,60 +260,65 @@ public class PredicateParser {
       if (shortestMatch == null)
         throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
-      if (shortestMatch.translatable instanceof Material predicateMaterial) {
-        predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(predicateMaterial)));
-        tokens.removeFirst();
-        continue;
-      }
+      switch (shortestMatch.langKeyed) {
+        case LangKeyedItemMaterial material -> {
+          predicates.add(new MaterialPredicate(translationSearch, shortestMatch, List.of(material.getWrapped())));
+          tokens.removeFirst();
+          continue;
+        }
+        case LangKeyedEnchantment enchantment -> {
+          // TODO: Do I really need both the shortestMatch and the predicateEnchantment on the same object?!
+          tokens.removeFirst();
 
-      if (shortestMatch.translatable instanceof Enchantment predicateEnchantment) {
-        tokens.removeFirst();
+          IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(enchantmentLevel);
 
-        IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
-        throwOnTimeNotation(enchantmentLevel);
+          predicates.add(new EnchantmentPredicate(currentToken, shortestMatch, enchantment.getWrapped(), enchantmentLevel));
+          continue;
+        }
+        case LangKeyedPotionEffectType effect -> {
+          tokens.removeFirst();
 
-        predicates.add(new EnchantmentPredicate(currentToken, shortestMatch, predicateEnchantment, enchantmentLevel));
-        continue;
-      }
+          IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(potionEffectAmplifier);
 
-      if (shortestMatch.translatable instanceof PotionEffectType predicatePotionEffect) {
-        tokens.removeFirst();
+          IntegerToken potionEffectDuration = tryConsumeIntegerArgument(tokens);
 
-        IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
-        throwOnTimeNotation(potionEffectAmplifier);
+          predicates.add(new PotionEffectPredicate(currentToken, shortestMatch, effect.getWrapped(), potionEffectAmplifier, potionEffectDuration));
+          continue;
+        }
+        case DeteriorationKey deteriorationKey -> {
+          tokens.removeFirst();
 
-        IntegerToken potionEffectDuration = tryConsumeIntegerArgument(tokens);
+          IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(deteriorationPercentageMin);
+          throwOnNonEqualsComparison(deteriorationPercentageMin);
 
-        predicates.add(new PotionEffectPredicate(currentToken, shortestMatch, predicatePotionEffect, potionEffectAmplifier, potionEffectDuration));
-        continue;
-      }
+          IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(deteriorationPercentageMax);
+          throwOnNonEqualsComparison(deteriorationPercentageMax);
 
-      if (shortestMatch.translatable instanceof DeteriorationKey) {
-        tokens.removeFirst();
+          predicates.add(new DeteriorationPredicate(currentToken, shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
+          continue;
+        }
+        case AmountKey amountKey -> {
+          tokens.removeFirst();
 
-        IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
-        throwOnTimeNotation(deteriorationPercentageMin);
-        throwOnNonEqualsComparison(deteriorationPercentageMin);
+          IntegerToken amount = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(amount);
 
-        IntegerToken deteriorationPercentageMax = tryConsumeIntegerArgument(tokens);
-        throwOnTimeNotation(deteriorationPercentageMax);
-        throwOnNonEqualsComparison(deteriorationPercentageMax);
+          if (amount == null || amount.value() == null)
+            throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
 
-        predicates.add(new DeteriorationPredicate(currentToken, shortestMatch, deteriorationPercentageMin, deteriorationPercentageMax));
-        continue;
-      }
-
-      if (shortestMatch.translatable instanceof AmountKey) {
-        tokens.removeFirst();
-
-        IntegerToken amount = tryConsumeIntegerArgument(tokens);
-        throwOnTimeNotation(amount);
-
-        if (amount == null || amount.value() == null)
-          throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
-
-        predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
-        continue;
+          predicates.add(new AmountPredicate(currentToken, shortestMatch, amount));
+          continue;
+        }
+        case LangKeyedMusicInstrument instrument -> {
+          tokens.removeFirst();
+          predicates.add(new MusicInstrumentPredicate(currentToken, shortestMatch, instrument.getWrapped()));
+          continue;
+        }
+        default -> {}
       }
 
       break;
@@ -368,7 +371,7 @@ public class PredicateParser {
     return integerToken;
   }
 
-  private static @Nullable TranslatedTranslatable getShortestMatch(List<TranslatedTranslatable> matches) {
+  private static @Nullable TranslatedLangKeyed getShortestMatch(List<TranslatedLangKeyed> matches) {
     if (matches.isEmpty())
       return null;
 
@@ -378,7 +381,7 @@ public class PredicateParser {
       return matches.getFirst();
 
     var shortestMatchLength = Integer.MAX_VALUE;
-    TranslatedTranslatable shortestMatch = null;
+    TranslatedLangKeyed shortestMatch = null;
 
     for (var matchIndex = 0; matchIndex < numberOfMatches; ++matchIndex) {
       var currentMatch = matches.get(matchIndex);

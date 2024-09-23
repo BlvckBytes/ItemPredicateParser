@@ -1,16 +1,20 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import org.bukkit.Translatable;
-import org.jetbrains.annotations.NotNull;
+import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 
-public class DeteriorationKey implements Translatable {
+public class DeteriorationKey implements LangKeyed<DeteriorationKey> {
 
   public static final DeteriorationKey INSTANCE = new DeteriorationKey();
 
   private DeteriorationKey() {}
 
   @Override
-  public @NotNull String getTranslationKey() {
+  public String getLanguageFileKey() {
     return "custom.item-predicate-parser.deterioration-key";
+  }
+
+  @Override
+  public DeteriorationKey getWrapped() {
+    return this;
   }
 }

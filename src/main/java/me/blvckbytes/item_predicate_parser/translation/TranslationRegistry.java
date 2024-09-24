@@ -14,12 +14,18 @@ import java.util.logging.Logger;
 public class TranslationRegistry {
 
   private final JsonObject languageFile;
+  private final IVersionDependentCode versionDependentCode;
   private final Logger logger;
   private TranslatedLangKeyed<?>[] entries;
 
-  public TranslationRegistry(JsonObject languageFile, Logger logger) {
+  public TranslationRegistry(JsonObject languageFile, IVersionDependentCode versionDependentCode, Logger logger) {
     this.languageFile = languageFile;
+    this.versionDependentCode = versionDependentCode;
     this.logger = logger;
+  }
+
+  public IVersionDependentCode getVersionDependentCode() {
+    return versionDependentCode;
   }
 
   public void initialize(Iterable<LangKeyedSource> sources) throws IllegalStateException {
@@ -176,7 +182,7 @@ public class TranslationRegistry {
       return "trim_pattern.minecraft." + trimPattern;
     }
 
-    if (langKeyed.getWrapped() == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+    if (langKeyed.getWrapped() instanceof Material material && material.name().equals("NETHERITE_UPGRADE_SMITHING_TEMPLATE"))
       return "upgrade.minecraft.netherite_upgrade";
 
     return null;

@@ -1,7 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import com.google.gson.GsonBuilder;
 import me.blvckbytes.item_predicate_parser.translation.AssetIndex;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import org.junit.jupiter.api.AfterAll;

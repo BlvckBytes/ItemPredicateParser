@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Material;
-import org.bukkit.Registry;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,10 +22,11 @@ public class LanguageRegistry implements ILanguageRegistry {
   private final AssetIndex assetIndex;
   private final File languagesFolder;
   private final Logger logger;
+  private final IVersionDependentCode versionDependentCode;
 
   private final Map<TranslationLanguage, TranslationRegistry> registryByLanguage;
 
-  public LanguageRegistry(Plugin plugin) throws Exception {
+  public LanguageRegistry(Plugin plugin) throws Throwable {
     this.registryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
     this.assetIndex = new AssetIndex(null);
@@ -39,6 +38,8 @@ public class LanguageRegistry implements ILanguageRegistry {
 
       logger.info("Created folder to house language files");
     }
+
+    this.versionDependentCode = new VersionDependentCodeFactory(assetIndex.serverVersion, logger).get();
   }
 
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {
@@ -79,7 +80,7 @@ public class LanguageRegistry implements ILanguageRegistry {
 
     language.customTranslations.apply(languageFile);
 
-    TranslationRegistry registry = new TranslationRegistry(languageFile, logger);
+    TranslationRegistry registry = new TranslationRegistry(languageFile, versionDependentCode, logger);
     registry.initialize(makeSources(language.collisionPrefixes));
     registryByLanguage.put(language, registry);
   }
@@ -88,24 +89,24 @@ public class LanguageRegistry implements ILanguageRegistry {
     var result = new ArrayList<LangKeyedSource>();
 
     result.add(new LangKeyedSource(
-      Registry.ENCHANTMENT.stream().map(LangKeyedEnchantment::new).toList(),
+      versionDependentCode.getEnchantments(),
       collisionPrefixes.forEnchantments())
     );
 
     result.add(new LangKeyedSource(
-      Registry.EFFECT.stream().map(LangKeyedPotionEffectType::new).toList(),
+      versionDependentCode.getEffects(),
       collisionPrefixes.forEffects())
     );
 
     result.add(new LangKeyedSource(
-      Registry.MATERIAL.stream().filter(Material::isItem).map(LangKeyedItemMaterial::new).toList(),
+      versionDependentCode.getItemMaterials(),
       collisionPrefixes.forMaterials()
     ));
 
-    result.add(new LangKeyedSource(
-      Registry.INSTRUMENT.stream().map(LangKeyedMusicInstrument::new).toList(),
-      collisionPrefixes.forInstruments()
-    ));
+    var instruments = versionDependentCode.getInstruments();
+
+    if (instruments != null)
+      result.add(new LangKeyedSource(instruments, collisionPrefixes.forInstruments()));
 
     result.add(new LangKeyedSource(List.of(
       DeteriorationKey.INSTANCE,

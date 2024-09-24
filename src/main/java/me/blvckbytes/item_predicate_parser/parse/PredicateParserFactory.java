@@ -14,6 +14,7 @@ public class PredicateParserFactory {
 
   public PredicateParserFactory(TranslationRegistry registry) {
     this.registry = registry;
+
     this.conjunctionTranslation = this.registry.lookup(ConjunctionKey.INSTANCE);
 
     if (this.conjunctionTranslation == null)
@@ -24,6 +25,6 @@ public class PredicateParserFactory {
     ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
-    return new PredicateParser(registry, conjunctionTranslation, tokens, allowMissingClosingParentheses);
+    return new PredicateParser(registry, registry.getVersionDependentCode(), conjunctionTranslation, tokens, allowMissingClosingParentheses);
   }
 }

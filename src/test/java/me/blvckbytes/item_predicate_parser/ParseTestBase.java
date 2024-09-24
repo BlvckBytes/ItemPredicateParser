@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,10 +67,13 @@ public abstract class ParseTestBase {
   protected static final Logger logger = Logger.getAnonymousLogger();
   protected static TranslationRegistry translationRegistry;
   protected static PredicateParserFactory parserFactory;
+  protected static DetectedServerVersion serverVersion;
 
   @BeforeAll
-  public static void setup() throws IOException {
+  public static void setup() throws Throwable {
     MockBukkit.mock();
+
+    serverVersion = new DetectedServerVersion(1, 21, 0, "1.21.0");
 
     try (var inputStream = TranslationRegistry.class.getResourceAsStream("/en_us.json")) {
       if (inputStream == null)
@@ -79,7 +81,9 @@ public abstract class ParseTestBase {
 
       var languageJson = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
 
-      translationRegistry = new TranslationRegistry(languageJson, logger);
+      var versionDependentCode = new VersionDependentCodeFactory(serverVersion, logger).get();
+
+      translationRegistry = new TranslationRegistry(languageJson, versionDependentCode, logger);
       translationRegistry.initialize(makeSources());
     }
 

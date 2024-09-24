@@ -1,7 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 public enum ExpectedServerVersion {
-  V1_21(1, 21, 0)
+  V1_20(1, 20, 0)
   ;
 
   public final int major;

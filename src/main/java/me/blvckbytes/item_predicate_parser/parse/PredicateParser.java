@@ -26,6 +26,7 @@ public class PredicateParser {
   }
 
   private final TranslationRegistry translationRegistry;
+  private final IVersionDependentCode versionDependentCode;
   private final TranslatedLangKeyed<?> conjunctionTranslation;
   private final ArrayList<Token> tokens;
   private final Map<Token, TranslatedLangKeyed<?>> resolveCache;
@@ -33,11 +34,13 @@ public class PredicateParser {
 
   public PredicateParser(
     TranslationRegistry translationRegistry,
+    IVersionDependentCode versionDependentCode,
     TranslatedLangKeyed<?> conjunctionTranslation,
     ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
     this.translationRegistry = translationRegistry;
+    this.versionDependentCode = versionDependentCode;
     this.tokens = tokens;
     this.allowMissingClosingParentheses = allowMissingClosingParentheses;
     this.conjunctionTranslation = conjunctionTranslation;
@@ -261,6 +264,8 @@ public class PredicateParser {
       if (shortestMatch == null)
         throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
+      ItemPredicate predicate;
+
       switch (shortestMatch.langKeyed.getPredicateType()) {
         case ITEM_MATERIAL -> {
           predicates.add(new MaterialPredicate(translationSearch, (TranslatedLangKeyed<LangKeyedItemMaterial>) shortestMatch, null));
@@ -316,7 +321,9 @@ public class PredicateParser {
         case MUSIC_INSTRUMENT -> {
           tokens.remove(0);
 
-          predicates.add(new MusicInstrumentPredicate(currentToken, (TranslatedLangKeyed<LangKeyedMusicInstrument>) shortestMatch));
+          if ((predicate = versionDependentCode.makeInstrumentPredicate(currentToken, shortestMatch)) != null)
+            predicates.add(predicate);
+
           continue;
         }
         default -> {}

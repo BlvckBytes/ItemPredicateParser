@@ -23,7 +23,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
         this.languageRegistry.initializeRegistry(language);
 
       instance = this;
-    } catch (Exception e) {
+    } catch (Throwable e) {
       getLogger().log(Level.SEVERE, "Could not download and or initialize languages", e);
       Bukkit.getPluginManager().disablePlugin(this);
     }

@@ -104,7 +104,7 @@ public class LanguageRegistry implements ILanguageRegistry {
 
     result.add(new LangKeyedSource(
       Registry.INSTRUMENT.stream().map(LangKeyedMusicInstrument::new).toList(),
-      collisionPrefixes.forMaterials()
+      collisionPrefixes.forInstruments()
     ));
 
     result.add(new LangKeyedSource(List.of(

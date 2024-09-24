@@ -1,4 +1,4 @@
-package me.blvckbytes.item_predicate_parser.translation;
+package me.blvckbytes.item_predicate_parser.translation.version;
 
 public enum ExpectedServerVersion {
   V1_20(1, 20, 0)

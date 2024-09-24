@@ -1,5 +1,9 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
+import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
+import me.blvckbytes.item_predicate_parser.translation.version.ExpectedServerVersion;
+import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.logging.Logger;

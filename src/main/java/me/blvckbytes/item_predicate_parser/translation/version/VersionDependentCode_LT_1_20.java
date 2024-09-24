@@ -1,8 +1,9 @@
-package me.blvckbytes.item_predicate_parser.translation;
+package me.blvckbytes.item_predicate_parser.translation.version;
 
 import com.google.gson.JsonObject;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
 import me.blvckbytes.item_predicate_parser.token.Token;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

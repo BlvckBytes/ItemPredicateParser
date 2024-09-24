@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
+import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 

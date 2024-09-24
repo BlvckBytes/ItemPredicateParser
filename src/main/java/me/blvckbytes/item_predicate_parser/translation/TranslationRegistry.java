@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.*;
+import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
 import org.bukkit.Bukkit;
 
 import java.io.ByteArrayInputStream;

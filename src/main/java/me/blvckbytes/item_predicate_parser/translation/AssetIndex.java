@@ -26,12 +26,12 @@ public class AssetIndex {
   private static final HttpClient httpClient = HttpClient.newHttpClient();
   private static final Gson gson = new GsonBuilder().create();
 
-  public final String serverVersion;
+  public final DetectedServerVersion serverVersion;
   private final VersionUrls versionUrls;
   private final Map<String, String> languageFileUrls;
 
   public AssetIndex(String customVersion) throws Exception {
-    this.serverVersion = customVersion == null ? parseServerVersion() : customVersion;
+    this.serverVersion = DetectedServerVersion.fromString(customVersion == null ? parseServerVersion() : customVersion);
     this.versionUrls = getUrlsForCurrentVersion();
     this.languageFileUrls = getLanguageFileUrlsForCurrentVersion();
   }
@@ -63,7 +63,7 @@ public class AssetIndex {
   private Tuple<String, String> getClientEmbeddedLanguageFileContents() throws Exception {
     try (
       var inputStream = makeGetRequest(versionUrls.clientJarUrl());
-      var jarStream = new JarInputStream(new ByteArrayInputStream(inputStream.readAllBytes()));
+      var jarStream = new JarInputStream(new ByteArrayInputStream(inputStream.readAllBytes()))
     ) {
       JarEntry entry;
 
@@ -212,7 +212,7 @@ public class AssetIndex {
 
       var idString = idPrimitive.getAsString();
 
-      if(!idString.equals(serverVersion))
+      if(!idString.equals(serverVersion.original()))
         continue;
 
       var urlNode = versionObject.get("url");

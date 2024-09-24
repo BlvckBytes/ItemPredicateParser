@@ -31,7 +31,7 @@ public class LanguageRegistry implements ILanguageRegistry {
     this.registryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
     this.assetIndex = new AssetIndex(null);
-    this.languagesFolder = Paths.get(plugin.getDataFolder().getAbsolutePath(), "languages", assetIndex.serverVersion).toFile();
+    this.languagesFolder = Paths.get(plugin.getDataFolder().getAbsolutePath(), "languages", assetIndex.serverVersion.original()).toFile();
 
     if (!this.languagesFolder.isDirectory()) {
       if (!this.languagesFolder.mkdirs())

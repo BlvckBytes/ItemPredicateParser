@@ -20,7 +20,7 @@ public class AssetIndexTests {
   @Test
   public void shouldDownloadFromIndex() throws Exception {
     var assetIndex = new AssetIndex(null); // MockBukkit is at 1.21
-    assertEquals("1.21", assetIndex.serverVersion);
+    assertEquals("1.21", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.GERMAN_DE);
     assertEquals("Diamantspitzhacke", languageJson.get("item.minecraft.diamond_pickaxe").getAsString());
@@ -29,7 +29,7 @@ public class AssetIndexTests {
   @Test
   public void shouldDownloadEmbeddedIntoClient() throws Exception {
     var assetIndex = new AssetIndex("1.20");
-    assertEquals("1.20", assetIndex.serverVersion);
+    assertEquals("1.20", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.ENGLISH_US);
     assertEquals("Diamond Pickaxe", languageJson.get("item.minecraft.diamond_pickaxe").getAsString());
@@ -38,7 +38,7 @@ public class AssetIndexTests {
   @Test
   public void shouldDownloadOldLangFormatEmbeddedIntoClient() throws Exception {
     var assetIndex = new AssetIndex("1.12");
-    assertEquals("1.12", assetIndex.serverVersion);
+    assertEquals("1.12", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.ENGLISH_US);
     assertEquals("Diamond Pickaxe", languageJson.get("item.pickaxeDiamond.name").getAsString());
@@ -47,7 +47,7 @@ public class AssetIndexTests {
   @Test
   public void shouldDownloadOldLangFormatFromIndex() throws Exception {
     var assetIndex = new AssetIndex("1.12");
-    assertEquals("1.12", assetIndex.serverVersion);
+    assertEquals("1.12", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.GERMAN_DE);
     assertEquals("Diamantspitzhacke", languageJson.get("item.pickaxeDiamond.name").getAsString());

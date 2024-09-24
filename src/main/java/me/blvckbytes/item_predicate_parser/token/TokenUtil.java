@@ -21,7 +21,7 @@ public class TokenUtil {
     if (tokens.isEmpty())
       return executeSearch(registry, maxResults, moreResultsLineGenerator, EMPTY_SEARCH, "");
 
-    var args = tokens.getFirst().parserInput().getInputAsArguments();
+    var args = tokens.get(0).parserInput().getInputAsArguments();
     var lastArgIndex = args.length - 1;
 
     if (args[lastArgIndex].isEmpty())
@@ -38,13 +38,13 @@ public class TokenUtil {
       if (currentToken.endCommandArgumentIndex() > lastArgIndex)
         continue;
 
-      argCorrespondingTokens.addFirst(currentToken);
+      argCorrespondingTokens.add(0, currentToken);
     }
 
     if (argCorrespondingTokens.isEmpty())
       return null;
 
-    var lastToken = argCorrespondingTokens.getLast();
+    var lastToken = argCorrespondingTokens.get(argCorrespondingTokens.size() - 1);
 
     if (!(lastToken instanceof UnquotedStringToken search))
       return null;

@@ -46,7 +46,7 @@ public class CollisionPrefixCaseBuilder {
     var remainingResults = new ArrayList<>(searchResult.result());
 
     predicateLoop: while (!remainingPredicates.isEmpty()) {
-      var currentPredicate = remainingPredicates.removeFirst();
+      var currentPredicate = remainingPredicates.remove(0);
 
       for (var resultIterator = remainingResults.iterator(); resultIterator.hasNext();) {
         if (!currentPredicate.test(resultIterator.next()))

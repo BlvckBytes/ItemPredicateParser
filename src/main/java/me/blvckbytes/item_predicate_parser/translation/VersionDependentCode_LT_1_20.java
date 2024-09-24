@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
+import com.google.gson.JsonObject;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
@@ -34,8 +35,8 @@ public class VersionDependentCode_LT_1_20 implements IVersionDependentCode {
   }
 
   @Override
-  public Iterable<? extends LangKeyed<?>> getItemMaterials() {
-    return Arrays.stream(Material.values()).filter(Material::isItem).map(LangKeyedItemMaterial::new).toList();
+  public Iterable<? extends LangKeyed<?>> getItemMaterials(JsonObject languageJson) {
+    return Arrays.stream(Material.values()).filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, languageJson)).toList();
   }
 
   @Override

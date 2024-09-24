@@ -81,11 +81,11 @@ public class LanguageRegistry implements ILanguageRegistry {
     language.customTranslations.apply(languageFile);
 
     TranslationRegistry registry = new TranslationRegistry(languageFile, versionDependentCode, logger);
-    registry.initialize(makeSources(language.collisionPrefixes));
+    registry.initialize(makeSources(language.collisionPrefixes, languageFile));
     registryByLanguage.put(language, registry);
   }
 
-  private List<LangKeyedSource> makeSources(CollisionPrefixes collisionPrefixes) {
+  private List<LangKeyedSource> makeSources(CollisionPrefixes collisionPrefixes, JsonObject languageJson) {
     var result = new ArrayList<LangKeyedSource>();
 
     result.add(new LangKeyedSource(
@@ -99,7 +99,7 @@ public class LanguageRegistry implements ILanguageRegistry {
     );
 
     result.add(new LangKeyedSource(
-      versionDependentCode.getItemMaterials(),
+      versionDependentCode.getItemMaterials(languageJson),
       collisionPrefixes.forMaterials()
     ));
 

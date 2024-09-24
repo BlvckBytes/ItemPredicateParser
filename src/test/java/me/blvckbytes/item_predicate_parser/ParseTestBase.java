@@ -68,6 +68,7 @@ public abstract class ParseTestBase {
   protected static TranslationRegistry translationRegistry;
   protected static PredicateParserFactory parserFactory;
   protected static DetectedServerVersion serverVersion;
+  protected static JsonObject languageJson;
 
   @BeforeAll
   public static void setup() throws Throwable {
@@ -79,7 +80,7 @@ public abstract class ParseTestBase {
       if (inputStream == null)
         throw new IllegalStateException("Resource stream was null");
 
-      var languageJson = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
+      languageJson = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
 
       var versionDependentCode = new VersionDependentCodeFactory(serverVersion, logger).get();
 
@@ -169,7 +170,7 @@ public abstract class ParseTestBase {
 
   @SuppressWarnings("unchecked")
   protected MaterialPredicate materialPredicate(Material material, UnquotedStringToken token) {
-    return new MaterialPredicate(token, (TranslatedLangKeyed<LangKeyedItemMaterial>) translationRegistry.lookup(new LangKeyedItemMaterial(material)), null);
+    return new MaterialPredicate(token, (TranslatedLangKeyed<LangKeyedItemMaterial>) translationRegistry.lookup(new LangKeyedItemMaterial(material, languageJson)), null);
   }
 
   protected MaterialPredicate materialsPredicate(UnquotedStringToken search, Collection<Material> materials) {
@@ -202,7 +203,7 @@ public abstract class ParseTestBase {
         "[Effect] "
       ),
       new LangKeyedSource(
-        Registry.MATERIAL.stream().filter(Material::isItem).map(LangKeyedItemMaterial::new).toList(),
+        Registry.MATERIAL.stream().filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, languageJson)).toList(),
         "[Material] "
       ),
       new LangKeyedSource(List.of(

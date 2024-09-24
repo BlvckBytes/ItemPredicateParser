@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Material;
 
 import java.util.Objects;
@@ -9,15 +10,27 @@ public class LangKeyedItemMaterial implements LangKeyed<Material> {
   private final Material material;
   private final String languageFileKey;
 
-  public LangKeyedItemMaterial(Material material) {
+  public LangKeyedItemMaterial(Material material, JsonObject languageJson) {
     if (!material.isItem())
       throw new IllegalStateException("Only supporting item materials");
 
     this.material = material;
 
-    // TODO: Find out how to decide on whether a material is block or item (isItem does not help)
-    //       Then, replace this, as to be truly independent of the Translatable-Interface
-    this.languageFileKey = material.getTranslationKey();
+    // NOTE: I don't see another way to know, without access to any kind of Registry, which
+    //       materials are treated as items, and which as blocks, when it comes to the language
+    //       file keys; isItem() and isBlock() do >not< indicate this relation.
+
+    var namespacedKey = material.getKey();
+    var fileKey = "item." + namespacedKey.getNamespace() + "." + namespacedKey.getKey();
+
+    if (languageJson.get(fileKey) == null) {
+      fileKey = "block." + namespacedKey.getNamespace() + "." + namespacedKey.getKey();
+
+      if (languageJson.get(fileKey) == null)
+        throw new IllegalStateException("Couldn't locate valid key for Material " + material);
+    }
+
+    this.languageFileKey = fileKey;
   }
 
   @Override

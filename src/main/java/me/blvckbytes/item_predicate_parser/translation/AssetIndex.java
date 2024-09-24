@@ -1,7 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.*;
-import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +17,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 public class AssetIndex {
+
+  private record ClientEmbeddedResult(
+    String fileContents,
+    String fileExtension
+  ) {}
 
   private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
   private static final String RESOURCE_BASE_URL = "https://resources.download.minecraft.net/";
@@ -38,15 +42,12 @@ public class AssetIndex {
 
   public JsonObject getLanguageFile(TranslationLanguage language) throws Exception {
     if (language == TranslationLanguage.ENGLISH_US) {
-      var fileInfo = getClientEmbeddedLanguageFileContents();
+      var embeddedResult = getClientEmbeddedLanguageFileContents();
 
-      var fileContents = fileInfo.a();
-      var fileExtension = fileInfo.b();
+      if (embeddedResult.fileExtension.equals("json"))
+        return parseJson(embeddedResult.fileContents);
 
-      if (fileExtension.equals("json"))
-        return parseJson(fileContents);
-
-      return LangToJsonUtil.convertLangContentsToJsonObject(fileContents);
+      return LangToJsonUtil.convertLangContentsToJsonObject(embeddedResult.fileContents);
     }
 
     String languageFileUrl;
@@ -60,7 +61,7 @@ public class AssetIndex {
     throw new IllegalStateException("Could not locate language-file url for " + language.assetFileNameWithoutExtension);
   }
 
-  private Tuple<String, String> getClientEmbeddedLanguageFileContents() throws Exception {
+  private ClientEmbeddedResult getClientEmbeddedLanguageFileContents() throws Exception {
     try (
       var inputStream = makeGetRequest(versionUrls.clientJarUrl());
       var jarStream = new JarInputStream(new ByteArrayInputStream(inputStream.readAllBytes()))
@@ -86,7 +87,7 @@ public class AssetIndex {
 
         var fileExtension = entryName.substring(entryName.lastIndexOf('.') + 1);
 
-        return new Tuple<>(new String(fileData), fileExtension);
+        return new ClientEmbeddedResult(new String(fileData), fileExtension);
       }
 
       throw new IllegalStateException("Could not find en_us.json within client.jar");
@@ -142,17 +143,19 @@ public class AssetIndex {
 
     var result = new HashMap<String, String>();
 
-    for (var objectKey : objectsObject.keySet()) {
-      if (!(objectKey.startsWith(LANG_OBJECT_PREFIX)))
+    for (var entry : objectsObject.entrySet()) {
+      var entryKey = entry.getKey();
+
+      if (!(entryKey.startsWith(LANG_OBJECT_PREFIX)))
         continue;
 
-      var fileName = objectKey.substring(LANG_OBJECT_PREFIX.length());
+      var fileName = entryKey.substring(LANG_OBJECT_PREFIX.length());
 
-      if (!(objectsObject.get(objectKey) instanceof JsonObject valueObject))
-        throw new IllegalStateException("Expected key \"objects." + objectKey + "\" to be a JSON-object");
+      if (!(entry.getValue() instanceof JsonObject valueObject))
+        throw new IllegalStateException("Expected key \"objects." + entryKey + "\" to be a JSON-object");
 
       if (!(valueObject.get("hash") instanceof JsonPrimitive valuePrimitive))
-        throw new IllegalStateException("Expected key \"objects." + objectKey + ".hash\" to be a JSON-primitive");
+        throw new IllegalStateException("Expected key \"objects." + entryKey + ".hash\" to be a JSON-primitive");
 
       var hashString = valuePrimitive.getAsString();
 

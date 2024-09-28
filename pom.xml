@@ -10,7 +10,7 @@
 
     <properties>
         <compileSource>17</compileSource>
-        <testCompileSource>18</testCompileSource>
+        <testCompileSource>21</testCompileSource>
         <output.path>${user.home}/Documents/Projects/MCServerLagersuche/plugins</output.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

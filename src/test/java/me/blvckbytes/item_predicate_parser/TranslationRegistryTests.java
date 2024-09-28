@@ -29,8 +29,8 @@ public class TranslationRegistryTests extends ParseTestBase {
       .withSource(new LangKeyedSource(List.of(
         UNBREAKING, UNBREAKING
       ), ""))
-      .expectResult(UNBREAKING, "1 ")
-      .expectResult(UNBREAKING, "2 ")
+      .expectResult(UNBREAKING, "[1] ")
+      .expectResult(UNBREAKING, "[2] ")
       .execute("unbr");
   }
 
@@ -41,8 +41,8 @@ public class TranslationRegistryTests extends ParseTestBase {
         UNBREAKING, UNBREAKING
       ), "[A]"))
       .withSingleSource(UNBREAKING, "[B]")
-      .expectResult(UNBREAKING, "[A] 1 ")
-      .expectResult(UNBREAKING, "[A] 2 ")
+      .expectResult(UNBREAKING, "[A] [1] ")
+      .expectResult(UNBREAKING, "[A] [2] ")
       .expectResult(UNBREAKING, "[B] ")
       .execute("unbr");
   }

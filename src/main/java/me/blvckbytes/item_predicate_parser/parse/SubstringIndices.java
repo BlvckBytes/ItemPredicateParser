@@ -25,7 +25,7 @@ public record SubstringIndices(
     var isPatternWildcardChar = start == end && text.charAt(start) == PATTERN_WILDCARD_CHAR;
 
     if (start != end && text.charAt(start) == PATTERN_NEGATION_CHAR)
-      return new SubstringIndices(start + 1, end, true, isPatternWildcardChar );
+      return new SubstringIndices(start + 1, end, true, false);
 
     return new SubstringIndices(start, end, false, isPatternWildcardChar );
   }

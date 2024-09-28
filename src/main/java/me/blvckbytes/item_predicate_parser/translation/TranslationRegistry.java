@@ -137,7 +137,7 @@ public class TranslationRegistry {
 
         // Incrementing same-source prefixes should be nearest to the translation
         if (bucketSize > 1)
-          newItemPrefixedTranslation = (itemIndex + 1) + "-" + newItemPrefixedTranslation;
+          newItemPrefixedTranslation = "[" + (itemIndex + 1) + "]-" + newItemPrefixedTranslation;
 
         if (hadCollision)
           newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;

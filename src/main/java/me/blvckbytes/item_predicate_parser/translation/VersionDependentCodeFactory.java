@@ -14,8 +14,8 @@ public class VersionDependentCodeFactory {
   private static final MethodType constructorType = MethodType.methodType(void.class, DetectedServerVersion.class, Logger.class);
 
   // NOTE: Using path-notation to support relocation, if ever needed
-  private static final String GTE_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/VersionDependentCode_GTE_1_20";
-  private static final String LT_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/VersionDependentCode_LT_1_20";
+  private static final String GTE_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_GTE_1_20";
+  private static final String LT_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_LT_1_20";
 
   private final IVersionDependentCode instance;
 

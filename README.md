@@ -28,8 +28,9 @@
 
 ## Things To Think About
 
-- Write documentation about how to use it
+- Write documentation about how to use it (in the works)
 - The predicates and the IntegerToken could use some test-cases too
+- Configuration of messages and various parameters should be added to *this* plugin, instead of the consumer
 
 ## Language Files
 

@@ -1,8 +1,16 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
-public interface ItemPredicate {
+import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Predicate;
+
+public interface ItemPredicate extends Predicate<ItemStack> {
 
   boolean test(PredicateState state);
+
+  default boolean test(ItemStack item) {
+    return test(new PredicateState(item));
+  }
 
   /**
    * Stringifies the predicate to represent the fully-expanded version of it's previously
@@ -11,4 +19,5 @@ public interface ItemPredicate {
    *                  entered; otherwise, full translations will be made use of.
    */
   String stringify(boolean useTokens);
+
 }

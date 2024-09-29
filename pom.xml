@@ -23,6 +23,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>me.blvckbytes</groupId>
+            <artifactId>BukkitEvaluable</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!-- MockBukkit needs to be prepended to spigot, otherwise there will be runtime errors. -->
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
@@ -57,6 +62,65 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+
+                    <artifactSet>
+                        <includes>
+                            <!-- Include all libs for shading -->
+                            <include>me.blvckbytes:BBConfigMapper</include>
+                            <include>me.blvckbytes:BukkitEvaluable</include>
+                            <include>me.blvckbytes:GPEEE</include>
+                            <!-- [1] Shouldn't be necessary anymore on newer versions of bukkit, but I prefer backwards-compatibility over file-size. -->
+                            <include>org.yaml:snakeyaml</include>
+                            <include>com.github.cryptomorin:XSeries</include>
+                        </includes>
+                    </artifactSet>
+
+                    <relocations>
+                        <!-- Relocate all libs into the root package -->
+                        <relocation>
+                            <pattern>me/blvckbytes/(bbconfigmapper|bukkit-evaluable|GPEEE)/(.*)</pattern>
+                            <shadedPattern>me/blvckbytes/item_predicate_parser/$1/$2</shadedPattern>
+                            <rawString>true</rawString>
+                        </relocation>
+
+                        <!-- See [1] -->
+                        <relocation>
+                            <pattern>org/yaml/snakeyaml/(.*)</pattern>
+                            <shadedPattern>me/blvckbytes/org/yaml/snakeyaml/$1</shadedPattern>
+                            <rawString>true</rawString>
+                        </relocation>
+                    </relocations>
+
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/license/**</exclude>
+                                <exclude>META-INF/*</exclude>
+                                <exclude>META-INF/maven/**</exclude>
+                                <exclude>LICENSE</exclude>
+                                <exclude>NOTICE</exclude>
+                                <exclude>/*.txt</exclude>
+                                <exclude>build.properties</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

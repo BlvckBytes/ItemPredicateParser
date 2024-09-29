@@ -1,8 +1,8 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.item_predicate_parser.translation.ILanguageRegistry;
+import me.blvckbytes.bukkitevaluable.ConfigManager;
+import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
-import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -12,15 +12,17 @@ import java.util.logging.Level;
 public class ItemPredicateParserPlugin extends JavaPlugin {
 
   private static ItemPredicateParserPlugin instance;
-  private LanguageRegistry languageRegistry;
+  private PredicateHelper predicateHelper;
 
   @Override
   public void onEnable() {
     try {
-      this.languageRegistry = new LanguageRegistry(this);
+      var configManager = new ConfigManager(this);
+      var configMapper = configManager.loadConfig("config.yml");
+      var mainSection = configMapper.mapSection(null, MainSection.class);
 
-      for (TranslationLanguage language : TranslationLanguage.values())
-        this.languageRegistry.initializeRegistry(language);
+      var languageRegistry = new LanguageRegistry(this);
+      this.predicateHelper = new PredicateHelper(languageRegistry, mainSection);
 
       instance = this;
     } catch (Throwable e) {
@@ -29,8 +31,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
     }
   }
 
-  public ILanguageRegistry getLanguageRegistry() {
-    return languageRegistry;
+  public PredicateHelper getPredicateHelper() {
+    return predicateHelper;
   }
 
   public static @Nullable ItemPredicateParserPlugin getInstance() {

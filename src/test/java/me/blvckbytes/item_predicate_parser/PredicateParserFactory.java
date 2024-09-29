@@ -1,5 +1,6 @@
-package me.blvckbytes.item_predicate_parser.parse;
+package me.blvckbytes.item_predicate_parser;
 
+import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.keyed.ConjunctionKey;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
@@ -25,6 +26,6 @@ public class PredicateParserFactory {
     ArrayList<Token> tokens,
     boolean allowMissingClosingParentheses
   ) {
-    return new PredicateParser(registry, registry.getVersionDependentCode(), conjunctionTranslation, tokens, allowMissingClosingParentheses);
+    return new PredicateParser(registry, conjunctionTranslation, tokens, allowMissingClosingParentheses);
   }
 }

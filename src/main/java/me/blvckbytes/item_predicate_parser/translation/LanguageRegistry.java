@@ -8,7 +8,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class LanguageRegistry implements ILanguageRegistry {
+public class LanguageRegistry {
 
   private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -25,10 +25,10 @@ public class LanguageRegistry implements ILanguageRegistry {
   private final Logger logger;
   private final IVersionDependentCode versionDependentCode;
 
-  private final Map<TranslationLanguage, TranslationRegistry> registryByLanguage;
+  private final Map<TranslationLanguage, TranslationRegistry> translationRegistryByLanguage;
 
   public LanguageRegistry(Plugin plugin) throws Throwable {
-    this.registryByLanguage = new HashMap<>();
+    this.translationRegistryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
     this.assetIndex = new AssetIndex(null);
     this.languagesFolder = Paths.get(plugin.getDataFolder().getAbsolutePath(), "languages", assetIndex.serverVersion.original()).toFile();
@@ -41,6 +41,9 @@ public class LanguageRegistry implements ILanguageRegistry {
     }
 
     this.versionDependentCode = new VersionDependentCodeFactory(assetIndex.serverVersion, logger).get();
+
+    for (TranslationLanguage language : TranslationLanguage.values())
+      initializeTranslationRegistry(language);
   }
 
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {
@@ -61,12 +64,11 @@ public class LanguageRegistry implements ILanguageRegistry {
     return languageObject;
   }
 
-  @Override
-  public @Nullable TranslationRegistry getTranslationRegistry(TranslationLanguage language) {
-    return registryByLanguage.get(language);
+  public @NotNull TranslationRegistry getTranslationRegistry(TranslationLanguage language) {
+    return translationRegistryByLanguage.get(language);
   }
 
-  public void initializeRegistry(TranslationLanguage language) throws Exception {
+  private void initializeTranslationRegistry(TranslationLanguage language) throws Exception {
     JsonObject languageFile;
 
     try {
@@ -83,7 +85,7 @@ public class LanguageRegistry implements ILanguageRegistry {
 
     TranslationRegistry registry = new TranslationRegistry(languageFile, versionDependentCode, logger);
     registry.initialize(makeSources(language.collisionPrefixes, languageFile));
-    registryByLanguage.put(language, registry);
+    translationRegistryByLanguage.put(language, registry);
   }
 
   private List<LangKeyedSource> makeSources(CollisionPrefixes collisionPrefixes, JsonObject languageJson) {

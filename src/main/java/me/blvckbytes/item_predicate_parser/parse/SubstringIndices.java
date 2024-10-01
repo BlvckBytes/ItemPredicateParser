@@ -62,7 +62,7 @@ public record SubstringIndices(
       }
 
       if (encounteredNonDelimiter) {
-        var nextIndices = SubstringIndices.makePossiblyNegatable(nextPartBeginning, isDelimiter ? i - 1 : i, input);
+        var nextIndices = makePossiblyNegatable(nextPartBeginning, isDelimiter ? i - 1 : i, input);
 
         if (nextIndices.isPatternWildcardChar) {
           if (token != null) {
@@ -92,6 +92,20 @@ public record SubstringIndices(
     int numberOfContainerChars
   ) {}
 
+  private static char charToLower(char c) {
+    // NOTE: This fast-path for ASCII actually makes a noticeable difference, simply because this method is so *heavily* used.
+    //       Even though Character.toLowerCase() seems quite optimized to me already, this way, I save ~1ms (!) on mid-length predicates.
+
+    if (c <= 127) {
+      if (c > 96 && c < 123)
+        c ^= 0x20;
+    }
+    else
+      c = Character.toLowerCase(c);
+
+    return c;
+  }
+
   private static IndexOfResult relativeIndexOf(String contained, SubstringIndices containedIndices, String container, SubstringIndices containerIndices) {
     var containerIndicesLength = containerIndices.length();
     var containedIndicesLength = containedIndices.length();
@@ -118,7 +132,6 @@ public record SubstringIndices(
         var containerIndex = containerIndices.start + containedOffset + containerOffset;
         var containedIndex = containedIndices.start + containedOffset;
         var containerChar = container.charAt(containerIndex);
-        var containedChar = contained.charAt(containedIndex);
 
         while (containerChar == '§' && containerOffset < highestOffset) {
           var nextContainerChar = container.charAt(containerIndex + 1);
@@ -138,17 +151,20 @@ public record SubstringIndices(
             break;
         }
 
-        if (Character.toLowerCase(containerChar) != Character.toLowerCase(containedChar)) {
+        var containedChar = contained.charAt(containedIndex);
+
+        if (charToLower(containerChar) != charToLower(containedChar)) {
           didMatch = false;
           break;
         }
       }
 
-      if (didMatch)
+      if (didMatch) {
         return new IndexOfResult(
           initialContainerOffset,
           containerOffset - initialContainerOffset + containedIndicesLength
         );
+      }
     }
 
     return new IndexOfResult(-1, 0);
@@ -177,7 +193,7 @@ public record SubstringIndices(
 
       for (var remainingTextSubstringIndex = 0; remainingTextSubstringIndex < remainingTextSubstrings.size(); ++remainingTextSubstringIndex) {
         var remainingTextSubstring = remainingTextSubstrings.get(remainingTextSubstringIndex);
-        var indexResult = SubstringIndices.relativeIndexOf(query, pendingQuerySubstring, text, remainingTextSubstring);
+        var indexResult = relativeIndexOf(query, pendingQuerySubstring, text, remainingTextSubstring);
         var relativeIndex = indexResult.beginInContainer;
 
         if (relativeIndex < 0)

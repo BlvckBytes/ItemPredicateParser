@@ -84,7 +84,7 @@ public abstract class ParseTestBase {
 
       var versionDependentCode = new VersionDependentCodeFactory(serverVersion, logger).get();
 
-      translationRegistry = new TranslationRegistry(languageJson, versionDependentCode, null, logger);
+      translationRegistry = new TranslationRegistry(TranslationLanguage.ENGLISH_US, languageJson, versionDependentCode, null, logger);
       translationRegistry.initialize(makeSources());
     }
 

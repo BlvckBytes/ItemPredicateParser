@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 public class TranslationRegistry {
 
+  private final TranslationLanguage language;
   private final JsonObject languageFile;
   private final IVersionDependentCode versionDependentCode;
   private final @Nullable TranslationResolver translationResolver;
@@ -22,11 +23,13 @@ public class TranslationRegistry {
   private TranslatedLangKeyed<?>[] entries;
 
   public TranslationRegistry(
+    TranslationLanguage language,
     JsonObject languageFile,
     IVersionDependentCode versionDependentCode,
     @Nullable TranslationResolver translationResolver,
     Logger logger
   ) {
+    this.language = language;
     this.languageFile = languageFile;
     this.versionDependentCode = versionDependentCode;
     this.translationResolver = translationResolver;
@@ -48,8 +51,12 @@ public class TranslationRegistry {
       .sorted(Comparator.comparing(it -> it.normalizedPrefixedTranslation))
       .toArray(TranslatedLangKeyed[]::new);
 
-    for (var entryIndex = 0; entryIndex < this.entries.length; ++entryIndex)
+    var entryIndex = 0;
+
+    for (; entryIndex < this.entries.length; ++entryIndex)
       this.entries[entryIndex].alphabeticalIndex = entryIndex;
+
+    logger.info("Loaded " + entryIndex + " entries for language " + language.assetFileNameWithoutExtension);
   }
 
   public @Nullable TranslatedLangKeyed<?> lookup(LangKeyed<?> langKeyed) {

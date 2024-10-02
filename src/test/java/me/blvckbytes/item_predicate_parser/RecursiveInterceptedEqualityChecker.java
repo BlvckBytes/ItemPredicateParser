@@ -114,7 +114,7 @@ public class RecursiveInterceptedEqualityChecker {
         pathParts.add(field);
         compareRecursively(rootActualType, field, expectedValue, actualValue, pathParts);
 
-        if (!field.equals(pathParts.removeLast()))
+        if (!field.equals(pathParts.remove(pathParts.size() - 1)))
           throw new IllegalStateException("Expected " + field.getName() + " to be at the end of the path-part list");
       } catch (IllegalArgumentException | IllegalAccessException e) {
         throw new IllegalStateException(

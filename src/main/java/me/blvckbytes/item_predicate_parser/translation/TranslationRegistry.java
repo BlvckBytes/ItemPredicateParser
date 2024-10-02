@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
@@ -16,12 +17,19 @@ public class TranslationRegistry {
 
   private final JsonObject languageFile;
   private final IVersionDependentCode versionDependentCode;
+  private final @Nullable TranslationResolver translationResolver;
   private final Logger logger;
   private TranslatedLangKeyed<?>[] entries;
 
-  public TranslationRegistry(JsonObject languageFile, IVersionDependentCode versionDependentCode, Logger logger) {
+  public TranslationRegistry(
+    JsonObject languageFile,
+    IVersionDependentCode versionDependentCode,
+    @Nullable TranslationResolver translationResolver,
+    Logger logger
+  ) {
     this.languageFile = languageFile;
     this.versionDependentCode = versionDependentCode;
+    this.translationResolver = translationResolver;
     this.logger = logger;
   }
 
@@ -147,11 +155,14 @@ public class TranslationRegistry {
     }
   }
 
-  private @Nullable String accessLanguageKey(String key) {
+  private @Nullable String accessLanguageKey(String key, LangKeyed<?> langKeyed) {
     var translationValue = languageFile.get(key);
 
-    if (translationValue == null)
+    if (translationValue == null) {
+      if (langKeyed != null && translationResolver != null)
+        return translationResolver.resolve(langKeyed);
       return null;
+    }
 
     if (!(translationValue instanceof JsonPrimitive))
       return null;
@@ -198,12 +209,12 @@ public class TranslationRegistry {
       if (descriptionTranslationKey == null)
         descriptionTranslationKey = fileKey + ".desc";
 
-      var descriptionTranslation = accessLanguageKey(descriptionTranslationKey);
+      var descriptionTranslation = accessLanguageKey(descriptionTranslationKey, null);
 
       if (descriptionTranslation != null)
-        return accessLanguageKey(fileKey) + " " + normalizeDescriptionTranslation(descriptionTranslation);
+        return accessLanguageKey(fileKey, langKeyed) + " " + normalizeDescriptionTranslation(descriptionTranslation);
     }
 
-    return accessLanguageKey(fileKey);
+    return accessLanguageKey(fileKey, langKeyed);
   }
 }

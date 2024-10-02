@@ -20,6 +20,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>auxilor</id>
+            <url>https://repo.auxilor.io/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -57,6 +61,24 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.11.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.willfp</groupId>
+            <artifactId>EcoEnchants</artifactId>
+            <version>12.18.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.willfp</groupId>
+            <artifactId>eco</artifactId>
+            <version>6.71.6</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

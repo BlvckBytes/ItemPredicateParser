@@ -36,7 +36,7 @@ public abstract class ParseTestBase {
     .interceptAndUseAssertEquals(PotionEffectType.class)
     .interceptAndUseAssertEquals(LangKeyed.class)
     .intercept(List.class, (rootActualType, pathParts, expected, actual) -> {
-      var lastPathPart = pathParts.getLast();
+      var lastPathPart = pathParts.get(pathParts.size() - 1);
 
       // Manual list content comparison
       if (MaterialPredicate.class == lastPathPart.getDeclaringClass()) {
@@ -54,7 +54,7 @@ public abstract class ParseTestBase {
       );
     })
     .intercept(Iterable.class, (rootActualType, pathParts, expected, actual) -> {
-      var lastPathPart = pathParts.getLast();
+      var lastPathPart = pathParts.get(pathParts.size() - 1);
 
       // There's no need to compare the items of a source, as the collision-prefix will always be unique
       return (
@@ -84,7 +84,7 @@ public abstract class ParseTestBase {
 
       var versionDependentCode = new VersionDependentCodeFactory(serverVersion, logger).get();
 
-      translationRegistry = new TranslationRegistry(languageJson, versionDependentCode, logger);
+      translationRegistry = new TranslationRegistry(languageJson, versionDependentCode, null, logger);
       translationRegistry.initialize(makeSources());
     }
 

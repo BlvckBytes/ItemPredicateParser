@@ -3,3 +3,4 @@ main: me.blvckbytes.item_predicate_parser.ItemPredicateParserPlugin
 version: 0.1
 author: BlvckBytes
 api-version: 1.13
+softdepend: [EcoEnchants]

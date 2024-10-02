@@ -27,6 +27,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
           .forName(ECO_ENCHANTS_RESOLVER_PATH.replace('/', '.'))
           .getConstructor()
           .newInstance();
+
+        getLogger().log(Level.INFO, "Loaded resolver for EcoEnchants");
       }
 
       var configManager = new ConfigManager(this);

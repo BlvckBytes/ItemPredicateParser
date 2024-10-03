@@ -34,6 +34,8 @@ public class AssetIndex {
   ) {}
 
   private static final int HTTP_MAX_TRIES = 3;
+  private static final long RETRY_DELAY_MS = 500;
+
   private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
   private static final String RESOURCE_BASE_URL = "https://resources.download.minecraft.net/";
   private static final String LANG_OBJECT_PREFIX = "minecraft/lang/";
@@ -135,6 +137,12 @@ public class AssetIndex {
         var specificPrefix = "Could not GET \"" + url + "\": ";
         logger.log(Level.WARNING, specificPrefix, error);
         errorMessages.add(specificPrefix + error.getMessage());
+
+        try {
+          Thread.sleep(RETRY_DELAY_MS);
+        } catch (InterruptedException e) {
+          logger.log(Level.SEVERE, "Could not sleep for " + RETRY_DELAY_MS + "ms after a failed HTTP-request", e);
+        }
       }
     }
 

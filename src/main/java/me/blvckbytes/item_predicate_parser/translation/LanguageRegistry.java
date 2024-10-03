@@ -34,7 +34,7 @@ public class LanguageRegistry {
     this.translationResolver = translationResolver;
     this.translationRegistryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
-    this.assetIndex = new AssetIndex(null);
+    this.assetIndex = new AssetIndex(null, plugin.getLogger());
     this.languagesFolder = Paths.get(plugin.getDataFolder().getAbsolutePath(), "languages", assetIndex.serverVersion.original()).toFile();
 
     if (!this.languagesFolder.isDirectory()) {

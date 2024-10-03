@@ -7,9 +7,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.logging.Logger;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AssetIndexTests {
+
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   @BeforeAll
   public static void setup() {
@@ -18,7 +22,7 @@ public class AssetIndexTests {
 
   @Test
   public void shouldDownloadFromIndex() throws Exception {
-    var assetIndex = new AssetIndex(null); // MockBukkit is at 1.21
+    var assetIndex = new AssetIndex(null, logger); // MockBukkit is at 1.21
     assertEquals("1.21", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.GERMAN_DE);
@@ -27,7 +31,7 @@ public class AssetIndexTests {
 
   @Test
   public void shouldDownloadEmbeddedIntoClient() throws Exception {
-    var assetIndex = new AssetIndex("1.20");
+    var assetIndex = new AssetIndex("1.20", logger);
     assertEquals("1.20", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.ENGLISH_US);
@@ -36,7 +40,7 @@ public class AssetIndexTests {
 
   @Test
   public void shouldDownloadOldLangFormatEmbeddedIntoClient() throws Exception {
-    var assetIndex = new AssetIndex("1.12");
+    var assetIndex = new AssetIndex("1.12", logger);
     assertEquals("1.12", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.ENGLISH_US);
@@ -45,7 +49,7 @@ public class AssetIndexTests {
 
   @Test
   public void shouldDownloadOldLangFormatFromIndex() throws Exception {
-    var assetIndex = new AssetIndex("1.12");
+    var assetIndex = new AssetIndex("1.12", logger);
     assertEquals("1.12", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.GERMAN_DE);

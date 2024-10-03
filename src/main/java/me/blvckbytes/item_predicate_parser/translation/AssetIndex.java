@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser.translation;
 import com.google.gson.*;
 import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -14,8 +15,11 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AssetIndex {
 
@@ -24,6 +28,12 @@ public class AssetIndex {
     String fileExtension
   ) {}
 
+  private record VersionUrls(
+    String assetIndexUrl,
+    String clientJarUrl
+  ) {}
+
+  private static final int HTTP_MAX_TRIES = 3;
   private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
   private static final String RESOURCE_BASE_URL = "https://resources.download.minecraft.net/";
   private static final String LANG_OBJECT_PREFIX = "minecraft/lang/";
@@ -32,13 +42,15 @@ public class AssetIndex {
   private static final Gson gson = new GsonBuilder().create();
 
   public final DetectedServerVersion serverVersion;
-  private final VersionUrls versionUrls;
-  private final Map<String, String> languageFileUrls;
 
-  public AssetIndex(String customVersion) throws Exception {
+  private final Logger logger;
+  private @Nullable VersionUrls versionUrls;
+  private @Nullable Map<String, String> languageFileUrls;
+
+  public AssetIndex(String customVersion, Logger logger) {
+    this.logger = logger;
+
     this.serverVersion = DetectedServerVersion.fromString(customVersion == null ? parseServerVersion() : customVersion);
-    this.versionUrls = getUrlsForCurrentVersion();
-    this.languageFileUrls = getLanguageFileUrlsForCurrentVersion();
   }
 
   public JsonObject getLanguageFile(TranslationLanguage language) throws Exception {
@@ -50,6 +62,9 @@ public class AssetIndex {
 
       return LangToJsonUtil.convertLangContentsToJsonObject(embeddedResult.fileContents);
     }
+
+    if (languageFileUrls == null)
+      languageFileUrls = getLanguageFileUrlsForCurrentVersion();
 
     String languageFileUrl;
 
@@ -63,6 +78,9 @@ public class AssetIndex {
   }
 
   private ClientEmbeddedResult getClientEmbeddedLanguageFileContents() throws Exception {
+    if (versionUrls == null)
+      versionUrls = getUrlsForCurrentVersion();
+
     try (
       var inputStream = makeGetRequest(versionUrls.clientJarUrl());
       var jarStream = new JarInputStream(new ByteArrayInputStream(inputStream.readAllBytes()))
@@ -95,20 +113,32 @@ public class AssetIndex {
     }
   }
 
-  private InputStream makeGetRequest(String url) throws Exception {
-    var response = httpClient.send(
-      HttpRequest
-        .newBuilder(URI.create(url))
-        .timeout(Duration.ofSeconds(3))
-        .GET()
-        .build(),
-      HttpResponse.BodyHandlers.ofInputStream()
-    );
+  private InputStream makeGetRequest(String url) {
+    var errorMessages = new StringJoiner("; ");
 
-    if (response.statusCode() != 200)
-      throw new IllegalStateException("GET \"" + url + "\" responded with non-200 status-code");
+    for (var trialIndex = 0; trialIndex < HTTP_MAX_TRIES; ++trialIndex) {
+      try {
+        var response = httpClient.send(
+          HttpRequest
+            .newBuilder(URI.create(url))
+            .timeout(Duration.ofSeconds(3))
+            .GET()
+            .build(),
+          HttpResponse.BodyHandlers.ofInputStream()
+        );
 
-    return response.body();
+        if (response.statusCode() != 200)
+          throw new IllegalStateException("Responded with non-200 status-code");
+
+        return response.body();
+      } catch (Exception error) {
+        var specificPrefix = "Could not GET \"" + url + "\": ";
+        logger.log(Level.WARNING, specificPrefix, error);
+        errorMessages.add(specificPrefix + error.getMessage());
+      }
+    }
+
+    throw new IllegalStateException("Failed after " + HTTP_MAX_TRIES + " attempts: " + errorMessages);
   }
 
   private String makePlainTextGetRequest(String url) throws Exception {
@@ -123,11 +153,11 @@ public class AssetIndex {
     return gson.fromJson(string, JsonObject.class);
   }
 
-  private JsonObject makeJsonGetRequest(String url) throws Exception {
+  private JsonObject makeJsonGetRequest(String url) {
     return gson.fromJson(new InputStreamReader(makeGetRequest(url)), JsonObject.class);
   }
 
-  private JsonArray getVersions() throws Exception {
+  private JsonArray getVersions() {
     var versionsNode = makeJsonGetRequest(MANIFEST_URL).get("versions");
 
     if (!(versionsNode instanceof JsonArray versionsArray))
@@ -136,7 +166,10 @@ public class AssetIndex {
     return versionsArray;
   }
 
-  private Map<String, String> getLanguageFileUrlsForCurrentVersion() throws Exception {
+  private Map<String, String> getLanguageFileUrlsForCurrentVersion() {
+    if (versionUrls == null)
+      versionUrls = getUrlsForCurrentVersion();
+
     var objectsNode = makeJsonGetRequest(versionUrls.assetIndexUrl()).get("objects");
 
     if (!(objectsNode instanceof JsonObject objectsObject))
@@ -167,7 +200,7 @@ public class AssetIndex {
     return result;
   }
 
-  private VersionUrls getUrlsForCurrentVersion() throws Exception {
+  private VersionUrls getUrlsForCurrentVersion() {
     var responseJson = makeJsonGetRequest(getPackageDataUrlForCurrentVersion());
 
     var assetIndexNode = responseJson.get("assetIndex");
@@ -202,7 +235,7 @@ public class AssetIndex {
     return new VersionUrls(assetIndexUrl, clientUrl);
   }
 
-  private String getPackageDataUrlForCurrentVersion() throws Exception {
+  private String getPackageDataUrlForCurrentVersion() {
     var versions = getVersions();
 
     for (var versionNode : versions) {

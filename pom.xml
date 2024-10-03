@@ -6,7 +6,7 @@
 
     <groupId>me.blvckbytes</groupId>
     <artifactId>ItemPredicateParser</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <properties>
         <compileSource>17</compileSource>
@@ -147,6 +147,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${compileSource}</source>
                     <target>${compileSource}</target>

@@ -14,21 +14,27 @@ public abstract class TranslationResolver {
     var result = new StringBuilder(inputLength);
 
     /*
-      - Simple Colors: (§|&)[0-9a-fklmnor]
+      - Simple Colors: (§|&)[0-9a-fk-or]
       - Hex Colors: (§|&)#([0-9a-fA-F]{3} | [0-9a-fA-F]{6})
       - XML-Tags (Mini-Message)
         - May contain other tags in string-parameters, marked by " or '
         - Example: <hover:show_text:"<red>test:TEST">
+        - Escape-Sequences: \", \', \< \>
      */
 
     int possibleTagBeginning = -1;
     var quoteStack = new Stack<Character>();
 
+    char previousChar = 0;
+
     for (var i = 0; i < inputLength; ++i) {
       var currentChar = input.charAt(i);
+      var isEscaped = previousChar == '\\';
+
+      previousChar = currentChar;
 
       if (possibleTagBeginning >= 0) {
-        if (currentChar == '"' || currentChar == '\'') {
+        if (!isEscaped && (currentChar == '"' || currentChar == '\'')) {
           if (!quoteStack.empty() && quoteStack.peek() == currentChar)
             quoteStack.pop();
           else
@@ -39,7 +45,7 @@ public abstract class TranslationResolver {
         if (!quoteStack.empty())
           continue;
 
-        if (currentChar == '>') {
+        if (!isEscaped && currentChar == '>') {
           possibleTagBeginning = -1;
           continue;
         }
@@ -81,7 +87,7 @@ public abstract class TranslationResolver {
         }
       }
 
-      if (currentChar == '<') {
+      if (!isEscaped && currentChar == '<') {
         possibleTagBeginning = i;
         continue;
       }

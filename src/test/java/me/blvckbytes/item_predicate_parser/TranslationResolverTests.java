@@ -60,6 +60,13 @@ public class TranslationResolverTests {
     makeCase("<tag:\"arg\" MyEnchantment <tag2", "<tag:\"arg\" MyEnchantment <tag2");
   }
 
+  @Test
+  public void shouldHandleEscapeSequences() {
+    makeCase("<tag\\<\\>>MyEnchantment</tag>", "MyEnchantment");
+    makeCase("<tag:\"\\\"<unclosed\">MyEnchantment", "MyEnchantment");
+    makeCase("<tag:'\\'<unclosed'>MyEnchantment", "MyEnchantment");
+  }
+
   private void makeCase(String input, String expected) {
     assertEquals(expected, TranslationResolver.sanitize(input));
 

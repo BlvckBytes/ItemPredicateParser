@@ -21,6 +21,51 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PredicateParserTests extends ParseTestBase {
 
   @Test
+  public void shouldThrowOnMissingLeftHandSide() {
+    assertEquals(
+      "§4and", // Highlighted input
+      makeExceptionCase(
+        new String[] {
+          "and"
+        },
+        0, ParseConflict.EXPECTED_LEFT_HAND_SIDE
+      )
+    );
+
+    assertEquals(
+      "§4or", // Highlighted input
+      makeExceptionCase(
+        new String[] {
+          "or"
+        },
+        0, ParseConflict.EXPECTED_LEFT_HAND_SIDE
+      )
+    );
+
+    assertEquals(
+      "§4and §cand", // Highlighted input
+      makeExceptionCase(
+        new String[] {
+          "and", "and"
+        },
+        0, ParseConflict.EXPECTED_LEFT_HAND_SIDE
+      )
+    );
+
+    // Back-to-back binary-operators cause the corresponding parsing-stage to fail, so an exception
+    // is thrown before the second occurrence is even reached; this is desired behavior.
+    assertEquals(
+      "§cdia and dia §4or §cand", // Highlighted input
+      makeExceptionCase(
+        new String[] {
+          "dia", "and", "dia", "or", "and"
+        },
+        3, ParseConflict.EXPECTED_EXPRESSION_AFTER_OPERATOR
+      )
+    );
+  }
+
+  @Test
   public void shouldHighlightInput() {
     assertEquals(
       "§cback-to-back§4\"unterminated stringinput-data",

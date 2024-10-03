@@ -57,6 +57,9 @@ public class PredicateParser {
       result = new ConjunctionNode(null, conjunctionTranslation, result, nextExpression);
     }
 
+    if (!tokens.isEmpty())
+      throw new ItemPredicateParseException(tokens.remove(0), ParseConflict.EXPECTED_LEFT_HAND_SIDE);
+
     return result;
   }
 

@@ -31,3 +31,4 @@ parseConflicts$:
   EXPECTED_OPENING_PARENTHESIS: '"&cExpected a opening parenthesis: " & highlighted_input'
   EXPECTED_CLOSING_PARENTHESIS: '"&cExpected a closing parenthesis: " & highlighted_input'
   EMPTY_OR_BLANK_QUOTED_STRING: '"&cStrings are not allowed to be blank: " & highlighted_input'
+  EXPECTED_LEFT_HAND_SIDE: '"&cExpected a left-hand-side expression: " & highlighted_input'

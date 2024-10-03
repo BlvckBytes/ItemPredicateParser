@@ -48,6 +48,10 @@ public enum ParseConflict {
    */
   EXPECTED_EXPRESSION_AFTER_OPERATOR,
   /**
+   * And/Or both demand a left-hand-side expression
+   */
+  EXPECTED_LEFT_HAND_SIDE,
+  /**
    * A closing parenthesis has been used to introduce a new parentheses-group
    */
   EXPECTED_OPENING_PARENTHESIS,

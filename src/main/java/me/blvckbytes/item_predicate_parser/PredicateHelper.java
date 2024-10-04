@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
 import me.blvckbytes.bbconfigmapper.ScalarType;
+import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
@@ -26,14 +27,14 @@ public class PredicateHelper {
   private static final UnquotedStringToken EMPTY_STRING = new UnquotedStringToken(0, 0, null, "");
 
   private final LanguageRegistry languageRegistry;
-  private final MainSection mainSection;
+  private final ConfigKeeper<MainSection> config;
 
   private final Map<TranslationLanguage, TranslatedLangKeyed<?>> conjunctionTranslations;
-  private final int maxResults;
+  private int maxResults;
 
-  public PredicateHelper(LanguageRegistry languageRegistry, MainSection mainSection) {
+  public PredicateHelper(LanguageRegistry languageRegistry, ConfigKeeper<MainSection> config) {
     this.languageRegistry = languageRegistry;
-    this.mainSection = mainSection;
+    this.config = config;
     this.conjunctionTranslations = new HashMap<>();
 
     // Conjunction translations are required when parsing to inject implicitly
@@ -47,7 +48,13 @@ public class PredicateHelper {
       conjunctionTranslations.put(language, conjunctionTranslation);
     }
 
-    maxResults = mainSection.maxCompletionsCount.asScalar(ScalarType.INT, mainSection.getBaseEnvironment().build());
+    updateMaxResults();
+
+    config.registerReloadListener(this::updateMaxResults);
+  }
+
+  private void updateMaxResults() {
+    maxResults = config.rootSection.maxCompletionsCount.asScalar(ScalarType.INT, config.rootSection.getBaseEnvironment().build());
   }
 
   /**
@@ -95,9 +102,9 @@ public class PredicateHelper {
     try {
       var predicate = _parsePredicate(language, tokens, true);
 
-      if (predicate != null && mainSection.expandedPreview != null) {
-        expandedPreviewOrError = mainSection.expandedPreview.stringify(
-          mainSection.getBaseEnvironment()
+      if (predicate != null && config.rootSection.expandedPreview != null) {
+        expandedPreviewOrError = config.rootSection.expandedPreview.stringify(
+          config.rootSection.getBaseEnvironment()
             .withStaticVariable("command_representation", predicate.stringify(false))
             .build()
         );
@@ -121,21 +128,21 @@ public class PredicateHelper {
   public String createExceptionMessage(ItemPredicateParseException exception) {
     String highlightPrefix = "", nonHighlightPrefix = "";
 
-    if (mainSection.inputHighlightPrefix != null)
-      highlightPrefix = mainSection.inputHighlightPrefix.stringify();
+    if (config.rootSection.inputHighlightPrefix != null)
+      highlightPrefix = config.rootSection.inputHighlightPrefix.stringify();
 
-    if (mainSection.inputNonHighlightPrefix != null)
-      nonHighlightPrefix = mainSection.inputNonHighlightPrefix.stringify();
+    if (config.rootSection.inputNonHighlightPrefix != null)
+      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.stringify();
 
     var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
 
-    var conflictEvaluable = mainSection.parseConflicts.get(exception.getConflict().name());
+    var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
 
     if (conflictEvaluable == null)
       return highlightedInput;
 
     return conflictEvaluable.stringify(
-      mainSection.getBaseEnvironment()
+      config.rootSection.getBaseEnvironment()
         .withStaticVariable("highlighted_input", highlightedInput)
         .build()
     );
@@ -214,9 +221,9 @@ public class PredicateHelper {
       .map(it -> itemPrefix + it.normalizedPrefixedTranslation)
       .collect(Collectors.toList());
 
-    if (resultCount > maxResults && mainSection.maxCompletionsExceeded != null) {
-      resultTexts.add(mainSection.maxCompletionsExceeded.stringify(
-        mainSection.getBaseEnvironment()
+    if (resultCount > maxResults && config.rootSection.maxCompletionsExceeded != null) {
+      resultTexts.add(config.rootSection.maxCompletionsExceeded.stringify(
+        config.rootSection.getBaseEnvironment()
           .withStaticVariable("excess_count", resultCount - maxResults)
           .build()
       ));

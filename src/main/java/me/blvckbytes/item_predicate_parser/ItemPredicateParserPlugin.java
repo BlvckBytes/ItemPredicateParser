@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
+import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.bukkitevaluable.ConfigManager;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
@@ -32,11 +33,10 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       }
 
       var configManager = new ConfigManager(this);
-      var configMapper = configManager.loadConfig("config.yml");
-      var mainSection = configMapper.mapSection(null, MainSection.class);
+      var config = new ConfigKeeper<>(configManager, "config.yml", MainSection.class);
 
       var languageRegistry = new LanguageRegistry(this, translationResolver);
-      this.predicateHelper = new PredicateHelper(languageRegistry, mainSection);
+      this.predicateHelper = new PredicateHelper(languageRegistry, config);
 
       instance = this;
     } catch (Throwable e) {

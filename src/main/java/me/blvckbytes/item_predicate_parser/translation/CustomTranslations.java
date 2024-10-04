@@ -29,6 +29,15 @@ public record CustomTranslations(
     "Anzahl"
   );
 
+  public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
+    "恶化",
+    "不是",
+    "或",
+    "和",
+    "精确",
+    "数量"
+  );
+
   public void apply(JsonObject languageFile) {
     languageFile.addProperty(DeteriorationKey.INSTANCE.getLanguageFileKey(), deterioration);
     languageFile.addProperty(NegationKey.INSTANCE.getLanguageFileKey(), negation);

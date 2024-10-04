@@ -17,32 +17,29 @@ public record DeteriorationPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    if (state.meta instanceof Damageable damageableMeta) {
-      var damage = damageableMeta.getDamage();
-      var maxDamage = (int) state.item.getType().getMaxDurability();
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (!(state.meta instanceof Damageable damageableMeta))
+      return this;
 
-      if (maxDamage == 0)
-        return false;
+    var damage = damageableMeta.getDamage();
+    var maxDamage = (int) state.item.getType().getMaxDurability();
 
-      var deteriorationPercentage = Math.round(((double) damage / maxDamage) * 100.0);
+    if (maxDamage == 0)
+      return this;
 
-      if (this.deteriorationPercentageMin != null) {
-        if (deteriorationPercentageMin.value() != null) {
-          if (!(deteriorationPercentage >= deteriorationPercentageMin.value()))
-            return false;
-        }
-      }
+    var deteriorationPercentage = Math.round(((double) damage / maxDamage) * 100.0);
 
-      if (this.deteriorationPercentageMax != null) {
-        if (deteriorationPercentageMax.value() != null)
-          return deteriorationPercentage <= deteriorationPercentageMax.value();
-      }
-
-      return true;
+    if (this.deteriorationPercentageMin != null && this.deteriorationPercentageMin.value() != null) {
+      if (!(deteriorationPercentage >= deteriorationPercentageMin.value()))
+        return this;
     }
 
-    return false;
+    if (this.deteriorationPercentageMax != null && deteriorationPercentageMax.value() != null) {
+      if (!(deteriorationPercentage <= deteriorationPercentageMax.value()))
+        return this;
+    }
+
+    return null;
   }
 
   @Override

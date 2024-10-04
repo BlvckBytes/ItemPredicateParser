@@ -16,7 +16,7 @@ public record EnchantmentPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
     for (var entryIterator = state.getEnchantments().iterator(); entryIterator.hasNext();) {
       var entry = entryIterator.next();
 
@@ -24,11 +24,11 @@ public record EnchantmentPredicate(
         if (state.isExactMode)
           entryIterator.remove();
 
-        return true;
+        return null;
       }
     }
 
-    return false;
+    return this;
   }
 
   private boolean doesEnchantmentMatch(Enchantment enchantment, int level) {

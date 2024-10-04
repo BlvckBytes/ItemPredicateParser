@@ -12,8 +12,16 @@ public record ConjunctionNode(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    return lhs.test(state) && rhs.test(state);
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    ItemPredicate failure;
+
+    if ((failure = lhs.testForFailure(state)) != null)
+      return failure;
+
+    if ((failure = rhs.testForFailure(state)) != null)
+      return failure;
+
+    return null;
   }
 
   @Override

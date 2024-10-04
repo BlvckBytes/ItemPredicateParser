@@ -15,18 +15,23 @@ public record MaterialPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    if (translatedLangKeyed != null)
-      return translatedLangKeyed.langKeyed.getWrapped().equals(state.item.getType());
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (translatedLangKeyed != null) {
+      if (translatedLangKeyed.langKeyed.getWrapped().equals(state.item.getType()))
+        return null;
+
+      return this;
+    }
 
     if (materials == null)
-      return true;
+      return this;
 
     for (var material : materials) {
       if (material.equals(state.item.getType()))
-        return true;
+        return null;
     }
-    return false;
+
+    return this;
   }
 
   @Override

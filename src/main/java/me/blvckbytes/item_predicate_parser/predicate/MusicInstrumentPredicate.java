@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedMusicInstrument;
 import org.bukkit.inventory.meta.MusicInstrumentMeta;
+import org.jetbrains.annotations.Nullable;
 
 public record MusicInstrumentPredicate(
   Token token,
@@ -11,11 +12,14 @@ public record MusicInstrumentPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
     if (!(state.meta instanceof MusicInstrumentMeta instrumentMeta))
-      return false;
+      return this;
 
-    return translatedLangKeyed.langKeyed.getWrapped().equals(instrumentMeta.getInstrument());
+    if (translatedLangKeyed.langKeyed.getWrapped().equals(instrumentMeta.getInstrument()))
+      return null;
+
+    return this;
   }
 
   @Override

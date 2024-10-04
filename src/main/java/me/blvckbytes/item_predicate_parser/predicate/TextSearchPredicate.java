@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +21,9 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public boolean test(PredicateState state) {
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
     if (state.meta == null)
-      return false;
+      return this;
 
     var pendingTextIndices = new ArrayList<>(textIndices);
 
@@ -39,7 +40,7 @@ public class TextSearchPredicate implements ItemPredicate {
       );
 
       if (pendingTextIndices.isEmpty())
-        return true;
+        return null;
     }
 
     // ================================================================================
@@ -54,7 +55,7 @@ public class TextSearchPredicate implements ItemPredicate {
         );
 
         if (pendingTextIndices.isEmpty())
-          return true;
+          return null;
       }
     }
 
@@ -73,7 +74,7 @@ public class TextSearchPredicate implements ItemPredicate {
         );
 
         if (pendingTextIndices.isEmpty())
-          return true;
+          return null;
       }
 
       // ================================================================================
@@ -89,7 +90,7 @@ public class TextSearchPredicate implements ItemPredicate {
         );
 
         if (pendingTextIndices.isEmpty())
-          return true;
+          return null;
       }
 
       // ================================================================================
@@ -104,7 +105,7 @@ public class TextSearchPredicate implements ItemPredicate {
           );
 
           if (pendingTextIndices.isEmpty())
-            return true;
+            return null;
         }
       }
     }
@@ -126,12 +127,15 @@ public class TextSearchPredicate implements ItemPredicate {
           );
 
           if (pendingTextIndices.isEmpty())
-            return true;
+            return null;
         }
       }
     }
 
-    return pendingTextIndices.isEmpty();
+    if (pendingTextIndices.isEmpty())
+      return null;
+
+    return this;
   }
 
   @Override

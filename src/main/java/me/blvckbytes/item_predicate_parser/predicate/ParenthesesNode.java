@@ -1,12 +1,14 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import org.jetbrains.annotations.Nullable;
+
 public record ParenthesesNode (
   ItemPredicate inner
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    return inner.test(state);
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    return inner.testForFailure(state);
   }
 
   @Override

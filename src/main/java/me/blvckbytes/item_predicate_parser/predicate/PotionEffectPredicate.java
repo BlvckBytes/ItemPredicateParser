@@ -18,7 +18,7 @@ public record PotionEffectPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
     for (var effectIterator = state.getEffects().iterator(); effectIterator.hasNext();) {
       var effect = effectIterator.next();
 
@@ -34,10 +34,10 @@ public record PotionEffectPredicate(
       if (state.isExactMode)
         effectIterator.remove();
 
-      return true;
+      return null;
     }
 
-    return false;
+    return this;
   }
 
   @Override

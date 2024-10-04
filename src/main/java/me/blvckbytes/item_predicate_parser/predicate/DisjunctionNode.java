@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import org.jetbrains.annotations.Nullable;
 
 public record DisjunctionNode(
   Token token,
@@ -11,8 +12,14 @@ public record DisjunctionNode(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    return lhs.test(state) || rhs.test(state);
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (lhs.testForFailure(state) == null)
+      return null;
+
+    if (rhs.testForFailure(state) == null)
+      return null;
+
+    return this;
   }
 
   @Override

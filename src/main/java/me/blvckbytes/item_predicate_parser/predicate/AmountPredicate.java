@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.keyed.AmountKey;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import org.jetbrains.annotations.Nullable;
 
 public record AmountPredicate(
   Token token,
@@ -12,8 +13,11 @@ public record AmountPredicate(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    return amountArgument.matches(state.item.getAmount());
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (amountArgument.matches(state.item.getAmount()))
+      return null;
+
+    return this;
   }
 
   @Override

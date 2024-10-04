@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser.predicate;
 
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import org.jetbrains.annotations.Nullable;
 
 public record NegationNode(
   Token token,
@@ -10,8 +11,11 @@ public record NegationNode(
 ) implements ItemPredicate {
 
   @Override
-  public boolean test(PredicateState state) {
-    return !operand.test(state);
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (operand.testForFailure(state) == null)
+      return this;
+
+    return null;
   }
 
   @Override

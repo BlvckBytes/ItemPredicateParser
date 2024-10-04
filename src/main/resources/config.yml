@@ -10,9 +10,9 @@
 
 # - command_representation: String
 expandedPreview$: '"&a" & command_representation'
-# '~' is the last printable char on the ASCII-table, and should thereby come last, as desired, when the client automatically sorts completions
+# 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
 # - excess_count: Int
-maxCompletionsExceeded$: '"~ and " & excess_count & " more"'
+maxCompletionsExceeded$: '"𱍊 and " & excess_count & " more"'
 inputNonHighlightPrefix: "&c"
 inputHighlightPrefix: "&4"
 # highlighted_input: String

@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class ItemPredicateParserPlugin extends JavaPlugin {
@@ -20,6 +21,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
+    var logger = getLogger();
+
     try {
       TranslationResolver translationResolver = null;
 
@@ -37,6 +40,12 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
       var languageRegistry = new LanguageRegistry(this, translationResolver);
       this.predicateHelper = new PredicateHelper(languageRegistry, config);
+
+      Objects.requireNonNull(getCommand(ItemPredicateParserCommand.COMMAND_NAME)).setExecutor(
+        new ItemPredicateParserCommand(predicateHelper, config, logger)
+      );
+
+      Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this), this);
 
       instance = this;
     } catch (Throwable e) {

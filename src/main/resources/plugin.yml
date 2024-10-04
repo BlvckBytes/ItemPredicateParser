@@ -4,3 +4,13 @@ version: 0.0.5
 author: BlvckBytes
 api-version: 1.13
 softdepend: [EcoEnchants]
+commands:
+  itempredicateparser:
+    aliases: [ipp]
+permissions:
+  itempredicateparser.command.reload:
+    description: 'Invoke the reload command'
+    default: op
+  itempredicateparser.command.test:
+    description: 'Invoke the test command'
+    default: op

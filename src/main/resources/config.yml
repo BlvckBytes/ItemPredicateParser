@@ -32,3 +32,34 @@ parseConflicts$:
   EXPECTED_CLOSING_PARENTHESIS: '"&cExpected a closing parenthesis: " & highlighted_input'
   EMPTY_OR_BLANK_QUOTED_STRING: '"&cStrings are not allowed to be blank: " & highlighted_input'
   EXPECTED_LEFT_HAND_SIDE: '"&cExpected a left-hand-side expression: " & highlighted_input'
+
+playerMessages:
+  commandOnlyForPlayers$: 'lut["MESSAGE_PREFIX"] & "&cThis command is only available to players"'
+  emptyPredicate$: 'lut["MESSAGE_PREFIX"] & "&cPlease provide a non-empty predicate."'
+  pluginReloadedSuccess$: 'lut["MESSAGE_PREFIX"] & "&7The plugin has been &ereloaded &7successfully."'
+  pluginReloadedError$: 'lut["MESSAGE_PREFIX"] & "&cAn error occurred while trying to reload the plugin. Check the console!"'
+  # - label: String
+  # - actions: Collection<String>
+  usageIppCommandAction$: 'lut["MESSAGE_PREFIX"] & "&7Usage: /" & label & " <" & iter_cat(actions, (action) => "&e" & action, "&7, ") & "&7>"'
+  # - label: String
+  # - action: String
+  # - languages: Collection<String>
+  usageIppTestCommandLanguage$: 'lut["MESSAGE_PREFIX"] & "&7Usage: /" & label & " " & action & " <" & iter_cat(languages, (language) => "&e" & language, "&7, ") & "&7>"'
+  # - entered_predicate: String
+  # - expanded_predicate: String
+  # - expanded_failure: String?
+  predicateTestResult$:
+    - '"&8&m                &8[&6ItemPredicateParser&8]&m                "'
+    - '"&8> &7Entered predicate: &e" & entered_predicate'
+    - '"&8> &7Expanded predicate: &e" & expanded_predicate'
+    - '"&8> &7Result: " & if expanded_failure == null then "&aMatching Hand" else "&cMismatching Hand: &4" & expanded_failure'
+    - '"&8&m                &8[&6ItemPredicateParser&8]&m                "'
+  # - exception_message: String
+  predicateParseError$: 'lut["MESSAGE_PREFIX"] & exception_message'
+  missingPermissionIppCommand$: 'lut["MESSAGE_PREFIX"] & "&cYou don''t have the permission to use the ipp command."'
+  missingPermissionIppTestCommand$: 'lut["MESSAGE_PREFIX"] & "&cYou don''t have the permission to use the test sub-command."'
+  missingPermissionIppReloadCommand$: 'lut["MESSAGE_PREFIX"] & "&cYou don''t have the permission to use the reload sub-command."'
+
+# File-global lookup table
+lut:
+  MESSAGE_PREFIX: '&7[&6ItemPredicateParser&7] '

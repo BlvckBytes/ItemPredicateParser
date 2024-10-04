@@ -19,4 +19,11 @@ public record CollisionPrefixes(
     "[Material]",
     "[Instrument]"
   );
+
+  public static CollisionPrefixes CHINESE_SIMPLIFIED = new CollisionPrefixes(
+    "[附魔]",
+    "[效果]",
+    "[材料]",
+    "[Instrument]"
+  );
 }

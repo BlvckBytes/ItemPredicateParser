@@ -9,9 +9,11 @@ public enum TranslationLanguage {
 
   ENGLISH_US("en_us", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
   ENGLISH_GB("en_gb", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
+  CHINESE_CN("zh_cn", CollisionPrefixes.CHINESE_SIMPLIFIED, CustomTranslations.CHINESE_SIMPLIFIED),
   GERMAN_DE("de_de", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
   GERMAN_AT("de_at", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
   GERMAN_CH("de_ch", CollisionPrefixes.GERMAN, CustomTranslations.GERMAN),
+
   ;
 
   public final String assetFileNameWithoutExtension;

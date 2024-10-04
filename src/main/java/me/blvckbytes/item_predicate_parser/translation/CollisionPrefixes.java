@@ -24,6 +24,6 @@ public record CollisionPrefixes(
     "[附魔]",
     "[效果]",
     "[材料]",
-    "[Instrument]"
+    "[乐器]"
   );
 }

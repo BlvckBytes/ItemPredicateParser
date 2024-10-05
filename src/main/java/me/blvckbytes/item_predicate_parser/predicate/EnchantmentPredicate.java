@@ -39,17 +39,15 @@ public record EnchantmentPredicate(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    var result = new StringJoiner(" ");
-
-    if (useTokens)
-      result.add(token.stringify());
+  public void stringify(StringifyState state) {
+    if (state.useTokens)
+      state.appendString(token.stringify());
     else
-      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (this.levelArgument != null)
-      result.add(this.levelArgument.stringify());
-
-    return result.toString();
+    if (this.levelArgument != null) {
+      state.appendSpace();
+      state.appendString(this.levelArgument.stringify());
+    }
   }
 }

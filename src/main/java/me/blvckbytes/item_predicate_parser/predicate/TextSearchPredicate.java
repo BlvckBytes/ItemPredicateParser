@@ -139,8 +139,8 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    return token.stringify();
+  public void stringify(StringifyState state) {
+    state.appendString(token.stringify());
   }
 
   @Override

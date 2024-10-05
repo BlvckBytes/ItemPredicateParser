@@ -7,8 +7,6 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.StringJoiner;
-
 public record DeteriorationPredicate(
   Token token,
   TranslatedLangKeyed<DeteriorationKey> translatedLangKeyed,
@@ -43,20 +41,20 @@ public record DeteriorationPredicate(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    var result = new StringJoiner(" ");
-
-    if (useTokens)
-      result.add(token.stringify());
+  public void stringify(StringifyState state) {
+    if (state.useTokens)
+      state.appendString(token.stringify());
     else
-      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (deteriorationPercentageMin != null)
-      result.add(deteriorationPercentageMin.stringify());
+    if (deteriorationPercentageMin != null) {
+      state.appendSpace();
+      state.appendString(deteriorationPercentageMin.stringify());
+    }
 
-    if (deteriorationPercentageMax != null)
-      result.add(deteriorationPercentageMax.stringify());
-
-    return result.toString();
+    if (deteriorationPercentageMax != null) {
+      state.appendSpace();
+      state.appendString(deteriorationPercentageMax.stringify());
+    }
   }
 }

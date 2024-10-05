@@ -19,10 +19,13 @@ public record NegationNode(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    if (useTokens)
-      return token.stringify() + " " + operand.stringify(true);
+  public void stringify(StringifyState state) {
+    if (state.useTokens)
+      state.appendString(token.stringify());
+    else
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    return translatedLangKeyed.normalizedPrefixedTranslation + " " + operand.stringify(false);
+    state.appendSpace();
+    state.appendPredicate(operand);
   }
 }

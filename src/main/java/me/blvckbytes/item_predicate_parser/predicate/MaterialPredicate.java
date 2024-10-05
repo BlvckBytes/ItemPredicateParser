@@ -35,10 +35,10 @@ public record MaterialPredicate(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    if (translatedLangKeyed != null && !useTokens)
-      return translatedLangKeyed.normalizedPrefixedTranslation;
-
-    return token.stringify();
+  public void stringify(StringifyState state) {
+    if (state.useTokens || translatedLangKeyed == null)
+      state.appendString(token.stringify());
+    else
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
   }
 }

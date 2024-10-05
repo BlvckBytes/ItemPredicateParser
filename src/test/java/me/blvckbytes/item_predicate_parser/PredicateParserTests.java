@@ -1245,7 +1245,7 @@ public class PredicateParserTests extends ParseTestBase {
     var ast = predicateParser.parseAst();
 
     assertNotNull(ast);
-    assertEquals(expected, ast.stringify(stringifyTokens));
+    assertEquals(expected, new StringifyState(stringifyTokens).appendPredicate(ast).toString());
   }
 
   private void makeCase(String[] args, @Nullable ItemPredicate expected) {

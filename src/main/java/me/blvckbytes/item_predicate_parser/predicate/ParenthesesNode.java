@@ -12,7 +12,9 @@ public record ParenthesesNode (
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    return "(" + inner.stringify(useTokens) + ")";
+  public void stringify(StringifyState state) {
+    state.appendString("(");
+    state.appendPredicate(inner);
+    state.appendString(")");
   }
 }

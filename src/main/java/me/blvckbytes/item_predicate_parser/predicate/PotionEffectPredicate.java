@@ -8,8 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.StringJoiner;
-
 public record PotionEffectPredicate(
   Token token,
   TranslatedLangKeyed<LangKeyedPotionEffectType> translatedLangKeyed,
@@ -41,21 +39,21 @@ public record PotionEffectPredicate(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    var result = new StringJoiner(" ");
-
-    if (useTokens)
-      result.add(token.stringify());
+  public void stringify(StringifyState state) {
+    if (state.useTokens)
+      state.appendString(token.stringify());
     else
-      result.add(translatedLangKeyed.normalizedPrefixedTranslation);
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (this.amplifierArgument != null)
-      result.add(this.amplifierArgument.stringify());
+    if (this.amplifierArgument != null) {
+      state.appendSpace();
+      state.appendString(this.amplifierArgument.stringify());
+    }
 
-    if (this.durationArgument != null)
-      result.add(this.durationArgument.stringify());
-
-    return result.toString();
+    if (this.durationArgument != null) {
+      state.appendSpace();
+      state.appendString(this.durationArgument.stringify());
+    }
   }
 
   private boolean doesAmplifierMismatch(int amplifier) {

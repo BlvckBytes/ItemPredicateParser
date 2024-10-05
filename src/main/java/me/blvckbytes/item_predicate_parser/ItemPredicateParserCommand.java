@@ -3,6 +3,7 @@ package me.blvckbytes.item_predicate_parser;
 import me.blvckbytes.bbconfigmapper.ScalarType;
 import me.blvckbytes.bukkitevaluable.BukkitEvaluable;
 import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import me.blvckbytes.item_predicate_parser.config.HighlightPredicateFunction;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.parse.EnumMatcher;
 import me.blvckbytes.item_predicate_parser.parse.EnumPredicate;
@@ -10,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.NormalizedConstant;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
 import me.blvckbytes.item_predicate_parser.predicate.PredicateState;
+import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -148,9 +150,10 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           message.asList(
             ScalarType.STRING,
             config.rootSection.getBaseEnvironment()
-              .withStaticVariable("entered_predicate", predicate.stringify(true))
-              .withStaticVariable("expanded_predicate", predicate.stringify(false))
-              .withStaticVariable("expanded_failure", failure == null ? null : failure.stringify(false))
+              .withStaticVariable("entered_predicate",
+                new StringifyState(true).appendPredicate(predicate).toString()
+              )
+              .withFunction("expanded_predicate", new HighlightPredicateFunction(predicate, failure))
               .build()
           ).forEach(player::sendMessage);
         }

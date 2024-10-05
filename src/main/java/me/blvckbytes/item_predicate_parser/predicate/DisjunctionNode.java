@@ -23,10 +23,16 @@ public record DisjunctionNode(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    if (useTokens)
-      return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
+  public void stringify(StringifyState state) {
+    state.appendPredicate(lhs);
+    state.appendSpace();
 
-    return lhs.stringify(false) + " " + translatedLangKeyed.normalizedPrefixedTranslation + " " + rhs.stringify(false);
+    if (state.useTokens)
+      state.appendString(token.stringify());
+    else
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+
+    state.appendSpace();
+    state.appendPredicate(rhs);
   }
 }

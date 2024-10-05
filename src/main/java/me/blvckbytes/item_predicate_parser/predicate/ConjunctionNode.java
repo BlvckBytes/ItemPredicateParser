@@ -25,13 +25,19 @@ public record ConjunctionNode(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    if (token == null)
-      return lhs.stringify(useTokens) + " " + rhs.stringify(useTokens);
+  public void stringify(StringifyState state) {
+    state.appendPredicate(lhs);
 
-    if (useTokens)
-      return lhs.stringify(true) + " " + token.stringify() + " " + rhs.stringify(true);
+    if (token != null) {
+      state.appendSpace();
 
-    return lhs.stringify(false) + " " + translatedLangKeyed.normalizedPrefixedTranslation + " " + rhs.stringify(false);
+      if (state.useTokens)
+        state.appendString(token.stringify());
+      else
+        state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+    }
+
+    state.appendSpace();
+    state.appendPredicate(rhs);
   }
 }

@@ -7,6 +7,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
+import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
@@ -105,7 +106,10 @@ public class PredicateHelper {
       if (predicate != null && config.rootSection.expandedPreview != null) {
         expandedPreviewOrError = config.rootSection.expandedPreview.stringify(
           config.rootSection.getBaseEnvironment()
-            .withStaticVariable("command_representation", predicate.stringify(false))
+            .withStaticVariable(
+              "command_representation",
+              new StringifyState(false).appendPredicate(predicate).toString()
+            )
             .build()
         );
       }

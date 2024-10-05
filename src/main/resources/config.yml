@@ -46,13 +46,11 @@ playerMessages:
   # - languages: Collection<String>
   usageIppTestCommandLanguage$: 'lut["MESSAGE_PREFIX"] & "&7Usage: /" & label & " " & action & " <" & iter_cat(languages, (language) => "&e" & language, "&7, ") & "&7>"'
   # - entered_predicate: String
-  # - expanded_predicate: String
-  # - expanded_failure: String?
+  # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
   predicateTestResult$:
     - '"&8&m                &8[&6ItemPredicateParser&8]&m                "'
-    - '"&8> &7Entered predicate: &e" & entered_predicate'
-    - '"&8> &7Expanded predicate: &e" & expanded_predicate'
-    - '"&8> &7Result: " & if expanded_failure == null then "&aMatching Hand" else "&cMismatching Hand: &4" & expanded_failure'
+    - '"&8> &7Entered: &e" & entered_predicate'
+    - '"&8> &7Result: " & expanded_predicate("&a", "&c")'
     - '"&8&m                &8[&6ItemPredicateParser&8]&m                "'
   # - exception_message: String
   predicateParseError$: 'lut["MESSAGE_PREFIX"] & exception_message'

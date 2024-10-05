@@ -23,9 +23,10 @@ public record MusicInstrumentPredicate(
   }
 
   @Override
-  public String stringify(boolean useTokens) {
-    if (useTokens)
-      return token.stringify();
-    return translatedLangKeyed.normalizedPrefixedTranslation;
+  public void stringify(StringifyState state) {
+    if (state.useTokens)
+      state.appendString(token.stringify());
+    else
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
   }
 }

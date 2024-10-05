@@ -1,6 +1,6 @@
 name: ItemPredicateParser
 main: me.blvckbytes.item_predicate_parser.ItemPredicateParserPlugin
-version: 0.0.6
+version: 0.0.7
 author: BlvckBytes
 api-version: 1.13
 softdepend: [EcoEnchants]

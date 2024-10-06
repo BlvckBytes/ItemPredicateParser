@@ -107,8 +107,10 @@ public class TranslationRegistry {
     for (var langKeyed : source.items()) {
       var translationValue = getTranslationOrNull(langKeyed);
 
-      if (translationValue == null)
-        throw new IllegalStateException("Could not locate translation-value for key " + langKeyed.getLanguageFileKey());
+      if (translationValue == null) {
+        logger.warning("Could not locate translation-value for key " + langKeyed.getLanguageFileKey());
+        continue;
+      }
 
       var normalizedTranslationValue = TranslatedLangKeyed.normalize(translationValue);
 

@@ -1,14 +1,14 @@
 package me.blvckbytes.item_predicate_parser.translation.resolver;
 
-import com.willfp.ecoenchants.enchant.EcoEnchants;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
+import su.nightexpress.excellentenchants.registry.EnchantRegistry;
 
-public class EcoEnchantsResolver extends TranslationResolver {
+public class ExcellentEnchantsResolver extends TranslationResolver {
 
-  public EcoEnchantsResolver(Plugin loadedPlugin) {
+  public ExcellentEnchantsResolver(Plugin loadedPlugin) {
     super(loadedPlugin);
   }
 
@@ -17,12 +17,11 @@ public class EcoEnchantsResolver extends TranslationResolver {
     if (!(langKeyed.getWrapped() instanceof Enchantment enchantment))
       return null;
 
-    var id = enchantment.getKey().getKey();
-    var ecoEnchant = EcoEnchants.INSTANCE.get(id);
+    var customEnchantment = EnchantRegistry.getByKey(enchantment.getKey());
 
-    if (ecoEnchant == null)
+    if (customEnchantment == null)
       return null;
 
-    return sanitize(ecoEnchant.getRawDisplayName());
+    return sanitize(customEnchantment.getDisplayName());
   }
 }

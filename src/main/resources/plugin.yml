@@ -3,7 +3,7 @@ main: me.blvckbytes.item_predicate_parser.ItemPredicateParserPlugin
 version: ${project.version}
 author: BlvckBytes
 api-version: 1.13
-softdepend: [EcoEnchants]
+softdepend: [EcoEnchants, ExcellentEnchants]
 commands:
   itempredicateparser:
     aliases: [ipp]

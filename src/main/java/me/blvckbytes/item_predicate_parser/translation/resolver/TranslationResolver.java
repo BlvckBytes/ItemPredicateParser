@@ -1,11 +1,18 @@
 package me.blvckbytes.item_predicate_parser.translation.resolver;
 
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Stack;
 
 public abstract class TranslationResolver {
+
+  protected final Plugin loadedPlugin;
+
+  public TranslationResolver(Plugin loadedPlugin) {
+    this.loadedPlugin = loadedPlugin;
+  }
 
   public abstract @Nullable String resolve(LangKeyed<?> langKeyed);
 

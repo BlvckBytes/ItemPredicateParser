@@ -6,7 +6,7 @@
 
     <groupId>me.blvckbytes</groupId>
     <artifactId>ItemPredicateParser</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 
     <properties>
         <compileSource>17</compileSource>
@@ -80,6 +80,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- I don't think this is hosted anywhere... Clone and manually install into local repo. -->
+        <dependency>
+            <groupId>su.nightexpress.excellentenchants</groupId>
+            <artifactId>Core</artifactId>
+            <version>4.2.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -107,7 +113,6 @@
                     </execution>
                 </executions>
                 <configuration>
-
                     <artifactSet>
                         <includes>
                             <!-- Include all libs for shading -->

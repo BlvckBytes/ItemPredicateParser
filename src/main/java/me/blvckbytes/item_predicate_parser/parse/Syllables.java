@@ -12,24 +12,24 @@ public class Syllables {
   private static final char PATTERN_NEGATION_CHAR = '!';
 
   private static final int INITIAL_CAPACITY = 32;
-  private static final int BIT_IS_WILDCARD  = 1;
   private static final int BIT_IS_NEGATED   = (1 << 1);
   private static final int START_END_MASK   = 32768 - 1;
 
   /*
-    <15b start><15b end><1b is_negated><1b is_wildcard>
+    <15b start><15b end><1b is_negated><1b unused>
    */
   private int[] syllables;
   private int size;
 
   public String container;
+  private boolean wildcardMode;
 
   public Syllables(String container) {
     this.container = container;
     this.syllables = new int[INITIAL_CAPACITY];
   }
 
-  public Syllables add(int start, int end, boolean isNegated, boolean isWildcard) {
+  public Syllables add(int start, int end, boolean isNegated) {
     if (syllables.length == size) {
       var newArray = new int[syllables.length * 2];
       System.arraycopy(syllables, 0, newArray, 0, syllables.length);
@@ -37,13 +37,16 @@ public class Syllables {
     }
 
     syllables[size++] = (
-      (isWildcard ? BIT_IS_WILDCARD : 0) |
       (isNegated ? BIT_IS_NEGATED : 0) |
       ((end & START_END_MASK) << 2) |
       ((start & START_END_MASK) << (2 + 15))
     );
 
     return this;
+  }
+
+  public boolean isWildcardMode() {
+    return this.wildcardMode;
   }
 
   public int getSyllable(int index) {
@@ -78,10 +81,6 @@ public class Syllables {
     return (syllable & BIT_IS_NEGATED) != 0;
   }
 
-  public static boolean isWildcard(int syllable) {
-    return (syllable & BIT_IS_WILDCARD) != 0;
-  }
-
   /**
    * @param token If provided, checks for search pattern wildcard presence (throws on duplicate or only)
    */
@@ -110,7 +109,7 @@ public class Syllables {
         var partEnd = isDelimiter ? i - 1 : i;
 
         if (nextPartBeginning != partEnd && firstChar == PATTERN_NEGATION_CHAR) {
-          result.add(nextPartBeginning + 1, partEnd, true, false);
+          result.add(nextPartBeginning + 1, partEnd, true);
           encounteredNonSearchPatternWildcard = true;
         }
 
@@ -122,11 +121,11 @@ public class Syllables {
             encounteredSearchPatternWildcard = true;
           }
 
-          result.add(nextPartBeginning, partEnd, false, true);
+          result.wildcardMode = true;
         }
 
         else {
-          result.add(nextPartBeginning, partEnd, false, false);
+          result.add(nextPartBeginning, partEnd, false);
           encounteredNonSearchPatternWildcard = true;
         }
       }

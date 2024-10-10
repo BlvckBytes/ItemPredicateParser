@@ -77,11 +77,10 @@ public class TranslationRegistry {
 
     var result = new ArrayList<TranslatedLangKeyed<?>>();
     var querySyllables = Syllables.forString(query, query.value(), Syllables.DELIMITER_SEARCH_PATTERN);
+    var isWildcardMode = querySyllables.isWildcardMode();
 
     var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
-
-    var isWildcardPresent = false;
 
     for (var entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
       var entry = entries[entryIndex];
@@ -91,21 +90,19 @@ public class TranslationRegistry {
 
       matcher.setTarget(entry.syllables);
 
-      var encounteredWildcard = matcher.match();
-
-      isWildcardPresent |= encounteredWildcard;
+      matcher.match();
 
       if (matcher.hasUnmatchedQuerySyllables())
         continue;
 
       // If there's a wildcard, disregard full matches; that's just a design-decision
-      if (encounteredWildcard && !matcher.hasUnmatchedTargetSyllables())
+      if (isWildcardMode && !matcher.hasUnmatchedTargetSyllables())
         continue;
 
       result.add(entry);
     }
 
-    return new SearchResult(result, isWildcardPresent);
+    return new SearchResult(result, isWildcardMode);
   }
 
   private void createEntries(LangKeyedSource source, ArrayList<TranslatedLangKeyed<?>> output) throws IllegalStateException {

@@ -123,26 +123,15 @@ public class SyllablesMatcher {
     );
   }
 
-  /**
-   * @return Whether a wildcard has been encountered
-   */
-  public boolean match() {
+  public void match() {
     if (query == null || target == null)
       throw new IllegalStateException("Cannot match on a missing query and or a missing target");
-
-    var encounteredWildcard = false;
 
     for (var querySyllableIndex = 0; querySyllableIndex < query.size(); ++querySyllableIndex) {
       if (isMarkedAsMatched(queryMatchedFlags, querySyllableIndex))
         continue;
 
       var querySyllable = query.getSyllable(querySyllableIndex);
-
-      if (Syllables.isWildcard(querySyllable)) {
-        markAsMatched(queryMatchedFlags, querySyllableIndex);
-        encounteredWildcard = true;
-        continue;
-      }
 
       var didQuerySyllableMatch = matchQueryAgainstTargets(querySyllable, target, targetMatchedFlags);
 
@@ -162,8 +151,6 @@ public class SyllablesMatcher {
       if (Syllables.isNegated(querySyllable))
         markAsMatched(queryMatchedFlags, querySyllableIndex);
     }
-
-    return encounteredWildcard;
   }
 
   private void forEachUnmatched(Syllables syllables, long[] matchedFlags, UnmatchedSyllableConsumer consumer) {
@@ -232,7 +219,7 @@ public class SyllablesMatcher {
   }
 
   private void addTargetRemainder(int start, int end) {
-    targetRemainders.add(start, end, false, false);
+    targetRemainders.add(start, end, false);
 
     int newRequiredLongs = requiredLongs(targetRemainders.capacity());
 

@@ -29,98 +29,100 @@ public class SyllableTests {
     makeSyllablesCase(
       "-a-bcd-ef-g-",
       new Syllables(null)
-        .add(1, 1, false, false)
-        .add(3, 5, false, false)
-        .add(7, 8, false, false)
-        .add(10, 10, false, false)
+        .add(1, 1, false)
+        .add(3, 5, false)
+        .add(7, 8, false)
+        .add(10, 10, false)
     );
 
     // Leading delimiter
     makeSyllablesCase(
       "-a-bcd-ef-g",
       new Syllables(null)
-        .add(1, 1, false, false)
-        .add(3, 5, false, false)
-        .add(7, 8, false, false)
-        .add(10, 10, false, false)
+        .add(1, 1, false)
+        .add(3, 5, false)
+        .add(7, 8, false)
+        .add(10, 10, false)
     );
 
     // Trailing delimiter
     makeSyllablesCase(
       "a-bcd-ef-g-",
       new Syllables(null)
-        .add(0, 0, false, false)
-        .add(2, 4, false, false)
-        .add(6, 7, false, false)
-        .add(9, 9, false, false)
+        .add(0, 0, false)
+        .add(2, 4, false)
+        .add(6, 7, false)
+        .add(9, 9, false)
     );
 
     // Trailing delimiter and multiple intermediate delimiters
     makeSyllablesCase(
       "a-bcd----ef---g-",
       new Syllables(null)
-        .add(0, 0, false, false)
-        .add(2, 4, false, false)
-        .add(9, 10, false, false)
-        .add(14, 14, false, false)
+        .add(0, 0, false)
+        .add(2, 4, false)
+        .add(9, 10, false)
+        .add(14, 14, false)
     );
   }
 
   @Test
   public void shouldHandleMultipleTargetsWithoutQueryMatchesResetting() {
     var querySyllables = Syllables.forString(null, "dia-bot-car-ir-gol", Syllables.DELIMITER_SEARCH_PATTERN);
+    assertFalse(querySyllables.isWildcardMode());
+
     var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
 
     matcher.setTarget(Syllables.forString(null, "diamond-leggings", Syllables.DELIMITER_SEARCH_PATTERN));
-    assertFalse(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(
       matcher, true,
       new Syllables(null)
-        .add(4, 6, false, false)
-        .add(8, 10, false, false)
-        .add(12, 13, false, false)
-        .add(15, 17, false, false)
+        .add(4, 6, false)
+        .add(8, 10, false)
+        .add(12, 13, false)
+        .add(15, 17, false)
     );
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(8, 15, false, false)
+        .add(3, 6, false)
+        .add(8, 15, false)
     );
 
     assertTrue(matcher.hasUnmatchedQuerySyllables());
     assertTrue(matcher.hasUnmatchedTargetSyllables());
 
     matcher.setTarget(Syllables.forString(null, "iron-golem", Syllables.DELIMITER_SEARCH_PATTERN));
-    assertFalse(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(
       matcher, true,
       new Syllables(null)
-        .add(4, 6, false, false)
-        .add(8, 10, false, false)
+        .add(4, 6, false)
+        .add(8, 10, false)
     );
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(2, 3, false, false)
-        .add(8, 9, false, false)
+        .add(2, 3, false)
+        .add(8, 9, false)
     );
 
     assertTrue(matcher.hasUnmatchedQuerySyllables());
     assertTrue(matcher.hasUnmatchedTargetSyllables());
 
     matcher.setTarget(Syllables.forString(null, "bottled-carrot", Syllables.DELIMITER_SEARCH_PATTERN));
-    assertFalse(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(matcher, true, EMPTY_SYLLABLES);
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(11, 13, false, false)
+        .add(3, 6, false)
+        .add(11, 13, false)
     );
 
     assertFalse(matcher.hasUnmatchedQuerySyllables());
@@ -131,6 +133,8 @@ public class SyllableTests {
   public void shouldHandleMultipleLongTargetsWithoutQueryMatchesResetting() {
     var query = Syllables.forString(null, "hell-diam-gol", Syllables.DELIMITER_SEARCH_PATTERN);
     var sprinkles = new String[] { "hello", "diamond", "gold" };
+
+    assertFalse(query.isWildcardMode());
 
     var target = Syllables.forString(
       null,
@@ -143,7 +147,7 @@ public class SyllableTests {
     matcher.setQuery(query);
     matcher.setTarget(target);
 
-    assertFalse(matcher.match());
+    matcher.match();
     assertFalse(matcher.hasUnmatchedQuerySyllables());
 
     var unmatchedTargetSyllables = new ArrayList<Integer>();
@@ -158,40 +162,41 @@ public class SyllableTests {
   @Test
   public void shouldHandleMultipleQueries() {
     var targetSyllables = Syllables.forString(null, "one-two-three-four", Syllables.DELIMITER_SEARCH_PATTERN);
-    var matcher = new SyllablesMatcher();
+    assertFalse(targetSyllables.isWildcardMode());
 
+    var matcher = new SyllablesMatcher();
     matcher.setTarget(targetSyllables);
 
     matcher.setQuery(Syllables.forString(null, "this-contains-one-and-three", Syllables.DELIMITER_SEARCH_PATTERN));
-    assertFalse(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(
       matcher, true,
       new Syllables(null)
-        .add(0, 3, false, false)
-        .add(5, 12, false, false)
-        .add(18, 20, false, false)
+        .add(0, 3, false)
+        .add(5, 12, false)
+        .add(18, 20, false)
     );
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(4, 6, false, false)
-        .add(14, 17, false, false)
+        .add(4, 6, false)
+        .add(14, 17, false)
     );
 
     assertTrue(matcher.hasUnmatchedQuerySyllables());
     assertTrue(matcher.hasUnmatchedTargetSyllables());
 
     matcher.setQuery(Syllables.forString(null, "I-hold-syllables-two-and-four", Syllables.DELIMITER_SEARCH_PATTERN));
-    assertFalse(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(
       matcher, true,
       new Syllables(null)
-        .add(0, 0, false, false)
-        .add(2, 5, false, false)
-        .add(7, 15, false, false)
-        .add(21, 23, false, false)
+        .add(0, 0, false)
+        .add(2, 5, false)
+        .add(7, 15, false)
+        .add(21, 23, false)
     );
     assertUnmatchedSyllablesInAnyOrder(matcher, false, EMPTY_SYLLABLES);
 
@@ -202,19 +207,20 @@ public class SyllableTests {
   @Test
   public void shouldHandleMultipleTargetsWithQueryMatchesResetting() {
     var querySyllables = Syllables.forString(null, "dia-ax-?", Syllables.DELIMITER_SEARCH_PATTERN);
-    var matcher = new SyllablesMatcher();
+    assertTrue(querySyllables.isWildcardMode());
 
+    var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
     matcher.setTarget(Syllables.forString(null, "diamond-axe", Syllables.DELIMITER_SEARCH_PATTERN));
 
-    assertTrue(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(matcher, true, EMPTY_SYLLABLES);
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(10, 10, false, false)
+        .add(3, 6, false)
+        .add(10, 10, false)
     );
 
     assertFalse(matcher.hasUnmatchedQuerySyllables());
@@ -223,15 +229,15 @@ public class SyllableTests {
     matcher.resetQueryMatches();
     matcher.setTarget(Syllables.forString(null, "diamond-pickaxe", Syllables.DELIMITER_SEARCH_PATTERN));
 
-    assertTrue(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(matcher, true, EMPTY_SYLLABLES);
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(8, 11, false, false)
-        .add(14, 14, false, false)
+        .add(3, 6, false)
+        .add(8, 11, false)
+        .add(14, 14, false)
     );
 
     assertFalse(matcher.hasUnmatchedQuerySyllables());
@@ -240,18 +246,18 @@ public class SyllableTests {
     matcher.resetQueryMatches();
     matcher.setTarget(Syllables.forString(null, "diamond-chestplate", Syllables.DELIMITER_SEARCH_PATTERN));
 
-    assertTrue(matcher.match());
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(
       matcher, true,
       new Syllables(null)
-        .add(4, 5, false, false)
+        .add(4, 5, false)
     );
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(8, 17, false, false)
+        .add(3, 6, false)
+        .add(8, 17, false)
     );
 
     assertTrue(matcher.hasUnmatchedQuerySyllables());
@@ -263,26 +269,26 @@ public class SyllableTests {
     makeUnmatchedCase(
       "HELLO,-WORLD", "he-orld", false,
       new Syllables(null)
-        .add(2, 5, false, false)
-        .add(7, 7, false, false),
+        .add(2, 5, false)
+        .add(7, 7, false),
       EMPTY_SYLLABLES
     );
 
     makeUnmatchedCase(
       "Diamantbrustplatte", "dia-brus", false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(11, 17, false, false),
+        .add(3, 6, false)
+        .add(11, 17, false),
       EMPTY_SYLLABLES
     );
 
     makeUnmatchedCase(
       "Diamantbrustplatte", "gold-brus", false,
       new Syllables(null)
-        .add(0, 6, false, false)
-        .add(11, 17, false, false),
+        .add(0, 6, false)
+        .add(11, 17, false),
       new Syllables(null)
-        .add(0, 3, false, false)
+        .add(0, 3, false)
     );
   }
 
@@ -291,19 +297,19 @@ public class SyllableTests {
     makeUnmatchedCase(
       "Diamantbrustplatte", "!dia-brus", false,
       new Syllables(null)
-        .add(3, 6, false, false)
-        .add(11, 17, false, false),
+        .add(3, 6, false)
+        .add(11, 17, false),
       new Syllables(null)
-        .add(1, 3, true, false)
+        .add(1, 3, true)
     );
 
     makeUnmatchedCase(
       "Red-Wool", "!re-wo", false,
       new Syllables(null)
-        .add(2, 2, false, false)
-        .add(6, 7, false, false),
+        .add(2, 2, false)
+        .add(6, 7, false),
       new Syllables(null)
-        .add(1, 2, true, false)
+        .add(1, 2, true)
     );
   }
 
@@ -312,9 +318,9 @@ public class SyllableTests {
     makeUnmatchedCase(
       "Diamantbrustplatte", "dia-bru-man-pla", false,
       new Syllables(null)
-        .add(6, 6, false, false)
-        .add(10, 11, false, false)
-        .add(15, 17, false, false),
+        .add(6, 6, false)
+        .add(10, 11, false)
+        .add(15, 17, false),
       EMPTY_SYLLABLES
     );
   }
@@ -324,7 +330,7 @@ public class SyllableTests {
     makeUnmatchedCase(
       "Oak-Sign", "sign-?", true,
       new Syllables(null)
-        .add(0, 2, false, false),
+        .add(0, 2, false),
       EMPTY_SYLLABLES
     );
 
@@ -360,10 +366,10 @@ public class SyllableTests {
     makeUnmatchedCase(
       coloredString, "testing", false,
       new Syllables(null)
-        .add(0, 14, false, false)
-        .add(16, 30, false, false)
-        .add(56, 65, false, false)
-        .add(67, 70, false, false),
+        .add(0, 14, false)
+        .add(16, 30, false)
+        .add(56, 65, false)
+        .add(67, 70, false),
       EMPTY_SYLLABLES
     );
   }
@@ -371,8 +377,8 @@ public class SyllableTests {
   @Test
   public void shouldResetMatches() {
     var remainingTargetSyllables = new Syllables(null)
-      .add(2, 5, false, false)
-      .add(8, 10, false, false);
+      .add(2, 5, false)
+      .add(8, 10, false);
 
     var matcher = makeUnmatchedCase(
       "abcdefghijk", "ab-gh", false,
@@ -383,8 +389,8 @@ public class SyllableTests {
     matcher.resetQueryMatches();
 
     var querySyllables = new Syllables(null)
-      .add(0, 1, false, false)
-      .add(3, 4, false, false);
+      .add(0, 1, false)
+      .add(3, 4, false);
 
     assertUnmatchedSyllablesInAnyOrder(matcher, true, querySyllables);
     assertUnmatchedSyllablesInAnyOrder(matcher, false, remainingTargetSyllables);
@@ -395,7 +401,7 @@ public class SyllableTests {
     assertUnmatchedSyllablesInAnyOrder(
       matcher, false,
       new Syllables(null)
-        .add(0, 10, false, false)
+        .add(0, 10, false)
     );
   }
 
@@ -477,16 +483,20 @@ public class SyllableTests {
   }
 
   private SyllablesMatcher makeUnmatchedCase(
-    String target, String query, boolean containsWildcard,
+    String target, String query, boolean queryContainsWildcard,
     Syllables expectedUnmatchedTargetSyllables,
     Syllables expectedUnmatchedQuerySyllables
   ) {
     var matcher = new SyllablesMatcher();
 
-    matcher.setTarget(Syllables.forString(null, target, Syllables.DELIMITER_SEARCH_PATTERN));
-    matcher.setQuery(Syllables.forString(null, query, Syllables.DELIMITER_SEARCH_PATTERN));
+    var querySyllables = Syllables.forString(null, query, Syllables.DELIMITER_SEARCH_PATTERN);
 
-    assertEquals(containsWildcard, matcher.match());
+    matcher.setTarget(Syllables.forString(null, target, Syllables.DELIMITER_SEARCH_PATTERN));
+    matcher.setQuery(querySyllables);
+
+    assertEquals(queryContainsWildcard, querySyllables.isWildcardMode());
+
+    matcher.match();
 
     assertUnmatchedSyllablesInAnyOrder(matcher, true, expectedUnmatchedQuerySyllables);
     assertUnmatchedSyllablesInAnyOrder(matcher, false, expectedUnmatchedTargetSyllables);
@@ -547,7 +557,6 @@ public class SyllableTests {
 
       assertEquals(Syllables.getStartIndex(expectedSyllable), Syllables.getStartIndex(actualSyllable), "Expected start-indices to equal at index " + syllableIndex);
       assertEquals(Syllables.getEndIndex(expectedSyllable), Syllables.getEndIndex(actualSyllable), "Expected end-indices to equal at index " + syllableIndex);
-      assertEquals(Syllables.isWildcard(expectedSyllable), Syllables.isWildcard(actualSyllable), "Expected isWildcard-flags to equal at index " + syllableIndex);
       assertEquals(Syllables.isNegated(expectedSyllable), Syllables.isNegated(actualSyllable), "Expected isNegated-flags to equal at index " + syllableIndex);
     }
   }

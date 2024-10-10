@@ -49,8 +49,6 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     }
   }
 
-  public static final String COMMAND_NAME = "itempredicateparser";
-
   private final PredicateHelper predicateHelper;
   private final ConfigKeeper<MainSection> config;
   private final Logger logger;

@@ -58,6 +58,12 @@ playerMessages:
   missingPermissionIppTestCommand$: 'lut["MESSAGE_PREFIX"] & "&cYou don''t have the permission to use the test sub-command."'
   missingPermissionIppReloadCommand$: 'lut["MESSAGE_PREFIX"] & "&cYou don''t have the permission to use the reload sub-command."'
 
+commands:
+  itempredicateparser:
+    name: itempredicateparser
+    aliases:
+      - ipp
+
 # File-global lookup table
 lut:
   MESSAGE_PREFIX: '&7[&6ItemPredicateParser&7] '

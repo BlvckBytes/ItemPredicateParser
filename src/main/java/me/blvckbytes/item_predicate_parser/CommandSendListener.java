@@ -1,5 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
+import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import me.blvckbytes.item_predicate_parser.config.MainSection;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,9 +15,9 @@ public class CommandSendListener implements Listener {
   private final String lowerPluginName;
   private final Command ippCommand;
 
-  public CommandSendListener(JavaPlugin plugin) {
+  public CommandSendListener(JavaPlugin plugin, ConfigKeeper<MainSection> config) {
     this.lowerPluginName = plugin.getName().toLowerCase();
-    this.ippCommand = Objects.requireNonNull(plugin.getCommand(ItemPredicateParserCommand.COMMAND_NAME));
+    this.ippCommand = Objects.requireNonNull(plugin.getCommand(config.rootSection.commands.itemPredicateParser.evaluatedName));
   }
 
   @EventHandler

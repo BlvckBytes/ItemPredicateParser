@@ -1,7 +1,9 @@
 package me.blvckbytes.item_predicate_parser;
 
+import me.blvckbytes.bukkitevaluable.CommandUpdater;
 import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.bukkitevaluable.ConfigManager;
+import me.blvckbytes.item_predicate_parser.config.ItemPredicateParserCommandSection;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.resolver.PluginTranslationResolver;
@@ -28,11 +30,20 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       var languageRegistry = new LanguageRegistry(this, new PluginTranslationResolver(this));
       this.predicateHelper = new PredicateHelper(languageRegistry, config);
 
-      Objects.requireNonNull(getCommand(ItemPredicateParserCommand.COMMAND_NAME)).setExecutor(
-        new ItemPredicateParserCommand(predicateHelper, config, logger)
-      );
+      var commandUpdater = new CommandUpdater(this);
+      var command = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
 
-      Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this), this);
+      command.setExecutor(new ItemPredicateParserCommand(predicateHelper, config, logger));
+
+      Runnable updateCommands = () -> {
+        config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);
+        commandUpdater.trySyncCommands();
+      };
+
+      updateCommands.run();
+      config.registerReloadListener(updateCommands);
+
+      Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this, config), this);
 
       instance = this;
     } catch (Throwable e) {

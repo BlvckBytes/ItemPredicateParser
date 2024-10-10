@@ -15,6 +15,7 @@ public class MainSection extends AConfigSection {
   public @Nullable BukkitEvaluable maxCompletionsExceeded;
   public @Nullable BukkitEvaluable inputNonHighlightPrefix;
   public @Nullable BukkitEvaluable inputHighlightPrefix;
+  public @CSAlways CommandsSection commands;
   public Map<String, BukkitEvaluable> parseConflicts;
 
   @CSAlways

@@ -1,23 +1,22 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
-import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
+import me.blvckbytes.item_predicate_parser.parse.Syllables;
+import me.blvckbytes.item_predicate_parser.parse.SyllablesMatcher;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class TextSearchPredicate implements ItemPredicate {
 
   public final QuotedStringToken token;
-  private final List<SubstringIndices> textIndices;
+  private final Syllables tokenSyllables;
 
   public TextSearchPredicate(QuotedStringToken token) {
     this.token = token;
-    this.textIndices = SubstringIndices.forString(token, token.value(), SubstringIndices.FREE_TEXT_DELIMITER);
+    this.tokenSyllables = Syllables.forString(token, token.value(), Syllables.DELIMITER_FREE_TEXT);
   }
 
   @Override
@@ -25,21 +24,21 @@ public class TextSearchPredicate implements ItemPredicate {
     if (state.meta == null)
       return this;
 
-    var pendingTextIndices = new ArrayList<>(textIndices);
+    var matcher = new SyllablesMatcher();
+
+    matcher.setTarget(tokenSyllables);
 
     // ================================================================================
     // Display Name
     // ================================================================================
 
     if (state.meta.hasDisplayName()) {
-      var displayName = state.meta.getDisplayName();
+      var displayNameSyllables = Syllables.forString(null, state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
 
-      SubstringIndices.matchQuerySubstrings(
-        token.value(), pendingTextIndices,
-        displayName, SubstringIndices.forString(null, displayName, SubstringIndices.FREE_TEXT_DELIMITER)
-      );
+      matcher.setQuery(displayNameSyllables);
+      matcher.match();
 
-      if (pendingTextIndices.isEmpty())
+      if (matcher.hasUnmatchedTargetSyllables())
         return null;
     }
 
@@ -49,12 +48,12 @@ public class TextSearchPredicate implements ItemPredicate {
 
     if (state.meta.hasLore()) {
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
-        SubstringIndices.matchQuerySubstrings(
-          token.value(), pendingTextIndices,
-          loreLine, SubstringIndices.forString(null, loreLine, SubstringIndices.FREE_TEXT_DELIMITER)
-        );
+        var loreLineSyllables = Syllables.forString(null, loreLine, Syllables.DELIMITER_FREE_TEXT);
 
-        if (pendingTextIndices.isEmpty())
+        matcher.setQuery(loreLineSyllables);
+        matcher.match();
+
+        if (matcher.hasUnmatchedTargetSyllables())
           return null;
       }
     }
@@ -66,14 +65,12 @@ public class TextSearchPredicate implements ItemPredicate {
       // ================================================================================
 
       if (bookMeta.hasAuthor()) {
-        var author = Objects.requireNonNull(bookMeta.getAuthor());
+        var authorSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getAuthor()), Syllables.DELIMITER_FREE_TEXT);
 
-        SubstringIndices.matchQuerySubstrings(
-          token.value(), pendingTextIndices,
-          author, SubstringIndices.forString(null, author, SubstringIndices.FREE_TEXT_DELIMITER)
-        );
+        matcher.setQuery(authorSyllables);
+        matcher.match();
 
-        if (pendingTextIndices.isEmpty())
+        if (matcher.hasUnmatchedTargetSyllables())
           return null;
       }
 
@@ -82,14 +79,12 @@ public class TextSearchPredicate implements ItemPredicate {
       // ================================================================================
 
       if (bookMeta.hasTitle()) {
-        var title = Objects.requireNonNull(bookMeta.getTitle());
+        var titleSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getTitle()), Syllables.DELIMITER_FREE_TEXT);
 
-        SubstringIndices.matchQuerySubstrings(
-          token.value(), pendingTextIndices,
-          title, SubstringIndices.forString(null, title, SubstringIndices.FREE_TEXT_DELIMITER)
-        );
+        matcher.setQuery(titleSyllables);
+        matcher.match();
 
-        if (pendingTextIndices.isEmpty())
+        if (matcher.hasUnmatchedTargetSyllables())
           return null;
       }
 
@@ -99,12 +94,12 @@ public class TextSearchPredicate implements ItemPredicate {
 
       if (bookMeta.hasPages()) {
         for (var page : bookMeta.getPages()) {
-          SubstringIndices.matchQuerySubstrings(
-            token.value(), pendingTextIndices,
-            page, SubstringIndices.forString(null, page, SubstringIndices.FREE_TEXT_DELIMITER)
-          );
+          var pageSyllables = Syllables.forString(null, page, Syllables.DELIMITER_FREE_TEXT);
 
-          if (pendingTextIndices.isEmpty())
+          matcher.setQuery(pageSyllables);
+          matcher.match();
+
+          if (matcher.hasUnmatchedTargetSyllables())
             return null;
         }
       }
@@ -121,19 +116,16 @@ public class TextSearchPredicate implements ItemPredicate {
         var ownerName = ownerProfile.getName();
 
         if (ownerName != null) {
-          SubstringIndices.matchQuerySubstrings(
-            token.value(), pendingTextIndices,
-            ownerName, SubstringIndices.forString(null, ownerName, SubstringIndices.FREE_TEXT_DELIMITER)
-          );
+          var ownerNameSyllables = Syllables.forString(null, ownerName, Syllables.DELIMITER_FREE_TEXT);
 
-          if (pendingTextIndices.isEmpty())
+          matcher.setQuery(ownerNameSyllables);
+          matcher.match();
+
+          if (matcher.hasUnmatchedTargetSyllables())
             return null;
         }
       }
     }
-
-    if (pendingTextIndices.isEmpty())
-      return null;
 
     return this;
   }

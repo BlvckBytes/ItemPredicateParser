@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import me.blvckbytes.item_predicate_parser.parse.ParserInput;
+import me.blvckbytes.item_predicate_parser.parse.Syllables;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
@@ -25,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public abstract class ParseTestBase {
 
   protected static final RecursiveInterceptedEqualityChecker equalityChecker = new RecursiveInterceptedEqualityChecker()
@@ -38,20 +41,15 @@ public abstract class ParseTestBase {
     .intercept(List.class, (rootActualType, pathParts, expected, actual) -> {
       var lastPathPart = pathParts.get(pathParts.size() - 1);
 
+      if (MaterialPredicate.class != lastPathPart.getDeclaringClass())
+        return false;
+
       // Manual list content comparison
-      if (MaterialPredicate.class == lastPathPart.getDeclaringClass()) {
-        if (expected == null && actual == null)
-          return true;
-
-        RecursiveInterceptedEqualityChecker.containsInAnyOrder(actual, expected);
+      if (expected == null && actual == null)
         return true;
-      }
 
-      // Do not compare syllable-indices, that has nothing to do with the corresponding test-cases
-      return (
-        lastPathPart.getName().equals("textIndices") ||
-        lastPathPart.getName().equals("partIndices")
-      );
+      RecursiveInterceptedEqualityChecker.containsInAnyOrder(actual, expected);
+      return true;
     })
     .intercept(Iterable.class, (rootActualType, pathParts, expected, actual) -> {
       var lastPathPart = pathParts.get(pathParts.size() - 1);
@@ -61,6 +59,17 @@ public abstract class ParseTestBase {
         lastPathPart.getDeclaringClass() == LangKeyedSource.class &&
         lastPathPart.getName().equals("items")
       );
+    })
+    .intercept(Syllables.class, (rootActualType, pathParts, expected, actual) -> {
+      if (expected == null || actual == null)
+        return false;
+
+      assertEquals(expected.size(), actual.size(), "Expected syllables to be of same size");
+
+      for (var syllableIndex = 0; syllableIndex < expected.size(); ++syllableIndex)
+        assertEquals(expected.getSyllable(syllableIndex), actual.getSyllable(syllableIndex), "Expected syllables at index=" + syllableIndex + " to equal");
+
+      return true;
     });
 
   private static final Gson gson = new GsonBuilder().create();

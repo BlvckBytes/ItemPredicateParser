@@ -1,10 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
+import me.blvckbytes.item_predicate_parser.parse.Syllables;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
@@ -12,7 +9,7 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
   public final T langKeyed;
   public final String normalizedUnPrefixedTranslation;
   public final String normalizedPrefixedTranslation;
-  private final List<SubstringIndices> partIndices;
+  public final Syllables syllables;
 
   public int alphabeticalIndex = 0;
 
@@ -26,11 +23,7 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
     this.langKeyed = langKeyed;
     this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
     this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
-    this.partIndices = SubstringIndices.forString(null, normalizedPrefixedTranslation, SubstringIndices.SEARCH_PATTERN_DELIMITER);
-  }
-
-  public ArrayList<SubstringIndices> getPartIndicesCopy() {
-    return new ArrayList<>(partIndices);
+    this.syllables = Syllables.forString(null, normalizedPrefixedTranslation, Syllables.DELIMITER_SEARCH_PATTERN);
   }
 
   @Override

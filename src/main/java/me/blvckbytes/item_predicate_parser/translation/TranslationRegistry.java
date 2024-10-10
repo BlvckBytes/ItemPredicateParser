@@ -2,7 +2,8 @@ package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.blvckbytes.item_predicate_parser.parse.SubstringIndices;
+import me.blvckbytes.item_predicate_parser.parse.Syllables;
+import me.blvckbytes.item_predicate_parser.parse.SyllablesMatcher;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
@@ -75,24 +76,30 @@ public class TranslationRegistry {
     }
 
     var result = new ArrayList<TranslatedLangKeyed<?>>();
-    var queryParts = SubstringIndices.forString(query, query.value(), SubstringIndices.SEARCH_PATTERN_DELIMITER);
+    var querySyllables = Syllables.forString(query, query.value(), Syllables.DELIMITER_SEARCH_PATTERN);
+
+    var matcher = new SyllablesMatcher();
+    matcher.setQuery(querySyllables);
 
     var isWildcardPresent = false;
 
-    for (var entry : entries) {
-      var pendingQueryParts = new ArrayList<>(queryParts);
-      var pendingTextParts = entry.getPartIndicesCopy();
+    for (var entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
+      var entry = entries[entryIndex];
 
-      isWildcardPresent |= SubstringIndices.matchQuerySubstrings(
-        query.value(), pendingQueryParts,
-        entry.normalizedPrefixedTranslation, pendingTextParts
-      );
+      if (entryIndex != 0)
+        matcher.resetQueryMatches();
 
-      if (!pendingQueryParts.isEmpty())
+      matcher.setTarget(entry.syllables);
+
+      var encounteredWildcard = matcher.match();
+
+      isWildcardPresent |= encounteredWildcard;
+
+      if (matcher.hasUnmatchedQuerySyllables())
         continue;
 
-      // If there's a wildcard, disregard full matches
-      if (isWildcardPresent && pendingTextParts.isEmpty())
+      // If there's a wildcard, disregard full matches; that's just a design-decision
+      if (encounteredWildcard && !matcher.hasUnmatchedTargetSyllables())
         continue;
 
       result.add(entry);

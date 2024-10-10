@@ -1,22 +1,15 @@
 package me.blvckbytes.item_predicate_parser.parse;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NormalizedConstant<T extends Enum<?>> {
 
   public final T constant;
   public final String normalizedName;
-  private final List<SubstringIndices> normalizedNameIndices;
+  public final Syllables syllables;
 
   public NormalizedConstant(T constant) {
     this.constant = constant;
     this.normalizedName = normalizeName(constant.name());
-    this.normalizedNameIndices = SubstringIndices.forString(null, this.normalizedName, '-');
-  }
-
-  public ArrayList<SubstringIndices> getNormalizedNameIndices() {
-    return new ArrayList<>(normalizedNameIndices);
+    this.syllables = Syllables.forString(null, this.normalizedName, Syllables.DELIMITER_SEARCH_PATTERN);
   }
 
   private static String normalizeName(String name) {

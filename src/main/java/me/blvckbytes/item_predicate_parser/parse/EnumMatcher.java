@@ -46,26 +46,40 @@ public class EnumMatcher<T extends Enum<?>> {
     @Nullable EnumPredicate<T> filter,
     Function<NormalizedConstant<T>, Boolean> matchHandler
   ) {
-    var inputIndices = input != null ? SubstringIndices.forString(null, input, '-') : null;
-
-    for (var translationLanguage : constants) {
-      if (filter != null && !filter.test(translationLanguage))
-        continue;
-
-      if (inputIndices != null) {
-        var pendingInputSubstrings = new ArrayList<>(inputIndices);
-
-        SubstringIndices.matchQuerySubstrings(
-          input, pendingInputSubstrings,
-          translationLanguage.normalizedName, translationLanguage.getNormalizedNameIndices()
-        );
-
-        if (!pendingInputSubstrings.isEmpty())
+    if (input == null) {
+      for (var translationLanguage : constants) {
+        if (filter != null && !filter.test(translationLanguage))
           continue;
+
+        if (!matchHandler.apply(translationLanguage))
+          return translationLanguage;
       }
 
-      if (!matchHandler.apply(translationLanguage))
-        return translationLanguage;
+      return null;
+    }
+
+    var inputSyllables = Syllables.forString(null, input, Syllables.DELIMITER_SEARCH_PATTERN);
+
+    var matcher = new SyllablesMatcher();
+    matcher.setQuery(inputSyllables);
+
+    for (var constantIndex = 0; constantIndex < constants.length; ++constantIndex) {
+      var constant = constants[constantIndex];
+
+      if (filter != null && !filter.test(constant))
+        continue;
+
+      if (constantIndex != 0)
+        matcher.resetQueryMatches();
+
+      matcher.setTarget(constant.syllables);
+      matcher.match();
+
+      if (matcher.hasUnmatchedQuerySyllables())
+        continue;
+
+      if (!matchHandler.apply(constant))
+        return constant;
     }
 
     return null;

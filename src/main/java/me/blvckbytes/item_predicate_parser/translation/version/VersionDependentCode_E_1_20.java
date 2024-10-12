@@ -8,16 +8,18 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.bukkit.Material;
 import org.bukkit.Registry;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
-public class VersionDependentCode_GTE_1_20 implements IVersionDependentCode {
+public class VersionDependentCode_E_1_20 implements IVersionDependentCode {
 
   private final Logger logger;
   private final DetectedServerVersion serverVersion;
 
-  public VersionDependentCode_GTE_1_20(DetectedServerVersion serverVersion, Logger logger) {
+  public VersionDependentCode_E_1_20(DetectedServerVersion serverVersion, Logger logger) {
     this.logger = logger;
     this.serverVersion = serverVersion;
   }
@@ -29,7 +31,7 @@ public class VersionDependentCode_GTE_1_20 implements IVersionDependentCode {
 
   @Override
   public Iterable<? extends LangKeyed<?>> getEffects() {
-    return Registry.EFFECT.stream().map(LangKeyedPotionEffectType::new).toList();
+    return Arrays.stream(PotionEffectType.values()).map(LangKeyedPotionEffectType::new).toList();
   }
 
   @Override

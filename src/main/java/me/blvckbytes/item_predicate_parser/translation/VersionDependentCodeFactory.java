@@ -1,7 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
-import me.blvckbytes.item_predicate_parser.translation.version.ExpectedServerVersion;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 
 import java.lang.invoke.MethodHandles;
@@ -14,7 +13,8 @@ public class VersionDependentCodeFactory {
   private static final MethodType constructorType = MethodType.methodType(void.class, DetectedServerVersion.class, Logger.class);
 
   // NOTE: Using path-notation to support relocation, if ever needed
-  private static final String GTE_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_GTE_1_20";
+  private static final String GT_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_GT_1_20";
+  private static final String E_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_E_1_20";
   private static final String LT_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_LT_1_20";
 
   private final IVersionDependentCode instance;
@@ -22,17 +22,17 @@ public class VersionDependentCodeFactory {
   public VersionDependentCodeFactory(DetectedServerVersion serverVersion, Logger logger) throws Throwable {
     Class<?> targetClass;
 
-    // 1.20 is greater than current => LT 1.20
-    if (ExpectedServerVersion.V1_20.compare(serverVersion) > 0) {
-      targetClass = Class.forName(LT_1_20_PATH.replace('/', '.'));
-      logger.info("Detected version < 1.20");
-    }
+    if (serverVersion.major() != 1)
+      throw new IllegalStateException("Cannot handle a major-version greater than one");
 
-    // 1.20 is less than or equal to current => GTE 1.20
-    else {
-      targetClass = Class.forName(GTE_1_20_PATH.replace('/', '.'));
-      logger.info("Detected version >= 1.20");
-    }
+    if (serverVersion.minor() == 20)
+      targetClass = Class.forName(E_1_20_PATH.replace('/', '.'));
+
+    else if (serverVersion.minor() > 20)
+      targetClass = Class.forName(GT_1_20_PATH.replace('/', '.'));
+
+    else
+      targetClass = Class.forName(LT_1_20_PATH.replace('/', '.'));
 
     var constructorHandle = publicLookup.findConstructor(targetClass, constructorType);
     this.instance = (IVersionDependentCode) constructorHandle.invoke(serverVersion, logger);

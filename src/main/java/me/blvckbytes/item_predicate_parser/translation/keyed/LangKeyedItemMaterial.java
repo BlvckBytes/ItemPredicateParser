@@ -76,11 +76,11 @@ public class LangKeyedItemMaterial implements LangKeyed<Material> {
 
     /*
       NETHERITE_UPGRADE_SMITHING_TEMPLATE:
-        <= 1.19.4: item.minecraft.smithing_template
+        <= 1.20.X: item.minecraft.smithing_template
         >        : item.minecraft.netherite_upgrade_smithing_template
      */
 
-    if (version.major() == 1 && version.minor() <= 19) {
+    if (version.major() == 1 && version.minor() <= 20) {
       if (key.equals("netherite_upgrade_smithing_template"))
         return "item.minecraft.smithing_template";
     }

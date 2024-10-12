@@ -189,23 +189,9 @@ public class TranslationRegistry {
 
   private @Nullable String tryGetSmithingTemplateDescriptionKey(LangKeyed<?> langKeyed) {
     /*
-      Various armor trims:
-      item.minecraft.>coast<_armor_trim_smithing_template => trim_pattern.minecraft.>coast<
-
       The upgrade seems to be a completely different key:
       item.minecraft.>netherite_upgrade<_smithing_template => upgrade.minecraft.>netherite_upgrade<
      */
-
-    var fileKey = langKeyed.getLanguageFileKey();
-    var armorTrimMarker = "_armor_trim_smithing_template";
-    var itemMarker = "item.minecraft.";
-
-    int trimMarkerIndex;
-
-    if ((trimMarkerIndex = fileKey.indexOf(armorTrimMarker)) > 0) {
-      var trimPattern = fileKey.substring(itemMarker.length(), trimMarkerIndex);
-      return "trim_pattern.minecraft." + trimPattern;
-    }
 
     if (langKeyed.getWrapped() instanceof Material material && material.name().equals("NETHERITE_UPGRADE_SMITHING_TEMPLATE"))
       return "upgrade.minecraft.netherite_upgrade";

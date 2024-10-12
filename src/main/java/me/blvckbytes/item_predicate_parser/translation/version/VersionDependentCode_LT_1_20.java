@@ -37,7 +37,7 @@ public class VersionDependentCode_LT_1_20 implements IVersionDependentCode {
 
   @Override
   public Iterable<? extends LangKeyed<?>> getItemMaterials(JsonObject languageJson) {
-    return Arrays.stream(Material.values()).filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, languageJson)).toList();
+    return Arrays.stream(Material.values()).filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, serverVersion, languageJson)).toList();
   }
 
   @Override

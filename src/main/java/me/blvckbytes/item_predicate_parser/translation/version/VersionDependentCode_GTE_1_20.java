@@ -15,9 +15,11 @@ import java.util.logging.Logger;
 public class VersionDependentCode_GTE_1_20 implements IVersionDependentCode {
 
   private final Logger logger;
+  private final DetectedServerVersion serverVersion;
 
-  public VersionDependentCode_GTE_1_20(DetectedServerVersion ignored, Logger logger) {
+  public VersionDependentCode_GTE_1_20(DetectedServerVersion serverVersion, Logger logger) {
     this.logger = logger;
+    this.serverVersion = serverVersion;
   }
 
   @Override
@@ -32,7 +34,7 @@ public class VersionDependentCode_GTE_1_20 implements IVersionDependentCode {
 
   @Override
   public Iterable<? extends LangKeyed<?>> getItemMaterials(JsonObject languageJson) {
-    return Registry.MATERIAL.stream().filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, languageJson)).toList();
+    return Registry.MATERIAL.stream().filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, serverVersion, languageJson)).toList();
   }
 
   @Override

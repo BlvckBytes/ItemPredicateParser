@@ -8,9 +8,9 @@ PREVIEW-EXPANDED                                       &a{predicate_representati
 PREVIEW-INPUT-NON-HIGHLIGHT-PREFIX                     &c
 PREVIEW-INPUT-HIGHLIGHT-PREFIX                         &4
 # - highlighted_input: String
-PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER              &cExpected a non-malformed integer {highlighted_input}
+PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER              &cExpected a valid integer {highlighted_input}
 # - highlighted_input: String
-PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS         &cDo not use more than 3 colon-separated blocks {highlighted_input}
+PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS         &cMore than 3 colon-separated blocks {highlighted_input}
 # - highlighted_input: String
 PREVIEW-CONFLICT-EXPECTED-FOLLOWING-INTEGER            &cThis predicate requires an integer argument {highlighted_input}
 # - highlighted_input: String

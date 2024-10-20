@@ -1,0 +1,86 @@
+# ==================== BEGIN Preview ====================
+
+# 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
+# - excess_count: Int
+PREVIEW-MAX-COMPLETIONS-EXCEEDED                       𱍊 und {excess_count} weitere
+# - predicate_representation: String
+PREVIEW-EXPANDED                                       &a{predicate_representation}
+PREVIEW-INPUT-NON-HIGHLIGHT-PREFIX                     &c
+PREVIEW-INPUT-HIGHLIGHT-PREFIX                         &4
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER              &cValide Ganzzahl erwartet {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS         &cMehr als drei Doppelpunkt-getrennte Blöcke {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-FOLLOWING-INTEGER            &cDieses Prädikat benötigt ein ganzzahliges Argument {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-SEARCH-PATTERN               &cSuchbegriff erwartet {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-NO-SEARCH-MATCH                       &cKeine Übereinstimmungen gefunden {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-MISSING-STRING-TERMINATION            &cUnterminierte Zeichenkette {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-MULTIPLE-SEARCH-PATTERN-WILDCARDS     &cMehrfache Benutzung von ? im selben Suchbegriff {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-ONLY-SEARCH-PATTERN-WILDCARD          &cKann nicht nur nach einem Platzhalter suchen {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-DOES-NOT-ACCEPT-TIME-NOTATION         &cDieses Argument akzeptiert keine Zeitnotation {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-DOES-NOT-ACCEPT-NON-EQUALS-COMPARISON &cDieses Argument akzeptiert keine Vergleichsnotation {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-EXPRESSION-AFTER-OPERATOR    &cDieser Operator erwartet einen nachfolgenden Ausdruck {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-OPENING-PARENTHESIS          &cÖffnende Klammer erwartet {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-CLOSING-PARENTHESIS          &cSchließende Klammer erwartet {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EMPTY-OR-BLANK-QUOTED-STRING          &cZeichenketten dürfen nicht leer sein {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE               &cVorangestellter Ausdruck erwartet {highlighted_input}
+
+# ==================== END Preview ====================
+
+# ==================== BEGIN Messages ====================
+
+MESSAGE-PREFIX                            &7[&6ItemPredicateParser&7]
+# - prefix: String
+MESSAGE-COMMAND-ONLY-FOR-PLAYERS          {prefix} &cDieser Befehl steht nur Spielern zur Verfügung.
+# - prefix: String
+MESSAGE-EMPTY-PREDICATE                   {prefix} &cBitte gib ein nicht-leeres Prädikat an.
+# - prefix: String
+MESSAGE-PLUGIN-RELOAD                     {prefix} &7Das Plugin wurde erfolgreich &eneu geladen&7.
+# - prefix: String
+MESSAGE-PLUGIN-RELOAD-ERROR               {prefix} &cEin Fehler trat während des Ladeprozesses auf. Überprüfe die Konsole!
+# - action: String
+MESSAGE-USAGE-IPP-ACTION-ITEM             &e{action}
+MESSAGE-USAGE-IPP-ACTION-SEPARATOR        &7, \
+# - label: String
+# - action_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-ACTION                  {prefix} &7Benutzung: /{label} <{action_list}&7>
+# - language: String
+MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR &7, \
+# - label: String
+# - action: String
+# - language_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-TEST-LANGUAGE          {prefix} &7Benutzung: /{label} {action} <{language_list}&7>
+MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
+# - entered_predicate: String
+MESSAGE-TEST-RESULT-ENTERED              &8> &7Eingabe: &e{entered_predicate}
+MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH    &a
+MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH &c
+# - colored_predicate: String
+MESSAGE-TEST-RESULT-MATCH                &8> &7Übereinstimmung: &e{colored_predicate}
+# - exception_message: String
+# - prefix: String
+MESSAGE-PREDICATE-PARSE-ERROR                 {prefix} {exception_message}
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cKeine Berechtigung zur Benutzung des Befehls ipp.
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST   {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls test.
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls reload.
+
+# ==================== END Messages ====================

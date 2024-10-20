@@ -1,7 +1,4 @@
-package me.blvckbytes.item_predicate_parser.translation;
-
-import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
-import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
+package me.blvckbytes.item_predicate_parser.translation.version;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -11,6 +8,9 @@ public class VersionDependentCodeFactory {
 
   private static final MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
   private static final MethodType constructorType = MethodType.methodType(void.class, DetectedServerVersion.class, Logger.class);
+
+  // TODO: Is this path-approach really necessary? I think instantiating classes with the new-keyword will work just
+  //       as well, since symbols shouldn't be resolved if the class is never actually used
 
   // NOTE: Using path-notation to support relocation, if ever needed
   private static final String GT_1_20_PATH = "me/blvckbytes/item_predicate_parser/translation/version/VersionDependentCode_GT_1_20";

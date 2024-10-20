@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
+import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentCodeFactory;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

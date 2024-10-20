@@ -11,6 +11,9 @@ import java.util.logging.Level;
 
 public class PluginTranslationResolver extends TranslationResolver {
 
+  // TODO: Is this path-approach really necessary? I think instantiating classes with the new-keyword will work just
+  //       as well, since symbols shouldn't be resolved if the class is never actually used
+
   private static final String ECO_ENCHANTS_RESOLVER_PATH = "me/blvckbytes/item_predicate_parser/translation/resolver/EcoEnchantsResolver";
   private static final String EXCELLENT_ENCHANTS_RESOLVER_PATH = "me/blvckbytes/item_predicate_parser/translation/resolver/ExcellentEnchantsResolver";
 

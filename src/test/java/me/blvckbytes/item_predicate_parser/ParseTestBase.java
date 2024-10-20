@@ -11,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.version.DetectedServerVersion;
+import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentCodeFactory;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;

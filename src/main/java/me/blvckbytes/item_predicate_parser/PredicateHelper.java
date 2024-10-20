@@ -107,7 +107,7 @@ public class PredicateHelper {
         expandedPreviewOrError = config.rootSection.expandedPreview.stringify(
           config.rootSection.getBaseEnvironment()
             .withStaticVariable(
-              "command_representation",
+              "predicate_representation",
               new StringifyState(false).appendPredicate(predicate).toString()
             )
             .build()

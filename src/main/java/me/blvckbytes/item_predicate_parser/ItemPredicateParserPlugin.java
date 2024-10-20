@@ -24,7 +24,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
     var logger = getLogger();
 
     try {
-      var configManager = new ConfigManager(this);
+      var configManager = new ConfigManager(this, "config");
       var config = new ConfigKeeper<>(configManager, "config.yml", MainSection.class);
 
       var languageRegistry = new LanguageRegistry(this, new PluginTranslationResolver(this));

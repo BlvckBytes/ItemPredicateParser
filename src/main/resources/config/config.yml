@@ -1,0 +1,77 @@
+# ____________                ________            _____________             _____     ________
+#   ____  _/_  /____________ ______  __ \_________________  /__(_)___________ __  /________  __ \_____ ___________________________
+#   __  / _  __/  _ \_  __ `__ \_  /_/ /_  ___/  _ \  __  /__  /_  ___/  __ `/  __/  _ \_  /_/ /  __ `/_  ___/_  ___/  _ \_  ___/
+#   __/ /  / /_ /  __/  / / / / /  ____/_  /   /  __/ /_/ / _  / / /__ / /_/ // /_ /  __/  ____// /_/ /_  /   _(__  )/  __/  /
+#   /___/  \__/ \___//_/ /_/ /_//_/     /_/    \___/\__,_/  /_/  \___/ \__,_/ \__/ \___//_/     \__,_/ /_/    /____/ \___//_/
+#
+# ItemPredicateParser - Developed by BlvckBytes <blvckbytes@gmail.com>
+# Repository - https://github.com/BlvckBytes/ItemPredicateParser
+# ASCII-Art - https://patorjk.com/software/taag/#p=display&f=Speed
+#
+# PRE-PROCESSOR-INPUT en_us.txt
+
+# - predicate_representation: String
+expandedPreview$: '@{PREVIEW-EXPANDED}'
+maxCompletionsCount: 30
+# - excess_count: Int
+maxCompletionsExceeded$: '@{PREVIEW-MAX-COMPLETIONS-EXCEEDED}'
+inputNonHighlightPrefix: '@{PREVIEW-INPUT-NON-HIGHLIGHT-PREFIX}'
+inputHighlightPrefix: '@{PREVIEW-INPUT-HIGHLIGHT-PREFIX}'
+# highlighted_input: String
+parseConflicts$:
+  EXPECTED_CORRECT_INTEGER: '@{PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER}'
+  TOO_MANY_TIME_NOTATION_BLOCKS: '@{PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS}'
+  EXPECTED_FOLLOWING_INTEGER: '@{PREVIEW-CONFLICT-EXPECTED-FOLLOWING-INTEGER}'
+  EXPECTED_SEARCH_PATTERN: '@{PREVIEW-CONFLICT-EXPECTED-SEARCH-PATTERN}'
+  NO_SEARCH_MATCH: '@{PREVIEW-CONFLICT-NO-SEARCH-MATCH}'
+  MISSING_STRING_TERMINATION: '@{PREVIEW-CONFLICT-MISSING-STRING-TERMINATION}'
+  MULTIPLE_SEARCH_PATTERN_WILDCARDS: '@{PREVIEW-CONFLICT-MULTIPLE-SEARCH-PATTERN-WILDCARDS}'
+  ONLY_SEARCH_PATTERN_WILDCARD: '@{PREVIEW-CONFLICT-ONLY-SEARCH-PATTERN-WILDCARD}'
+  DOES_NOT_ACCEPT_TIME_NOTATION: '@{PREVIEW-CONFLICT-DOES-NOT-ACCEPT-TIME-NOTATION}'
+  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON: '@{PREVIEW-CONFLICT-DOES-NOT-ACCEPT-NON-EQUALS-COMPARISON}'
+  EXPECTED_EXPRESSION_AFTER_OPERATOR: '@{PREVIEW-CONFLICT-EXPECTED-EXPRESSION-AFTER-OPERATOR}'
+  EXPECTED_OPENING_PARENTHESIS: '@{PREVIEW-CONFLICT-EXPECTED-OPENING-PARENTHESIS}'
+  EXPECTED_CLOSING_PARENTHESIS: '@{PREVIEW-CONFLICT-EXPECTED-CLOSING-PARENTHESIS}'
+  EMPTY_OR_BLANK_QUOTED_STRING: '@{PREVIEW-CONFLICT-EMPTY-OR-BLANK-QUOTED-STRING}'
+  EXPECTED_LEFT_HAND_SIDE: '@{PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE}'
+
+playerMessages:
+  commandOnlyForPlayers$: '@{MESSAGE-COMMAND-ONLY-FOR-PLAYERS(prefix=lut["MESSAGE_PREFIX"])}'
+  emptyPredicate$: '@{MESSAGE-EMPTY-PREDICATE(prefix=lut["MESSAGE_PREFIX"])}'
+  pluginReloadedSuccess$: '@{MESSAGE-PLUGIN-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
+  pluginReloadedError$: '@{MESSAGE-PLUGIN-RELOAD-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
+  # - label: String
+  # - actions: Collection<String>
+  usageIppCommandAction$: |
+    action_list = iter_cat(actions, (action) => @{MESSAGE-USAGE-IPP-ACTION-ITEM}, @{MESSAGE-USAGE-IPP-ACTION-SEPARATOR})
+    @{MESSAGE-USAGE-IPP-ACTION(prefix=lut["MESSAGE_PREFIX"])}
+  # - label: String
+  # - action: String
+  # - languages: Collection<String>
+  usageIppTestCommandLanguage$: |
+    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR})
+    @{MESSAGE-USAGE-IPP-TEST-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
+  # - entered_predicate: String
+  # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
+  predicateTestResult$:
+    - '@{MESSAGE-TEST-RESULT-SPACER}'
+    - '@{MESSAGE-TEST-RESULT-ENTERED}'
+    - |
+      colored_predicate = expanded_predicate(@{MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH}, @{MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH})
+      @{MESSAGE-TEST-RESULT-MATCH}
+    - '@{MESSAGE-TEST-RESULT-SPACER}'
+  # - exception_message: String
+  predicateParseError$: '@{MESSAGE-PREDICATE-PARSE-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
+  missingPermissionIppCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP(prefix=lut["MESSAGE_PREFIX"])}'
+  missingPermissionIppTestCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST(prefix=lut["MESSAGE_PREFIX"])}'
+  missingPermissionIppReloadCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
+
+commands:
+  itempredicateparser:
+    name: itempredicateparser
+    aliases:
+      - ipp
+
+# File-global lookup table
+lut:
+  MESSAGE_PREFIX: '@{MESSAGE-PREFIX}'

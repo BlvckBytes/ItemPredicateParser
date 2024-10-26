@@ -38,6 +38,15 @@ public record CustomTranslations(
     "数量"
   );
 
+  public static CustomTranslations TURKISH = new CustomTranslations(
+    "Bozulma",
+    "hayır",
+    "veya",
+    "ve",
+    "kesin",
+    "Miktar"
+  );
+  
   public void apply(JsonObject languageFile) {
     languageFile.addProperty(DeteriorationKey.INSTANCE.getLanguageFileKey(), deterioration);
     languageFile.addProperty(NegationKey.INSTANCE.getLanguageFileKey(), negation);

@@ -26,4 +26,11 @@ public record CollisionPrefixes(
     "[材料]",
     "[乐器]"
   );
+  
+  public static CollisionPrefixes TURKISH = new CollisionPrefixes(
+    "[Büyü]",
+    "[Efekt]",
+    "[Materyal]",
+    "[Enstrüman]"
+  );
 }

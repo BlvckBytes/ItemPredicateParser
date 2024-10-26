@@ -1,6 +1,5 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.bbconfigmapper.ScalarType;
 import me.blvckbytes.bukkitevaluable.BukkitEvaluable;
 import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.item_predicate_parser.config.HighlightPredicateFunction;
@@ -75,17 +74,18 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
       if (suggestions.isEmpty()) {
         if ((message = config.rootSection.playerMessages.missingPermissionIppCommand) != null)
-          sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+          message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
         return true;
       }
 
       if ((message = config.rootSection.playerMessages.usageIppCommandAction) != null) {
-        sender.sendMessage(message.stringify(
+        message.sendMessage(
+          sender,
           config.rootSection.getBaseEnvironment()
             .withStaticVariable("label", label)
             .withStaticVariable("actions", suggestions)
             .build()
-        ));
+        );
       }
 
       return true;
@@ -95,13 +95,13 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       case TEST -> {
         if (!(sender instanceof Player player)) {
           if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
         if (!PluginPermission.IPP_TEST_COMMAND.has(player)) {
           if ((message = config.rootSection.playerMessages.missingPermissionIppTestCommand) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
@@ -109,13 +109,14 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
         if (args.length < 2 || (language = TranslationLanguage.matcher.matchFirst(args[1])) == null) {
           if ((message = config.rootSection.playerMessages.usageIppTestCommandLanguage) != null) {
-            sender.sendMessage(message.stringify(
+            message.sendMessage(
+              sender,
               config.rootSection.getBaseEnvironment()
                 .withStaticVariable("label", label)
                 .withStaticVariable("action", action.normalizedName)
                 .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
                 .build()
-            ));
+            );
           }
           return true;
         }
@@ -127,33 +128,34 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           predicate = predicateHelper.parsePredicate(language.constant, tokens);
         } catch (ItemPredicateParseException e) {
           if ((message = config.rootSection.playerMessages.predicateParseError) != null) {
-            sender.sendMessage(message.stringify(
+            message.sendMessage(
+              sender,
               config.rootSection.getBaseEnvironment()
                 .withStaticVariable("exception_message", predicateHelper.createExceptionMessage(e))
                 .build()
-            ));
+            );
           }
           return true;
         }
 
         if (predicate == null) {
           if ((message = config.rootSection.playerMessages.emptyPredicate) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
         var failure = predicate.testForFailure(new PredicateState(player.getInventory().getItemInMainHand()));
 
         if ((message = config.rootSection.playerMessages.predicateTestResult) != null) {
-          message.asList(
-            ScalarType.STRING,
+          message.sendMessage(
+            player,
             config.rootSection.getBaseEnvironment()
               .withStaticVariable("entered_predicate",
                 new StringifyState(true).appendPredicate(predicate).toString()
               )
               .withFunction("expanded_predicate", new HighlightPredicateFunction(predicate, failure))
               .build()
-          ).forEach(player::sendMessage);
+          );
         }
 
         return true;
@@ -162,7 +164,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       case RELOAD -> {
         if (sender instanceof Player player && !PluginPermission.IPP_RELOAD_COMMAND.has(player)) {
           if ((message = config.rootSection.playerMessages.missingPermissionIppReloadCommand) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
@@ -170,12 +172,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           config.reload();
 
           if ((message = config.rootSection.playerMessages.pluginReloadedSuccess) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
         } catch (Exception e) {
           logger.log(Level.SEVERE, "An error occurred while trying to reload the config", e);
 
           if ((message = config.rootSection.playerMessages.pluginReloadedError) != null)
-            sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
         }
 
         return true;
@@ -206,7 +208,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         BukkitEvaluable message;
 
         if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-          sender.sendMessage(message.stringify(config.rootSection.getBaseEnvironment().build()));
+          message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
 
         return List.of();
       }

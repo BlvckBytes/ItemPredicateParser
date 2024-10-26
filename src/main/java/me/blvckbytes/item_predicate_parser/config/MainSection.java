@@ -24,6 +24,6 @@ public class MainSection extends AConfigSection {
   public MainSection(EvaluationEnvironmentBuilder baseEnvironment) {
     super(baseEnvironment);
 
-    maxCompletionsCount = BukkitEvaluable.of(30);
+    maxCompletionsCount = new BukkitEvaluable(30, null, null);
   }
 }

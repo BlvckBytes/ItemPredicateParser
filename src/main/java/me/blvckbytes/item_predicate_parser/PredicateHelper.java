@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser;
 
 import me.blvckbytes.bbconfigmapper.ScalarType;
 import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import me.blvckbytes.gpeee.GPEEE;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
@@ -55,7 +56,7 @@ public class PredicateHelper {
   }
 
   private void updateMaxResults() {
-    maxResults = config.rootSection.maxCompletionsCount.asScalar(ScalarType.INT, config.rootSection.getBaseEnvironment().build());
+    maxResults = config.rootSection.maxCompletionsCount.asScalar(ScalarType.INT, config.rootSection.builtBaseEnvironment);
   }
 
   /**
@@ -104,7 +105,8 @@ public class PredicateHelper {
       var predicate = _parsePredicate(language, tokens, true);
 
       if (predicate != null && config.rootSection.expandedPreview != null) {
-        expandedPreviewOrError = config.rootSection.expandedPreview.stringify(
+        expandedPreviewOrError = config.rootSection.expandedPreview.asScalar(
+          ScalarType.STRING,
           config.rootSection.getBaseEnvironment()
             .withStaticVariable(
               "predicate_representation",
@@ -133,10 +135,10 @@ public class PredicateHelper {
     String highlightPrefix = "", nonHighlightPrefix = "";
 
     if (config.rootSection.inputHighlightPrefix != null)
-      highlightPrefix = config.rootSection.inputHighlightPrefix.stringify();
+      highlightPrefix = config.rootSection.inputHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
 
     if (config.rootSection.inputNonHighlightPrefix != null)
-      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.stringify();
+      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
 
     var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
 
@@ -145,7 +147,8 @@ public class PredicateHelper {
     if (conflictEvaluable == null)
       return highlightedInput;
 
-    return conflictEvaluable.stringify(
+    return conflictEvaluable.asScalar(
+      ScalarType.STRING,
       config.rootSection.getBaseEnvironment()
         .withStaticVariable("highlighted_input", highlightedInput)
         .build()
@@ -226,7 +229,8 @@ public class PredicateHelper {
       .collect(Collectors.toList());
 
     if (resultCount > maxResults && config.rootSection.maxCompletionsExceeded != null) {
-      resultTexts.add(config.rootSection.maxCompletionsExceeded.stringify(
+      resultTexts.add(config.rootSection.maxCompletionsExceeded.asScalar(
+        ScalarType.STRING,
         config.rootSection.getBaseEnvironment()
           .withStaticVariable("excess_count", resultCount - maxResults)
           .build()

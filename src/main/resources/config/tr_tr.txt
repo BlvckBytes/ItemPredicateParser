@@ -1,0 +1,86 @@
+# ==================== BEGIN Preview ====================
+
+# 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
+# - excess_count: Int
+PREVIEW-MAX-COMPLETIONS-EXCEEDED                       𱍊 ve {excess_count} fazlası
+# - predicate_representation: String
+PREVIEW-EXPANDED                                       &a{predicate_representation}
+PREVIEW-INPUT-NON-HIGHLIGHT-PREFIX                     &c
+PREVIEW-INPUT-HIGHLIGHT-PREFIX                         &4
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER              &cGeçerli bir tamsayı bekleniyor {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS         &c3'ten fazla kolondan ayrılmış blok {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-FOLLOWING-INTEGER            &cBu yüklem bir tamsayı bağımsız değişkeni gerektirir {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-SEARCH-PATTERN               &cAramak için bir isim bekleniyor {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-NO-SEARCH-MATCH                       &cEşleşme bulunamadı {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-MISSING-STRING-TERMINATION            &cString sonlandırılmadı {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-MULTIPLE-SEARCH-PATTERN-WILDCARDS     &cBir argüman içinde birden fazla ? kullanılır {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-ONLY-SEARCH-PATTERN-WILDCARD          &cSadece bir joker karakter için arama yapılamaz {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-DOES-NOT-ACCEPT-TIME-NOTATION         &cBu argüman zaman gösterimini kabul etmez {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-DOES-NOT-ACCEPT-NON-EQUALS-COMPARISON &cBu argüman karşılaştırma gösterimini kabul etmez {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-EXPRESSION-AFTER-OPERATOR    &cBu operatörün ardından başka bir ifade gelmelidir {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-OPENING-PARENTHESIS          &cAçılış parantezi bekleniyor {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-CLOSING-PARENTHESIS          &cKapanış parantezi bekleniyor {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EMPTY-OR-BLANK-QUOTED-STRING          &cDizinin boş olmasına izin verilmez {highlighted_input}
+# - highlighted_input: String
+PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE               &cSol taraftaki bir ifade bekleniyor {highlighted_input}
+
+# ==================== END Preview ====================
+
+# ==================== BEGIN Messages ====================
+
+MESSAGE-PREFIX                            &7[&6ItemPredicateParser&7]
+# - prefix: String
+MESSAGE-COMMAND-ONLY-FOR-PLAYERS          {prefix} &cBu komut sadece oyuncular tarafından kullanılabilir.
+# - prefix: String
+MESSAGE-EMPTY-PREDICATE                   {prefix} &cLütfen boş olmayan bir yüklem sağlayın.
+# - prefix: String
+MESSAGE-PLUGIN-RELOAD                     {prefix} &7Eklenti &ebaşarıyla &7yeniden yüklendi.
+# - prefix: String
+MESSAGE-PLUGIN-RELOAD-ERROR               {prefix} &cEklentiyi yeniden yüklemeye çalışırken bir hata oluştu. Konsolu kontrol edin!
+# - action: String
+MESSAGE-USAGE-IPP-ACTION-ITEM             &e{action}
+MESSAGE-USAGE-IPP-ACTION-SEPARATOR        &7, \
+# - label: String
+# - action_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-ACTION                  {prefix} &7Kullanım: /{label} <{action_list}&7>
+# - language: String
+MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR &7, \
+# - label: String
+# - action: String
+# - language_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-TEST-LANGUAGE          {prefix} &7Kullanım: /{label} {action} <{language_list}&7>
+MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
+# - entered_predicate: String
+MESSAGE-TEST-RESULT-ENTERED              &8> &7Gir: &e{entered_predicate}
+MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH    &a
+MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH &c
+# - colored_predicate: String
+MESSAGE-TEST-RESULT-MATCH                &8> &7Eşleşme: &e{colored_predicate}
+# - exception_message: String
+# - prefix: String
+MESSAGE-PREDICATE-PARSE-ERROR                 {prefix} {exception_message}
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cIPP komutunu kullanmak için izniniz yok.
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST   {prefix} &cIPP TEST komutunu kullanmak için izniniz yok.
+# - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD {prefix} &cIPP RELOAD komutunu kullanma izniniz yok.
+
+# ==================== END Messages ====================

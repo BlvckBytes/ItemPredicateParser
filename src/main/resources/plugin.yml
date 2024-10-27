@@ -4,6 +4,7 @@ version: ${project.version}
 author: BlvckBytes
 api-version: 1.13
 softdepend: [EcoEnchants, ExcellentEnchants]
+folia-supported: true
 commands:
   itempredicateparser:
     aliases: [ipp]

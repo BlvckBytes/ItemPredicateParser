@@ -26,7 +26,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
     var matcher = new SyllablesMatcher();
 
-    matcher.setTarget(tokenSyllables);
+    matcher.setQuery(tokenSyllables);
 
     // ================================================================================
     // Display Name
@@ -35,10 +35,10 @@ public class TextSearchPredicate implements ItemPredicate {
     if (state.meta.hasDisplayName()) {
       var displayNameSyllables = Syllables.forString(null, state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
 
-      matcher.setQuery(displayNameSyllables);
+      matcher.setTarget(displayNameSyllables);
       matcher.match();
 
-      if (matcher.hasUnmatchedTargetSyllables())
+      if (!matcher.hasUnmatchedQuerySyllables())
         return null;
     }
 
@@ -50,10 +50,10 @@ public class TextSearchPredicate implements ItemPredicate {
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
         var loreLineSyllables = Syllables.forString(null, loreLine, Syllables.DELIMITER_FREE_TEXT);
 
-        matcher.setQuery(loreLineSyllables);
+        matcher.setTarget(loreLineSyllables);
         matcher.match();
 
-        if (matcher.hasUnmatchedTargetSyllables())
+        if (!matcher.hasUnmatchedQuerySyllables())
           return null;
       }
     }
@@ -67,10 +67,10 @@ public class TextSearchPredicate implements ItemPredicate {
       if (bookMeta.hasAuthor()) {
         var authorSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getAuthor()), Syllables.DELIMITER_FREE_TEXT);
 
-        matcher.setQuery(authorSyllables);
+        matcher.setTarget(authorSyllables);
         matcher.match();
 
-        if (matcher.hasUnmatchedTargetSyllables())
+        if (!matcher.hasUnmatchedQuerySyllables())
           return null;
       }
 
@@ -81,10 +81,10 @@ public class TextSearchPredicate implements ItemPredicate {
       if (bookMeta.hasTitle()) {
         var titleSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getTitle()), Syllables.DELIMITER_FREE_TEXT);
 
-        matcher.setQuery(titleSyllables);
+        matcher.setTarget(titleSyllables);
         matcher.match();
 
-        if (matcher.hasUnmatchedTargetSyllables())
+        if (!matcher.hasUnmatchedQuerySyllables())
           return null;
       }
 
@@ -96,10 +96,10 @@ public class TextSearchPredicate implements ItemPredicate {
         for (var page : bookMeta.getPages()) {
           var pageSyllables = Syllables.forString(null, page, Syllables.DELIMITER_FREE_TEXT);
 
-          matcher.setQuery(pageSyllables);
+          matcher.setTarget(pageSyllables);
           matcher.match();
 
-          if (matcher.hasUnmatchedTargetSyllables())
+          if (!matcher.hasUnmatchedQuerySyllables())
             return null;
         }
       }
@@ -118,10 +118,10 @@ public class TextSearchPredicate implements ItemPredicate {
         if (ownerName != null) {
           var ownerNameSyllables = Syllables.forString(null, ownerName, Syllables.DELIMITER_FREE_TEXT);
 
-          matcher.setQuery(ownerNameSyllables);
+          matcher.setTarget(ownerNameSyllables);
           matcher.match();
 
-          if (matcher.hasUnmatchedTargetSyllables())
+          if (!matcher.hasUnmatchedQuerySyllables())
             return null;
         }
       }

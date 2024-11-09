@@ -375,6 +375,39 @@ public class SyllableTests {
   }
 
   @Test
+  public void shouldIgnoreHexColorSequences() {
+    var coloredString = "§x§F§F§0§0§0§0h§x§F§F§5§F§0§0e§x§F§F§B§F§0§0l§x§D§F§F§F§0§0l§x§7§F§F§F§0§0o§x§1§F§F§F§0§0,§x§0§0§F§F§3§F-§x§0§0§F§F§9§Fw§x§0§0§F§F§F§Fo§x§0§0§9§F§F§Fr§x§0§0§3§F§F§Fl§x§1§F§0§0§F§Fd§x§7§F§0§0§F§F!§x§D§F§0§0§F§F-§x§F§F§0§0§B§F:§x§F§F§0§0§5§F)";
+
+    makeUnmatchedCase(
+      coloredString, "hello,-world!-:)", false,
+      EMPTY_SYLLABLES,
+      EMPTY_SYLLABLES
+    );
+  }
+
+  @Test
+  public void shouldIgnoreConsecutiveStandardColorSequences() {
+    var coloredString = "§c§l§kHello-world";
+
+    makeUnmatchedCase(
+      coloredString, "hello-world", false,
+      EMPTY_SYLLABLES,
+      EMPTY_SYLLABLES
+    );
+  }
+
+  @Test
+  public void shouldIgnoreConsecutiveHexColorSequences() {
+    var coloredString = "§x§F§F§0§0§0§0§x§0§0§F§F§0§0§x§0§0§0§0§F§FHello-world";
+
+    makeUnmatchedCase(
+      coloredString, "hello-world", false,
+      EMPTY_SYLLABLES,
+      EMPTY_SYLLABLES
+    );
+  }
+
+  @Test
   public void shouldResetMatches() {
     var remainingTargetSyllables = new Syllables(null)
       .add(2, 5, false)

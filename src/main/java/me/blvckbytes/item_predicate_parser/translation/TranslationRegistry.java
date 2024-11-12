@@ -2,12 +2,14 @@ package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.blvckbytes.item_predicate_parser.parse.Syllables;
-import me.blvckbytes.item_predicate_parser.parse.SyllablesMatcher;
+import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
+import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
+import me.blvckbytes.syllables_matcher.Syllables;
+import me.blvckbytes.syllables_matcher.SyllablesMatcher;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,7 +78,15 @@ public class TranslationRegistry {
     }
 
     var result = new ArrayList<TranslatedLangKeyed<?>>();
-    var querySyllables = Syllables.forString(query, query.value(), Syllables.DELIMITER_SEARCH_PATTERN);
+    var querySyllablesResult = Syllables.forStringWithWildcardSupport(query.value(), Syllables.DELIMITER_SEARCH_PATTERN);
+
+    if (querySyllablesResult.numberOfWildcardSyllables() > 1)
+      throw new ItemPredicateParseException(query, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
+
+    if (querySyllablesResult.numberOfWildcardSyllables() != 0 && querySyllablesResult.numberOfNonWildcardSyllables() == 0)
+      throw new ItemPredicateParseException(query, ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
+
+    var querySyllables = querySyllablesResult.syllables();
     var isWildcardMode = querySyllables.isWildcardMode();
 
     var matcher = new SyllablesMatcher();

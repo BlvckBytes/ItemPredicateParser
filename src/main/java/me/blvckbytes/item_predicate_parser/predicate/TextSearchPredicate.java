@@ -1,8 +1,8 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
-import me.blvckbytes.item_predicate_parser.parse.Syllables;
-import me.blvckbytes.item_predicate_parser.parse.SyllablesMatcher;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
+import me.blvckbytes.syllables_matcher.Syllables;
+import me.blvckbytes.syllables_matcher.SyllablesMatcher;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
   public TextSearchPredicate(QuotedStringToken token) {
     this.token = token;
-    this.tokenSyllables = Syllables.forString(token, token.value(), Syllables.DELIMITER_FREE_TEXT);
+    this.tokenSyllables = Syllables.forString(token.value(), Syllables.DELIMITER_FREE_TEXT);
   }
 
   @Override
@@ -33,7 +33,7 @@ public class TextSearchPredicate implements ItemPredicate {
     // ================================================================================
 
     if (state.meta.hasDisplayName()) {
-      var displayNameSyllables = Syllables.forString(null, state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
+      var displayNameSyllables = Syllables.forString(state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
 
       matcher.setTarget(displayNameSyllables);
       matcher.match();
@@ -48,7 +48,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
     if (state.meta.hasLore()) {
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
-        var loreLineSyllables = Syllables.forString(null, loreLine, Syllables.DELIMITER_FREE_TEXT);
+        var loreLineSyllables = Syllables.forString(loreLine, Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(loreLineSyllables);
         matcher.match();
@@ -65,7 +65,7 @@ public class TextSearchPredicate implements ItemPredicate {
       // ================================================================================
 
       if (bookMeta.hasAuthor()) {
-        var authorSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getAuthor()), Syllables.DELIMITER_FREE_TEXT);
+        var authorSyllables = Syllables.forString(Objects.requireNonNull(bookMeta.getAuthor()), Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(authorSyllables);
         matcher.match();
@@ -79,7 +79,7 @@ public class TextSearchPredicate implements ItemPredicate {
       // ================================================================================
 
       if (bookMeta.hasTitle()) {
-        var titleSyllables = Syllables.forString(null, Objects.requireNonNull(bookMeta.getTitle()), Syllables.DELIMITER_FREE_TEXT);
+        var titleSyllables = Syllables.forString(Objects.requireNonNull(bookMeta.getTitle()), Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(titleSyllables);
         matcher.match();
@@ -94,7 +94,7 @@ public class TextSearchPredicate implements ItemPredicate {
 
       if (bookMeta.hasPages()) {
         for (var page : bookMeta.getPages()) {
-          var pageSyllables = Syllables.forString(null, page, Syllables.DELIMITER_FREE_TEXT);
+          var pageSyllables = Syllables.forString(page, Syllables.DELIMITER_FREE_TEXT);
 
           matcher.setTarget(pageSyllables);
           matcher.match();
@@ -116,7 +116,7 @@ public class TextSearchPredicate implements ItemPredicate {
         var ownerName = ownerProfile.getName();
 
         if (ownerName != null) {
-          var ownerNameSyllables = Syllables.forString(null, ownerName, Syllables.DELIMITER_FREE_TEXT);
+          var ownerNameSyllables = Syllables.forString(ownerName, Syllables.DELIMITER_FREE_TEXT);
 
           matcher.setTarget(ownerNameSyllables);
           matcher.match();

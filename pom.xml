@@ -32,6 +32,11 @@
             <artifactId>BukkitEvaluable</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>me.blvckbytes</groupId>
+            <artifactId>SyllablesMatcher</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!-- MockBukkit needs to be prepended to spigot, otherwise there will be runtime errors. -->
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
@@ -119,6 +124,7 @@
                             <include>me.blvckbytes:BBConfigMapper</include>
                             <include>me.blvckbytes:BukkitEvaluable</include>
                             <include>me.blvckbytes:GPEEE</include>
+                            <include>me.blvckbytes:SyllablesMatcher</include>
                             <!-- [1] Shouldn't be necessary anymore on newer versions of bukkit, but I prefer backwards-compatibility over file-size. -->
                             <include>org.yaml:snakeyaml</include>
                             <include>com.github.cryptomorin:XSeries</include>
@@ -128,7 +134,7 @@
                     <relocations>
                         <!-- Relocate all libs into the root package -->
                         <relocation>
-                            <pattern>me/blvckbytes/(bbconfigmapper|bukkit-evaluable|GPEEE)/(.*)</pattern>
+                            <pattern>me/blvckbytes/(bbconfigmapper|bukkit-evaluable|GPEEE|syllables_matcher)/(.*)</pattern>
                             <shadedPattern>me/blvckbytes/item_predicate_parser/$1/$2</shadedPattern>
                             <rawString>true</rawString>
                         </relocation>

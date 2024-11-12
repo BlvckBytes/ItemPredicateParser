@@ -1,7 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import me.blvckbytes.item_predicate_parser.parse.Syllables;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import me.blvckbytes.syllables_matcher.Syllables;
 
 public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
@@ -23,7 +23,7 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
     this.langKeyed = langKeyed;
     this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
     this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
-    this.syllables = Syllables.forString(null, normalizedPrefixedTranslation, Syllables.DELIMITER_SEARCH_PATTERN);
+    this.syllables = Syllables.forString(normalizedPrefixedTranslation, Syllables.DELIMITER_SEARCH_PATTERN);
   }
 
   @Override

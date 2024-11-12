@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
-import me.blvckbytes.item_predicate_parser.parse.EnumMatcher;
+import me.blvckbytes.syllables_matcher.EnumMatcher;
 
 public enum TranslationLanguage {
 

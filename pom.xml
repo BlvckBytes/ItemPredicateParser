@@ -11,7 +11,6 @@
     <properties>
         <compileSource>17</compileSource>
         <testCompileSource>21</testCompileSource>
-        <output.path>${user.home}/Documents/Projects/MCServerLagersuche/plugins</output.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -191,36 +190,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.3.1</version>
-            </plugin>
-
-            <!-- Install the final jar into the specified output path -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.4.0</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-
-                                    <!-- Overwrite if already present -->
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${output.path}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

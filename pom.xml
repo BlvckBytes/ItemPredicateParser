@@ -89,6 +89,12 @@
             <groupId>su.nightexpress.excellentenchants</groupId>
             <artifactId>Core</artifactId>
             <version>4.2.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -133,7 +139,7 @@
                     <relocations>
                         <!-- Relocate all libs into the root package -->
                         <relocation>
-                            <pattern>me/blvckbytes/(bbconfigmapper|bukkit-evaluable|GPEEE|syllables_matcher)/(.*)</pattern>
+                            <pattern>me/blvckbytes/(bbconfigmapper|bukkitevaluable|gpeee|syllables_matcher)/(.*)</pattern>
                             <shadedPattern>me/blvckbytes/item_predicate_parser/$1/$2</shadedPattern>
                             <rawString>true</rawString>
                         </relocation>

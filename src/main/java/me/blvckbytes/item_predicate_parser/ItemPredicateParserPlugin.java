@@ -18,6 +18,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
   private static ItemPredicateParserPlugin instance;
   private PredicateHelper predicateHelper;
+  private LanguageRegistry languageRegistry;
 
   @Override
   public void onEnable() {
@@ -27,7 +28,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       var configManager = new ConfigManager(this, "config");
       var config = new ConfigKeeper<>(configManager, "config.yml", MainSection.class);
 
-      var languageRegistry = new LanguageRegistry(this, new PluginTranslationResolver(this));
+      languageRegistry = new LanguageRegistry(this, new PluginTranslationResolver(this));
       this.predicateHelper = new PredicateHelper(languageRegistry, config);
 
       var commandUpdater = new CommandUpdater(this);
@@ -50,6 +51,10 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       getLogger().log(Level.SEVERE, "Could not download and or initialize languages", e);
       Bukkit.getPluginManager().disablePlugin(this);
     }
+  }
+
+  public TranslationLanguageRegistry getTranslationLanguageRegistry() {
+    return languageRegistry;
   }
 
   public PredicateHelper getPredicateHelper() {

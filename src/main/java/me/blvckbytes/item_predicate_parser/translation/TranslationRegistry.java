@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser.translation;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.blvckbytes.item_predicate_parser.SingletonTranslationRegistry;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class TranslationRegistry {
+public class TranslationRegistry implements SingletonTranslationRegistry {
 
   private final TranslationLanguage language;
   private final JsonObject languageFile;
@@ -24,6 +25,7 @@ public class TranslationRegistry {
   private final @Nullable TranslationResolver translationResolver;
   private final Logger logger;
   private TranslatedLangKeyed<?>[] entries;
+  private Map<Object, String> translationByWrapped;
 
   public TranslationRegistry(
     TranslationLanguage language,
@@ -45,9 +47,10 @@ public class TranslationRegistry {
 
   public void initialize(Iterable<LangKeyedSource> sources) throws IllegalStateException {
     var unsortedEntries = new ArrayList<TranslatedLangKeyed<?>>();
+    translationByWrapped = new HashMap<>();
 
     for (var source : sources)
-      createEntries(source, unsortedEntries);
+      createEntries(source, unsortedEntries, translationByWrapped);
 
     this.entries = unsortedEntries
       .stream()
@@ -62,7 +65,15 @@ public class TranslationRegistry {
     logger.info("Loaded " + entryIndex + " entries for language " + language.assetFileNameWithoutExtension);
   }
 
+  @Override
+  public @Nullable String getTranslationBySingleton(Object instance) {
+    return translationByWrapped.get(instance);
+  }
+
   public @Nullable TranslatedLangKeyed<?> lookup(LangKeyed<?> langKeyed) {
+    if (entries == null)
+      return null;
+
     for (var entry : entries) {
       if (entry.langKeyed.equals(langKeyed))
         return entry;
@@ -115,7 +126,11 @@ public class TranslationRegistry {
     return new SearchResult(result, isWildcardMode);
   }
 
-  private void createEntries(LangKeyedSource source, ArrayList<TranslatedLangKeyed<?>> output) throws IllegalStateException {
+  private void createEntries(
+    LangKeyedSource source,
+    List<TranslatedLangKeyed<?>> translatedOutput,
+    Map<Object, String> translationByWrappedOutput
+  ) throws IllegalStateException {
     var buckets = new HashMap<String, ArrayList<LangKeyed<?>>>();
 
     for (var langKeyed : source.items()) {
@@ -125,6 +140,8 @@ public class TranslationRegistry {
         logger.warning("Could not locate translation-value for key " + langKeyed.getLanguageFileKey());
         continue;
       }
+
+      translationByWrappedOutput.put(langKeyed.getWrapped(), translationValue);
 
       var normalizedTranslationValue = TranslatedLangKeyed.normalize(translationValue);
 
@@ -143,8 +160,8 @@ public class TranslationRegistry {
 
         boolean hadCollision = false;
 
-        for (var outputIndex = 0; outputIndex < output.size(); ++outputIndex) {
-          var existingEntry = output.get(outputIndex);
+        for (var outputIndex = 0; outputIndex < translatedOutput.size(); ++outputIndex) {
+          var existingEntry = translatedOutput.get(outputIndex);
 
           // Do not add cross-source collision prefixes on same-source items, as the incrementing
           // bucket index already takes care of these kinds of collision
@@ -154,7 +171,7 @@ public class TranslationRegistry {
           if (!existingEntry.normalizedUnPrefixedTranslation.equalsIgnoreCase(bucketNormalizedUnPrefixedTranslation))
             continue;
 
-          output.set(outputIndex, new TranslatedLangKeyed<>(
+          translatedOutput.set(outputIndex, new TranslatedLangKeyed<>(
             existingEntry.source,
             existingEntry.langKeyed,
             existingEntry.normalizedUnPrefixedTranslation,
@@ -173,7 +190,7 @@ public class TranslationRegistry {
         if (hadCollision)
           newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;
 
-        output.add(new TranslatedLangKeyed<>(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
+        translatedOutput.add(new TranslatedLangKeyed<>(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
       }
     }
   }

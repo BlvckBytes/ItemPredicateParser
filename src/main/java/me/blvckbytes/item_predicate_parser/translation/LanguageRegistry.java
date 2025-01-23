@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.blvckbytes.item_predicate_parser.TranslationLanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
@@ -19,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class LanguageRegistry {
+public class LanguageRegistry implements TranslationLanguageRegistry {
 
   private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -69,6 +70,7 @@ public class LanguageRegistry {
     return languageObject;
   }
 
+  @Override
   public @NotNull TranslationRegistry getTranslationRegistry(TranslationLanguage language) {
     return translationRegistryByLanguage.get(language);
   }

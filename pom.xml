@@ -89,6 +89,7 @@
             <groupId>su.nightexpress.excellentenchants</groupId>
             <artifactId>Core</artifactId>
             <version>4.2.2</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.spigotmc</groupId>

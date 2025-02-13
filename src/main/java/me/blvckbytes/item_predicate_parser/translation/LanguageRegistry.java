@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
+import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -9,13 +10,11 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentCodeFactory;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
@@ -60,13 +59,25 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
         throw new IllegalStateException("Could not delete existing language file " + localFile);
     }
 
-    if (localFile.exists())
-      return gson.fromJson(FileUtils.readFileToString(localFile, StandardCharsets.UTF_8), JsonObject.class);
+    if (localFile.exists()) {
+      try (
+        var scanner = new Scanner(localFile, Charsets.UTF_8)
+      ) {
+        return gson.fromJson(scanner.useDelimiter("\\A").next(), JsonObject.class);
+      }
+    }
 
     logger.info("Downloading language-file " + language.assetFileNameWithoutExtension);
 
     var languageObject = assetIndex.getLanguageFile(language);
-    FileUtils.writeStringToFile(localFile, gson.toJson(languageObject), StandardCharsets.UTF_8);
+
+    try (
+      var outputStream = new FileOutputStream(localFile);
+      var streamWriter = new OutputStreamWriter(outputStream, Charsets.UTF_8)
+    ) {
+      streamWriter.write(gson.toJson(languageObject));
+    }
+
     return languageObject;
   }
 

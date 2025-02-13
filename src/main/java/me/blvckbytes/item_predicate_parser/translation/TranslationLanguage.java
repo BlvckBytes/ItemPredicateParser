@@ -1,8 +1,9 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import me.blvckbytes.syllables_matcher.EnumMatcher;
+import me.blvckbytes.syllables_matcher.MatchableEnum;
 
-public enum TranslationLanguage {
+public enum TranslationLanguage implements MatchableEnum {
 
   // NOTE: There is a reason as to why only select languages are supported, and their collision-prefixes
   //       as well as their custom-key-translations are hardcoded: Firstly, expressions shall behave

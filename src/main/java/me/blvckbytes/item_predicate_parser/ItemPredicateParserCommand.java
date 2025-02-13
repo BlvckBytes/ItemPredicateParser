@@ -11,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.syllables_matcher.EnumMatcher;
 import me.blvckbytes.syllables_matcher.EnumPredicate;
+import me.blvckbytes.syllables_matcher.MatchableEnum;
 import me.blvckbytes.syllables_matcher.NormalizedConstant;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 
 public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter {
 
-  private enum CommandAction {
+  private enum CommandAction implements MatchableEnum {
     // /ipp reload
     RELOAD,
 
@@ -113,7 +114,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
               sender,
               config.rootSection.getBaseEnvironment()
                 .withStaticVariable("label", label)
-                .withStaticVariable("action", action.normalizedName)
+                .withStaticVariable("action", action.getNormalizedName())
                 .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
                 .build()
             );

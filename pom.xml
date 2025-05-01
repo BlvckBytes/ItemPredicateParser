@@ -6,7 +6,7 @@
 
     <groupId>me.blvckbytes</groupId>
     <artifactId>ItemPredicateParser</artifactId>
-    <version>0.0.18</version>
+    <version>0.0.19</version>
 
     <properties>
         <compileSource>17</compileSource>

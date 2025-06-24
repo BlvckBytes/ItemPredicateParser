@@ -20,6 +20,15 @@ public record CustomTranslations(
     "Amount"
   );
 
+  public static CustomTranslations FRENCH = new CustomTranslations(
+    "Deterioration",
+    "non",
+    "ou",
+    "et",
+    "exacte",
+    "Quantité"
+  );
+
   public static CustomTranslations GERMAN = new CustomTranslations(
     "Abnutzung",
     "nicht",

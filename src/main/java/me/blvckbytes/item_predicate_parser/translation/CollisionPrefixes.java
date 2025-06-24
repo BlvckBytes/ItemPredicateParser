@@ -13,6 +13,13 @@ public record CollisionPrefixes(
     "[Instrument]"
   );
 
+  public static CollisionPrefixes FRENCH = new CollisionPrefixes(
+    "[Enchantement]",
+    "[Effet]",
+    "[Matériel]",
+    "[Instrument]"
+  );
+
   public static CollisionPrefixes GERMAN = new CollisionPrefixes(
     "[Verzauberung]",
     "[Effekt]",

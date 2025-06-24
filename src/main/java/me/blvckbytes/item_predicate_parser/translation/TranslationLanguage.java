@@ -10,6 +10,7 @@ public enum TranslationLanguage implements MatchableEnum {
   //       uniformly across all consumers of this API, and secondly, I want to make sure that there are
   //       no parsing- or comparison-errors when it comes to Unicode-symbols.
 
+  FRENCH_FR("fr_fr", CollisionPrefixes.FRENCH, CustomTranslations.FRENCH),
   ENGLISH_US("en_us", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
   ENGLISH_GB("en_gb", CollisionPrefixes.ENGLISH, CustomTranslations.ENGLISH),
   CHINESE_CN("zh_cn", CollisionPrefixes.CHINESE_SIMPLIFIED, CustomTranslations.CHINESE_SIMPLIFIED),

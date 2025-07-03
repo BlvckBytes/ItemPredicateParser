@@ -11,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResol
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import me.blvckbytes.syllables_matcher.Syllables;
 import me.blvckbytes.syllables_matcher.SyllablesMatcher;
+import me.blvckbytes.syllables_matcher.WildcardMode;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +86,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
   public SearchResult search(UnquotedStringToken query) {
     if (entries == null) {
       logger.warning("Tried to make use of search before initializing the registry");
-      return new SearchResult(List.of(), false);
+      return new SearchResult(List.of(), WildcardMode.NONE);
     }
 
     var result = new ArrayList<TranslatedLangKeyed<?>>();
@@ -98,7 +99,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
       throw new ItemPredicateParseException(query, ParseConflict.ONLY_SEARCH_PATTERN_WILDCARD);
 
     var querySyllables = querySyllablesResult.syllables();
-    var isWildcardMode = querySyllables.isWildcardMode();
+    var wildcardMode = querySyllables.getWildcardMode();
 
     var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
@@ -116,14 +117,15 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
       if (matcher.hasUnmatchedQuerySyllables())
         continue;
 
-      // If there's a wildcard, disregard full matches; that's just a design-decision
-      if (isWildcardMode && !matcher.hasUnmatchedTargetSyllables())
-        continue;
+      if (wildcardMode != WildcardMode.NONE) {
+        if (wildcardMode == WildcardMode.EXCLUDING_EXACT_MATCH && !matcher.hasUnmatchedTargetSyllables())
+          continue;
+      }
 
       result.add(entry);
     }
 
-    return new SearchResult(result, isWildcardMode);
+    return new SearchResult(result, wildcardMode);
   }
 
   private void createEntries(

@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.token.*;
 import me.blvckbytes.item_predicate_parser.predicate.*;
 import me.blvckbytes.item_predicate_parser.translation.*;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
+import me.blvckbytes.syllables_matcher.WildcardMode;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -212,7 +213,7 @@ public class PredicateParser {
     return resolveCache.computeIfAbsent(token, tk -> {
       var searchResult = translationRegistry.search(stringToken);
 
-      if (searchResult.isWildcardPresent())
+      if (searchResult.wildcardMode() != WildcardMode.NONE)
         return null;
 
       return getShortestMatch(searchResult.result());
@@ -243,7 +244,7 @@ public class PredicateParser {
 
       // Wildcards may only apply to materials, not only because that's the only place where they make sense, but
       // because otherwise, predicate-ambiguity would arise.
-      if (searchResult.isWildcardPresent()) {
+      if (searchResult.wildcardMode() != WildcardMode.NONE) {
         var materials = new ArrayList<Material>();
 
         for (var resultEntry : searchResultEntries) {

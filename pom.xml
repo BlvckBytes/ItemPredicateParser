@@ -147,9 +147,13 @@
 
                         <!-- See [1] -->
                         <relocation>
-                            <pattern>org/yaml/snakeyaml/(.*)</pattern>
-                            <shadedPattern>me/blvckbytes/org/yaml/snakeyaml/$1</shadedPattern>
-                            <rawString>true</rawString>
+                            <pattern>org.yaml.snakeyaml</pattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.org.yaml.snakeyaml</shadedPattern>
+                        </relocation>
+
+                        <relocation>
+                            <pattern>com.cryptomorin.xseries</pattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.com.cryptomorin.xseries</shadedPattern>
                         </relocation>
                     </relocations>
 

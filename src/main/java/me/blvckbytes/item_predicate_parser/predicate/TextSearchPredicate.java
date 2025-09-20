@@ -24,6 +24,8 @@ public class TextSearchPredicate implements ItemPredicate {
     if (state.meta == null)
       return this;
 
+    int matchCount;
+
     var matcher = new SyllablesMatcher();
 
     matcher.setQuery(tokenSyllables);
@@ -36,10 +38,13 @@ public class TextSearchPredicate implements ItemPredicate {
       var displayNameSyllables = Syllables.forString(state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
 
       matcher.setTarget(displayNameSyllables);
-      matcher.match();
+      matchCount = matcher.match();
 
       if (!matcher.hasUnmatchedQuerySyllables())
         return null;
+
+      if (matchCount > 0 && state.isExactMode)
+        return this;
     }
 
     // ================================================================================
@@ -47,15 +52,20 @@ public class TextSearchPredicate implements ItemPredicate {
     // ================================================================================
 
     if (state.meta.hasLore()) {
+      matchCount = 0;
+
       for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
         var loreLineSyllables = Syllables.forString(loreLine, Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(loreLineSyllables);
-        matcher.match();
+        matchCount += matcher.match();
 
         if (!matcher.hasUnmatchedQuerySyllables())
           return null;
       }
+
+      if (matchCount > 0 && state.isExactMode)
+        return this;
     }
 
     if (state.meta instanceof BookMeta bookMeta) {
@@ -68,10 +78,13 @@ public class TextSearchPredicate implements ItemPredicate {
         var authorSyllables = Syllables.forString(Objects.requireNonNull(bookMeta.getAuthor()), Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(authorSyllables);
-        matcher.match();
+        matchCount = matcher.match();
 
         if (!matcher.hasUnmatchedQuerySyllables())
           return null;
+
+        if (matchCount > 0 && state.isExactMode)
+          return this;
       }
 
       // ================================================================================
@@ -82,10 +95,13 @@ public class TextSearchPredicate implements ItemPredicate {
         var titleSyllables = Syllables.forString(Objects.requireNonNull(bookMeta.getTitle()), Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(titleSyllables);
-        matcher.match();
+        matchCount = matcher.match();
 
         if (!matcher.hasUnmatchedQuerySyllables())
           return null;
+
+        if (matchCount > 0 && state.isExactMode)
+          return this;
       }
 
       // ================================================================================
@@ -93,15 +109,20 @@ public class TextSearchPredicate implements ItemPredicate {
       // ================================================================================
 
       if (bookMeta.hasPages()) {
+        matchCount = 0;
+
         for (var page : bookMeta.getPages()) {
           var pageSyllables = Syllables.forString(page, Syllables.DELIMITER_FREE_TEXT);
 
           matcher.setTarget(pageSyllables);
-          matcher.match();
+          matchCount += matcher.match();
 
           if (!matcher.hasUnmatchedQuerySyllables())
             return null;
         }
+
+        if (matchCount > 0 && state.isExactMode)
+          return this;
       }
     }
 
@@ -119,10 +140,13 @@ public class TextSearchPredicate implements ItemPredicate {
           var ownerNameSyllables = Syllables.forString(ownerName, Syllables.DELIMITER_FREE_TEXT);
 
           matcher.setTarget(ownerNameSyllables);
-          matcher.match();
+          matchCount = matcher.match();
 
           if (!matcher.hasUnmatchedQuerySyllables())
             return null;
+
+          if (matchCount > 0 && state.isExactMode)
+            return this;
         }
       }
     }

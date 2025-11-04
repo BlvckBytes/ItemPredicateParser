@@ -87,9 +87,10 @@
         <!-- I don't think this is hosted anywhere... Clone and manually install into local repo. -->
         <dependency>
             <groupId>su.nightexpress.excellentenchants</groupId>
-            <artifactId>Core</artifactId>
-            <version>4.2.2</version>
-            <scope>provided</scope>
+            <artifactId>Plugin</artifactId>
+            <version>5.2.1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/ExcellentEnchants-5.2.1.jar</systemPath>
             <exclusions>
                 <exclusion>
                     <groupId>org.spigotmc</groupId>

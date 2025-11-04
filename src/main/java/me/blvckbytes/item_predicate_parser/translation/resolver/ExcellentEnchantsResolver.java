@@ -4,7 +4,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
-import su.nightexpress.excellentenchants.registry.EnchantRegistry;
+import su.nightexpress.excellentenchants.api.EnchantRegistry;
 
 public class ExcellentEnchantsResolver extends TranslationResolver {
 

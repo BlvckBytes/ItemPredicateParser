@@ -1,5 +1,8 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
+import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
+import org.jetbrains.annotations.Nullable;
+
 public class AmountKey implements LangKeyed<AmountKey> {
 
   public static final AmountKey INSTANCE = new AmountKey();
@@ -8,7 +11,12 @@ public class AmountKey implements LangKeyed<AmountKey> {
 
   @Override
   public String getLanguageFileKey() {
-    return "custom.item-predicate-parser.amount-key";
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable String resolveTranslationDirectly(TranslationLanguage language) {
+    return language.customTranslations.amount();
   }
 
   @Override

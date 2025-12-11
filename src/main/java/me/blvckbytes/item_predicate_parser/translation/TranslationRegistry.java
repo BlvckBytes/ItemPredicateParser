@@ -229,10 +229,15 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
   }
 
   private @Nullable String getTranslationOrNull(LangKeyed<?> langKeyed) {
+    var directTranslation = langKeyed.resolveTranslationDirectly(language);
+
+    if (directTranslation != null)
+      return directTranslation;
+
     var fileKey = langKeyed.getLanguageFileKey();
 
     if (langKeyed.getWrapped() instanceof Material) {
-      String descriptionTranslationKey = tryGetSmithingTemplateDescriptionKey(langKeyed);
+      var descriptionTranslationKey = tryGetSmithingTemplateDescriptionKey(langKeyed);
 
       if (descriptionTranslationKey == null)
         descriptionTranslationKey = fileKey + ".desc";

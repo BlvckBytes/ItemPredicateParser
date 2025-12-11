@@ -1,5 +1,8 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
+import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
+import org.jetbrains.annotations.Nullable;
+
 public class NegationKey implements LangKeyed<NegationKey> {
 
   public static final NegationKey INSTANCE = new NegationKey();
@@ -8,7 +11,12 @@ public class NegationKey implements LangKeyed<NegationKey> {
 
   @Override
   public String getLanguageFileKey() {
-    return "custom.item-predicate-parser.negation-key";
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable String resolveTranslationDirectly(TranslationLanguage language) {
+    return language.customTranslations.negation();
   }
 
   @Override

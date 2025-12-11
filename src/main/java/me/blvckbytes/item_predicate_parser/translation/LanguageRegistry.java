@@ -99,8 +99,6 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
       }
     }
 
-    language.customTranslations.apply(languageFile);
-
     TranslationRegistry registry = new TranslationRegistry(language, languageFile, versionDependentCode, translationResolver, logger);
     registry.initialize(makeSources(language.collisionPrefixes, languageFile));
     translationRegistryByLanguage.put(language, registry);

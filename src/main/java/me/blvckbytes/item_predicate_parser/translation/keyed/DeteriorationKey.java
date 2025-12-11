@@ -1,5 +1,8 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
+import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
+import org.jetbrains.annotations.Nullable;
+
 public class DeteriorationKey implements LangKeyed<DeteriorationKey> {
 
   public static final DeteriorationKey INSTANCE = new DeteriorationKey();
@@ -8,7 +11,12 @@ public class DeteriorationKey implements LangKeyed<DeteriorationKey> {
 
   @Override
   public String getLanguageFileKey() {
-    return "custom.item-predicate-parser.deterioration-key";
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable String resolveTranslationDirectly(TranslationLanguage language) {
+    return language.customTranslations.deterioration();
   }
 
   @Override

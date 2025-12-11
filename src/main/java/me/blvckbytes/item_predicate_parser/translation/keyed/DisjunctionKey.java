@@ -1,5 +1,8 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
+import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
+import org.jetbrains.annotations.Nullable;
+
 public class DisjunctionKey implements LangKeyed<DisjunctionKey> {
 
   public static final DisjunctionKey INSTANCE = new DisjunctionKey();
@@ -8,7 +11,12 @@ public class DisjunctionKey implements LangKeyed<DisjunctionKey> {
 
   @Override
   public String getLanguageFileKey() {
-    return "custom.item-predicate-parser.disjunction-key";
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public @Nullable String resolveTranslationDirectly(TranslationLanguage language) {
+    return language.customTranslations.disjunction();
   }
 
   @Override

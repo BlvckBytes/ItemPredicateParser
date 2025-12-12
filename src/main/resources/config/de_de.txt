@@ -46,8 +46,6 @@ MESSAGE-PREFIX                            &7[&6IPP&7]
 # - prefix: String
 MESSAGE-COMMAND-ONLY-FOR-PLAYERS          {prefix} &cDieser Befehl steht nur Spielern zur Verfügung.
 # - prefix: String
-MESSAGE-EMPTY-PREDICATE                   {prefix} &cBitte gib ein nicht-leeres Prädikat an.
-# - prefix: String
 MESSAGE-PLUGIN-RELOAD                     {prefix} &7Das Plugin wurde erfolgreich &eneu geladen&7.
 # - prefix: String
 MESSAGE-PLUGIN-RELOAD-ERROR               {prefix} &cEin Fehler trat während des Ladeprozesses auf. Überprüfe die Konsole!
@@ -90,6 +88,14 @@ MESSAGE-SHOWING-VARIABLES                     {prefix} &7Öffne die Übersicht m
 # - prefix: String
 # - name: String
 MESSAGE-UNKNOWN-VARIABLE-NAME                 {prefix} &cEs existiert keine Variable namens &4{name}&c!
+MESSAGE-VARIABLES-TEST-NO-RESULTS             {prefix} &cDas Item kommt in &4keiner &cVariable vor!
+# - name: String
+MESSAGE-VARIABLES-TEST-RESULTS-RESULT         &a{name}
+MESSAGE-VARIABLES-TEST-RESULTS-SEPARATOR      &7, \
+# - count: Int
+# - name_list: String
+MESSAGE-VARIABLES-TEST-RESULTS                {prefix} &7Das Item kommt &a{count}x &7in Variablen vor: {name_list}&7.
+MESSAGE-NO-ITEM-IN-MAIN-HAND                  {prefix} &cDu hältst kein Item in deiner &4Haupthand&c!
 # - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cKeine Berechtigung zur Benutzung des Befehls ipp.
 # - prefix: String

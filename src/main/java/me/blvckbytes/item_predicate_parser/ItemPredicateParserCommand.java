@@ -12,6 +12,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
 import me.blvckbytes.item_predicate_parser.predicate.PredicateState;
 import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
+import me.blvckbytes.item_predicate_parser.predicate.VariablePredicate;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter {
 
@@ -165,14 +167,43 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           return true;
         }
 
-        if (predicate == null) {
-          if ((message = config.rootSection.playerMessages.emptyPredicate) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+        var itemInHand = player.getInventory().getItemInMainHand();
+
+        if (itemInHand.getType().isAir()) {
+          if ((message = config.rootSection.playerMessages.noItemInMainHand) != null)
+            message.sendMessage(player, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
-        var failure = predicate.testForFailure(new PredicateState(player.getInventory().getItemInMainHand()));
+        if (predicate == null) {
+          var variables = variablesByLanguage.getOrDefault(language.constant, Collections.emptyList());
+          var matchingNames = new ArrayList<String>();
 
+          for (var variable : variables) {
+            if (new VariablePredicate(null, variable).test(itemInHand))
+              matchingNames.add(variable.normalizedUnPrefixedTranslation);
+          }
+
+          if (matchingNames.isEmpty()) {
+            if ((message = config.rootSection.playerMessages.variablesTestNoResults) != null)
+              message.sendMessage(player, config.rootSection.builtBaseEnvironment);
+            return true;
+          }
+
+          if ((message = config.rootSection.playerMessages.variablesTestResults) != null) {
+            message.sendMessage(
+              player,
+              config.rootSection.getBaseEnvironment()
+                .withStaticVariable("count", matchingNames.size())
+                .withStaticVariable("names", matchingNames)
+                .build()
+            );
+          }
+
+          return true;
+        }
+
+        var failure = predicate.testForFailure(new PredicateState(itemInHand));
         if ((message = config.rootSection.playerMessages.predicateTestResult) != null) {
           message.sendMessage(
             player,

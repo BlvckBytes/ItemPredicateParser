@@ -6,7 +6,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
 import org.jetbrains.annotations.Nullable;
 
 public record VariablePredicate(
-  Token token,
+  @Nullable Token token,
   TranslatedLangKeyed<VariableKey> translatedLangKeyed
 ) implements ItemPredicate {
 
@@ -24,7 +24,7 @@ public record VariablePredicate(
 
   @Override
   public void stringify(StringifyState state) {
-    if (state.useTokens || translatedLangKeyed == null)
+    if (token != null && (state.useTokens || translatedLangKeyed == null))
       state.appendString(token.stringify());
     else
       state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);

@@ -37,7 +37,6 @@ parseConflicts$:
 
 playerMessages:
   commandOnlyForPlayers$: '@{MESSAGE-COMMAND-ONLY-FOR-PLAYERS(prefix=lut["MESSAGE_PREFIX"])}'
-  emptyPredicate$: '@{MESSAGE-EMPTY-PREDICATE(prefix=lut["MESSAGE_PREFIX"])}'
   pluginReloadedSuccess$: '@{MESSAGE-PLUGIN-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
   pluginReloadedError$: '@{MESSAGE-PLUGIN-RELOAD-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
   # - label: String
@@ -70,6 +69,11 @@ playerMessages:
   predicateParseError$: '@{MESSAGE-PREDICATE-PARSE-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
   showingVariables$: '@{MESSAGE-SHOWING-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'
   unknownVariableName$: '@{MESSAGE-UNKNOWN-VARIABLE-NAME(prefix=lut["MESSAGE_PREFIX"])}'
+  variablesTestNoResults$: '@{MESSAGE-VARIABLES-TEST-NO-RESULTS(prefix=lut["MESSAGE_PREFIX"])}'
+  variablesTestResults$: |
+    name_list = iter_cat(names, (name) => @{MESSAGE-VARIABLES-TEST-RESULTS-RESULT}, @{MESSAGE-VARIABLES-TEST-RESULTS-SEPARATOR})
+    @{MESSAGE-VARIABLES-TEST-RESULTS(prefix=lut["MESSAGE_PREFIX"])}
+  noItemInMainHand$: '@{MESSAGE-NO-ITEM-IN-MAIN-HAND(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppTestCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppVariablesCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'

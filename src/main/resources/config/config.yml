@@ -51,6 +51,12 @@ playerMessages:
   usageIppTestCommandLanguage$: |
     language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR})
     @{MESSAGE-USAGE-IPP-TEST-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
+  # - label: String
+  # - action: String
+  # - languages: Collection<String>
+  usageIppVariablesCommandLanguage$: |
+    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-SEPARATOR})
+    @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
   # - entered_predicate: String
   # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
   predicateTestResult$:
@@ -62,8 +68,11 @@ playerMessages:
     - '@{MESSAGE-TEST-RESULT-SPACER}'
   # - exception_message: String
   predicateParseError$: '@{MESSAGE-PREDICATE-PARSE-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
+  showingVariables$: '@{MESSAGE-SHOWING-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'
+  unknownVariableName$: '@{MESSAGE-UNKNOWN-VARIABLE-NAME(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppTestCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST(prefix=lut["MESSAGE_PREFIX"])}'
+  missingPermissionIppVariablesCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppReloadCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
 
 commands:
@@ -74,6 +83,79 @@ commands:
 
 variables:
 
+# - current_page: Integer
+# - number_pages: Integer
+# - number_of_rows: Integer
+# - last_slot: Integer
+variablesDisplay:
+  title$: '@{VARIABLES-DISPLAY-TITLE}'
+  rows: 6
+  maxTokenLineWidth: 35
+  paginationSlots$: 'range(0, 44)'
+  items:
+    # https://github.com/BlvckBytes/BukkitEvaluable#itemstack-section
+    previousPage:
+      slots$: 'last_slot - 8'
+      type: PLAYER_HEAD
+      textures$: 'lut["textures"][if current_page > 1 then "ARROW_LEFT" else "ARROW_LEFT_RED"]'
+      name$: 'if current_page > 1 then @{PREVIOUS-PAGE-NAME-HAS} else @{PREVIOUS-PAGE-NAME-HAS-NOT}'
+      lore$:
+        - '" "'
+        - '@{ANY-CONTROL-LORE-SPACER}'
+        - '@{PREVIOUS-PAGE-LORE-LEFT-CLICK-DESCRIPTION}'
+        - '@{PREVIOUS-PAGE-LORE-RIGHT-CLICK-DESCRIPTION}'
+        - '@{ANY-CONTROL-LORE-SPACER}'
+    # https://github.com/BlvckBytes/BukkitEvaluable#itemstack-section
+    nextPage:
+      slots$: 'last_slot'
+      type: PLAYER_HEAD
+      textures$: 'lut["textures"][if current_page < number_pages then "ARROW_RIGHT" else "ARROW_RIGHT_RED"]'
+      name$: 'if current_page < number_pages then @{NEXT-PAGE-NAME-HAS} else @{NEXT-PAGE-NAME-HAS-NOT}'
+      lore$:
+        - '" "'
+        - '@{ANY-CONTROL-LORE-SPACER}'
+        - '@{NEXT-PAGE-LORE-LEFT-CLICK-DESCRIPTION}'
+        - '@{NEXT-PAGE-LORE-RIGHT-CLICK-DESCRIPTION}'
+        - '@{ANY-CONTROL-LORE-SPACER}'
+    # - icon_type: String
+    # - display_name: String
+    # - material_token_lines: List<TokenLine> where TokenLine(tokens: List<String> , wraps: Boolean)
+    variable:
+      type$: 'icon_type'
+      name$: '@{VARIABLES-ENTRY-NAME}'
+      lore$:
+        - '" "'
+        - '@{ANY-CONTROL-LORE-SPACER}'
+        - '@{VARIABLES-ENTRY-MATERIAL-TITLE}'
+        - '" "'
+        - |
+          map(
+            material_token_lines,
+            (token_line) => iter_cat(
+              token_line.tokens,
+              (line_token) => (@{VARIABLES-ENTRY-MATERIAL-TOKEN}),
+              @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
+            ) & if token_line.wraps then "" else @{VARIABLES-ENTRY-MATERIAL-SEPARATOR},
+            @{VARIABLES-ENTRY-MATERIAL-NO-ENTRIES}
+          )
+        - '@{ANY-CONTROL-LORE-SPACER}'
+    filler:
+      slots$:
+        - 'last_slot - 7'
+        - 'last_slot - 6'
+        - 'last_slot - 5'
+        - 'last_slot - 4'
+        - 'last_slot - 3'
+        - 'last_slot - 2'
+        - 'last_slot - 1'
+      type: BLACK_STAINED_GLASS_PANE
+      name: " "
+
 # File-global lookup table
 lut:
   MESSAGE_PREFIX: '@{MESSAGE-PREFIX}'
+  textures:
+    ARROW_LEFT: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU1MGI3Zjc0ZTllZDc2MzNhYTI3NGVhMzBjYzNkMmU4N2FiYjM2ZDRkMWY0Y2E2MDhjZDQ0NTkwY2NlMGIifX19'
+    ARROW_LEFT_RED: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg0ZjU5NzEzMWJiZTI1ZGMwNThhZjg4OGNiMjk4MzFmNzk1OTliYzY3Yzk1YzgwMjkyNWNlNGFmYmEzMzJmYyJ9fX0='
+    ARROW_RIGHT: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYzMzlmZjJlNTM0MmJhMThiZGM0OGE5OWNjYTY1ZDEyM2NlNzgxZDg3ODI3MmY5ZDk2NGVhZDNiOGFkMzcwIn19fQ=='
+    ARROW_RIGHT_RED: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNmZTg4NDVhOGQ1ZTYzNWZiODc3MjhjY2M5Mzg5NWQ0MmI0ZmMyZTZhNTNmMWJhNzhjODQ1MjI1ODIyIn19fQ=='

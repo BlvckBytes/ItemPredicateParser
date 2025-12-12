@@ -13,10 +13,14 @@ public class PlayerMessagesSection extends AConfigSection {
   public @Nullable BukkitEvaluable pluginReloadedError;
   public @Nullable BukkitEvaluable usageIppCommandAction;
   public @Nullable BukkitEvaluable usageIppTestCommandLanguage;
+  public @Nullable BukkitEvaluable usageIppVariablesCommandLanguage;
   public @Nullable BukkitEvaluable predicateTestResult;
   public @Nullable BukkitEvaluable predicateParseError;
+  public @Nullable BukkitEvaluable showingVariables;
+  public @Nullable BukkitEvaluable unknownVariableName;
 
   public @Nullable BukkitEvaluable missingPermissionIppTestCommand;
+  public @Nullable BukkitEvaluable missingPermissionIppVariablesCommand;
   public @Nullable BukkitEvaluable missingPermissionIppReloadCommand;
   public @Nullable BukkitEvaluable missingPermissionIppCommand;
 

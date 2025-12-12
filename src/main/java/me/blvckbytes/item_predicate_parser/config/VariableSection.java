@@ -17,6 +17,9 @@ import java.util.Map;
 
 public class VariableSection extends AConfigSection {
 
+  public String icon;
+  public @CSIgnore Material _icon = Material.BARRIER;
+
   public List<String> materials;
   public @CSIgnore List<Material> _materials = new ArrayList<>();
 
@@ -30,6 +33,15 @@ public class VariableSection extends AConfigSection {
   @Override
   public void afterParsing(List<Field> fields) throws Exception {
     super.afterParsing(fields);
+
+    if (icon != null) {
+      var xMaterial = XMaterial.matchXMaterial(icon);
+
+      if (xMaterial.isEmpty())
+        throw new MappingError("Unknown icon-material \"" + icon + "\"");
+
+      _icon = xMaterial.get().get();
+    }
 
     if (materials != null) {
       for (var material : materials) {

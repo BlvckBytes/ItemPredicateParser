@@ -41,7 +41,7 @@ public class VariablesSection extends AConfigSection {
       if (variableSection == null)
         variableSection = new VariableSection(getBaseEnvironment());
 
-      var variable = new Variable(defaultName, variableSection._materials, variableSection._names);
+      var variable = new Variable(variableSection._icon, defaultName, variableSection._materials, variableSection._names);
 
       _variableKeys.add(new VariableKey(variable));
     }

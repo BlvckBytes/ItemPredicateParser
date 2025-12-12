@@ -73,6 +73,21 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     return translationByWrapped.get(instance);
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends LangKeyed<?>> List<TranslatedLangKeyed<T>> lookup(Class<T> type) {
+    var result = new ArrayList<TranslatedLangKeyed<T>>();
+
+    if (entries == null)
+      return result;
+
+    for (var entry : entries) {
+      if (type.isInstance(entry.langKeyed))
+        result.add((TranslatedLangKeyed<T>) entry);
+    }
+
+    return result;
+  }
+
   public @Nullable TranslatedLangKeyed<?> lookup(LangKeyed<?> langKeyed) {
     if (entries == null)
       return null;

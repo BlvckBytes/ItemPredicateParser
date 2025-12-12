@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import me.blvckbytes.bukkitevaluable.ReloadPriority;
 import me.blvckbytes.item_predicate_parser.TranslationLanguageRegistry;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
@@ -65,7 +66,7 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
         registry.initialize(makeSources(registry.language.collisionPrefixes, registry.languageFile));
 
       Bukkit.getPluginManager().callEvent(new PredicateSourcesReloadEvent());
-    });
+    }, ReloadPriority.HIGH);
   }
 
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {

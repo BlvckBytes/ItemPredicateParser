@@ -5,6 +5,7 @@ import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.bukkitevaluable.ConfigManager;
 import me.blvckbytes.item_predicate_parser.config.ItemPredicateParserCommandSection;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
+import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHandler;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.resolver.PluginTranslationResolver;
 import org.bukkit.Bukkit;
@@ -19,6 +20,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
   private static ItemPredicateParserPlugin instance;
   private PredicateHelper predicateHelper;
   private LanguageRegistry languageRegistry;
+  private VariablesDisplayHandler variablesDisplayHandler;
 
   @Override
   public void onEnable() {
@@ -31,10 +33,13 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       languageRegistry = new LanguageRegistry(this, config, new PluginTranslationResolver(this));
       this.predicateHelper = new PredicateHelper(languageRegistry, config);
 
+      variablesDisplayHandler = new VariablesDisplayHandler(config, this);
+      Bukkit.getServer().getPluginManager().registerEvents(variablesDisplayHandler, this);
+
       var commandUpdater = new CommandUpdater(this);
       var command = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
 
-      command.setExecutor(new ItemPredicateParserCommand(predicateHelper, config, logger));
+      command.setExecutor(new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, predicateHelper, config, logger));
 
       Runnable updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);
@@ -50,6 +55,14 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
     } catch (Throwable e) {
       getLogger().log(Level.SEVERE, "Could not download and or initialize languages", e);
       Bukkit.getPluginManager().disablePlugin(this);
+    }
+  }
+
+  @Override
+  public void onDisable() {
+    if (variablesDisplayHandler != null) {
+      variablesDisplayHandler.onShutdown();
+      variablesDisplayHandler = null;
     }
   }
 

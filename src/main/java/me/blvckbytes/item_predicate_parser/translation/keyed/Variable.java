@@ -12,13 +12,15 @@ public class Variable {
 
   private final String defaultName;
 
+  public final Material icon;
   public final List<Material> materials;
   public final Map<TranslationLanguage, String> nameByLanguage;
 
-  public Variable(String defaultName, List<Material> materials, Map<TranslationLanguage, String> nameByLanguage) {
+  public Variable(Material icon, String defaultName, List<Material> materials, Map<TranslationLanguage, String> nameByLanguage) {
     if (defaultName.contains(ENCLOSING_MARKER))
       throw new IllegalStateException("Variable-names cannot contain \"" + ENCLOSING_MARKER + "\"");
 
+    this.icon = icon;
     this.defaultName = defaultName;
     this.materials = materials;
     this.nameByLanguage = nameByLanguage;

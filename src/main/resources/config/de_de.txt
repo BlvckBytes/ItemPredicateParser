@@ -42,7 +42,7 @@ PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE               &cVorangestellter Ausdruc
 
 # ==================== BEGIN Messages ====================
 
-MESSAGE-PREFIX                            &7[&6ItemPredicateParser&7]
+MESSAGE-PREFIX                            &7[&6IPP&7]
 # - prefix: String
 MESSAGE-COMMAND-ONLY-FOR-PLAYERS          {prefix} &cDieser Befehl steht nur Spielern zur Verfügung.
 # - prefix: String
@@ -66,6 +66,14 @@ MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR &7, \
 # - language_list: String
 # - prefix: String
 MESSAGE-USAGE-IPP-TEST-LANGUAGE          {prefix} &7Benutzung: /{label} {action} <{language_list}&7>
+# - language: String
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-SEPARATOR &7, \
+# - label: String
+# - action: String
+# - language_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE     {prefix} &7Benutzung: /{label} {action} <{language_list}&7> [Name]
 MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
 # - entered_predicate: String
 MESSAGE-TEST-RESULT-ENTERED              &8> &7Eingabe: &e{entered_predicate}
@@ -77,10 +85,48 @@ MESSAGE-TEST-RESULT-MATCH                &8> &7Übereinstimmung: &e{colored_pred
 # - prefix: String
 MESSAGE-PREDICATE-PARSE-ERROR                 {prefix} {exception_message}
 # - prefix: String
+# - count: Int
+MESSAGE-SHOWING-VARIABLES                     {prefix} &7Öffne die Übersicht mit &a{count} Variablen&7.
+# - prefix: String
+# - name: String
+MESSAGE-UNKNOWN-VARIABLE-NAME                 {prefix} &cEs existiert keine Variable namens &4{name}&c!
+# - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cKeine Berechtigung zur Benutzung des Befehls ipp.
 # - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST   {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls test.
 # - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls variables.
+# - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls reload.
 
 # ==================== END Messages ====================
+
+# ==================== BEGIN Display General ====================
+
+ANY-CONTROL-LORE-SPACER                     &8&m                                                  \
+
+PREVIOUS-PAGE-NAME-HAS                      &8» &6Vorherige Seite &8«
+PREVIOUS-PAGE-NAME-HAS-NOT                  &8» &cKeine vorherige Seite &8«
+PREVIOUS-PAGE-LORE-LEFT-CLICK-DESCRIPTION   &8➥ &eLinksklick &7Navigiere zur vorherigen Seite
+PREVIOUS-PAGE-LORE-RIGHT-CLICK-DESCRIPTION  &8➥ &eRechtsklick &7Springe zur ersten Seite
+
+NEXT-PAGE-NAME-HAS                      &8» &6Nächste Seite &8«
+NEXT-PAGE-NAME-HAS-NOT                  &8» &cKeine nächste Seite &8«
+NEXT-PAGE-LORE-LEFT-CLICK-DESCRIPTION   &8➥ &eLinksklick &7Navigiere zur nächsten Seite
+NEXT-PAGE-LORE-RIGHT-CLICK-DESCRIPTION  &8➥ &eRechtsklick &7Springe zur letzten Seite
+
+# ==================== END Display General ====================
+
+# ==================== BEGIN Variables-Display ====================
+
+VARIABLES-DISPLAY-TITLE &8Variablen &e{current_page}&8/&e{number_pages}
+
+# - display_name: String
+VARIABLES-ENTRY-NAME                &8» &6{display_name} &8«
+VARIABLES-ENTRY-MATERIAL-TITLE      &7➥ Materialien:
+# - line_token: String
+VARIABLES-ENTRY-MATERIAL-TOKEN      &6{line_token}
+VARIABLES-ENTRY-MATERIAL-SEPARATOR  &e, \
+VARIABLES-ENTRY-MATERIAL-NO-ENTRIES &cKeine Einträge vorhanden!
+
+# ==================== END Variables-Display ====================

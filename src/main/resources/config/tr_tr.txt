@@ -42,7 +42,7 @@ PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE               &cSol taraftaki bir ifade
 
 # ==================== BEGIN Messages ====================
 
-MESSAGE-PREFIX                            &7[&6ItemPredicateParser&7]
+MESSAGE-PREFIX                            &7[&6IPP&7]
 # - prefix: String
 MESSAGE-COMMAND-ONLY-FOR-PLAYERS          {prefix} &cBu komut sadece oyuncular tarafından kullanılabilir.
 # - prefix: String
@@ -66,6 +66,14 @@ MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR &7, \
 # - language_list: String
 # - prefix: String
 MESSAGE-USAGE-IPP-TEST-LANGUAGE          {prefix} &7Kullanım: /{label} {action} <{language_list}&7>
+# - language: String
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-SEPARATOR &7, \
+# - label: String
+# - action: String
+# - language_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE     {prefix} &7Usage: /{label} {action} <{language_list}&7> [name]
 MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
 # - entered_predicate: String
 MESSAGE-TEST-RESULT-ENTERED              &8> &7Gir: &e{entered_predicate}
@@ -77,10 +85,48 @@ MESSAGE-TEST-RESULT-MATCH                &8> &7Eşleşme: &e{colored_predicate}
 # - prefix: String
 MESSAGE-PREDICATE-PARSE-ERROR                 {prefix} {exception_message}
 # - prefix: String
+# - count: Int
+MESSAGE-SHOWING-VARIABLES                     {prefix} &7Displaying the overview with &a{count} variables&7.
+# - prefix: String
+# - name: String
+MESSAGE-UNKNOWN-VARIABLE-NAME                 {prefix} &cThere's no variable called &4{name}&c!
+# - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cIPP komutunu kullanmak için izniniz yok.
 # - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST   {prefix} &cIPP TEST komutunu kullanmak için izniniz yok.
 # - prefix: String
+MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES {prefix} &cYou don't have the permission to use the variables sub-command.
+# - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD {prefix} &cIPP RELOAD komutunu kullanma izniniz yok.
 
 # ==================== END Messages ====================
+
+# ==================== BEGIN Display General ====================
+
+ANY-CONTROL-LORE-SPACER                     &8&m                                                  \
+
+PREVIOUS-PAGE-NAME-HAS                      &8» &6Previous Page &8«
+PREVIOUS-PAGE-NAME-HAS-NOT                  &8» &cNo Previous Page &8«
+PREVIOUS-PAGE-LORE-LEFT-CLICK-DESCRIPTION   &8➥ &eLeft-Click &7Navigate to previous page
+PREVIOUS-PAGE-LORE-RIGHT-CLICK-DESCRIPTION  &8➥ &eRight-Click &7Jump to very first page
+
+NEXT-PAGE-NAME-HAS                      &8» &6Next Page &8«
+NEXT-PAGE-NAME-HAS-NOT                  &8» &cNo Next Page &8«
+NEXT-PAGE-LORE-LEFT-CLICK-DESCRIPTION   &8➥ &eLeft-Click &7Navigate to next page
+NEXT-PAGE-LORE-RIGHT-CLICK-DESCRIPTION  &8➥ &eRight-Click &7Jump to very last page
+
+# ==================== END Display General ====================
+
+# ==================== BEGIN Variables-Display ====================
+
+VARIABLES-DISPLAY-TITLE &8Variables &e{current_page}&8/&e{number_pages}
+
+# - display_name: String
+VARIABLES-ENTRY-NAME                &8» &6{display_name} &8«
+VARIABLES-ENTRY-MATERIAL-TITLE      &7➥ Materials:
+# - line_token: String
+VARIABLES-ENTRY-MATERIAL-TOKEN      &6{line_token}
+VARIABLES-ENTRY-MATERIAL-SEPARATOR  &e, \
+VARIABLES-ENTRY-MATERIAL-NO-ENTRIES &cNo entries found!
+
+# ==================== END Variables-Display ====================

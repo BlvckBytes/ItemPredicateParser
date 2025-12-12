@@ -7,6 +7,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import me.blvckbytes.syllables_matcher.Syllables;
@@ -20,8 +21,9 @@ import java.util.logging.Logger;
 
 public class TranslationRegistry implements SingletonTranslationRegistry {
 
-  private final TranslationLanguage language;
-  private final JsonObject languageFile;
+  public final TranslationLanguage language;
+  public final JsonObject languageFile;
+
   private final IVersionDependentCode versionDependentCode;
   private final @Nullable TranslationResolver translationResolver;
   private final Logger logger;
@@ -46,7 +48,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     return versionDependentCode;
   }
 
-  public void initialize(Iterable<LangKeyedSource> sources) throws IllegalStateException {
+  public void initialize(Iterable<LangKeyedSource> sources) {
     var unsortedEntries = new ArrayList<TranslatedLangKeyed<?>>();
     translationByWrapped = new HashMap<>();
 
@@ -104,8 +106,16 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
 
+    var isVariableSearch = query.value().startsWith(Variable.ENCLOSING_MARKER);
+
     for (var entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
       var entry = entries[entryIndex];
+
+      if (isVariableSearch && !entry.normalizedUnPrefixedTranslation.startsWith(Variable.ENCLOSING_MARKER))
+        continue;
+
+      if (!isVariableSearch && entry.normalizedUnPrefixedTranslation.startsWith(Variable.ENCLOSING_MARKER))
+        continue;
 
       if (entryIndex != 0)
         matcher.resetQueryMatches();
@@ -132,7 +142,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     LangKeyedSource source,
     List<TranslatedLangKeyed<?>> translatedOutput,
     Map<Object, String> translationByWrappedOutput
-  ) throws IllegalStateException {
+  ) {
     var buckets = new HashMap<String, ArrayList<LangKeyed<?>>>();
 
     for (var langKeyed : source.items()) {

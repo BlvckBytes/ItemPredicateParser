@@ -17,6 +17,7 @@ public class MainSection extends AConfigSection {
   public @Nullable BukkitEvaluable inputHighlightPrefix;
   public @CSAlways CommandsSection commands;
   public Map<String, BukkitEvaluable> parseConflicts;
+  public @CSAlways VariablesSection variables;
 
   @CSAlways
   public PlayerMessagesSection playerMessages;

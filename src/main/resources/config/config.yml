@@ -72,6 +72,8 @@ commands:
     aliases:
       - ipp
 
+variables:
+
 # File-global lookup table
 lut:
   MESSAGE_PREFIX: '@{MESSAGE-PREFIX}'

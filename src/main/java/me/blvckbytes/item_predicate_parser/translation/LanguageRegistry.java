@@ -5,11 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.blvckbytes.bukkitevaluable.ConfigKeeper;
 import me.blvckbytes.item_predicate_parser.TranslationLanguageRegistry;
+import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResolver;
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentCodeFactory;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +26,7 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
 
   private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+  private final ConfigKeeper<MainSection> config;
   private final @Nullable TranslationResolver translationResolver;
   private final AssetIndex assetIndex;
   private final File languagesFolder;
@@ -31,7 +35,12 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
 
   private final Map<TranslationLanguage, TranslationRegistry> translationRegistryByLanguage;
 
-  public LanguageRegistry(Plugin plugin, @Nullable TranslationResolver translationResolver) throws Throwable {
+  public LanguageRegistry(
+    Plugin plugin,
+    ConfigKeeper<MainSection> config,
+    @Nullable TranslationResolver translationResolver
+  ) throws Throwable {
+    this.config = config;
     this.translationResolver = translationResolver;
     this.translationRegistryByLanguage = new HashMap<>();
     this.logger = plugin.getLogger();
@@ -49,6 +58,14 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
 
     for (TranslationLanguage language : TranslationLanguage.values())
       initializeTranslationRegistry(language);
+
+    config.registerReloadListener(() -> {
+      // Update variables by re-making sources
+      for (var registry : translationRegistryByLanguage.values())
+        registry.initialize(makeSources(registry.language.collisionPrefixes, registry.languageFile));
+
+      Bukkit.getPluginManager().callEvent(new PredicateSourcesReloadEvent());
+    });
   }
 
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {
@@ -135,6 +152,8 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
       ExactKey.INSTANCE,
       AmountKey.INSTANCE
     ), ""));
+
+    result.add(new LangKeyedSource(config.rootSection.variables._variableKeys, ""));
 
     return result;
   }

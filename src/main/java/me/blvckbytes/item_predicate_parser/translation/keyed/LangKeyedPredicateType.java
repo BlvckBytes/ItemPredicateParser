@@ -7,5 +7,6 @@ public enum LangKeyedPredicateType {
   POTION_EFFECT_TYPE,
   DETERIORATION,
   AMOUNT,
+  VARIABLE,
   NOT_A_PREDICATE
 }

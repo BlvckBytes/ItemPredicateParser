@@ -57,21 +57,13 @@ MESSAGE-USAGE-IPP-ACTION-SEPARATOR        &7, \
 # - prefix: String
 MESSAGE-USAGE-IPP-ACTION                  {prefix} &7Benutzung: /{label} <{action_list}&7>
 # - language: String
-MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM      &e{language}
-MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR &7, \
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-SEPARATOR &7, \
 # - label: String
 # - action: String
 # - language_list: String
 # - prefix: String
-MESSAGE-USAGE-IPP-TEST-LANGUAGE          {prefix} &7Benutzung: /{label} {action} <{language_list}&7>
-# - language: String
-MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-ITEM      &e{language}
-MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-SEPARATOR &7, \
-# - label: String
-# - action: String
-# - language_list: String
-# - prefix: String
-MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE     {prefix} &7Benutzung: /{label} {action} <{language_list}&7> [Name]
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE     {prefix} &7Benutzung: /{label} {action} <{language_list}&7> - Selektiere eine persönliche Sprache
 MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
 # - entered_predicate: String
 MESSAGE-TEST-RESULT-ENTERED              &8> &7Eingabe: &e{entered_predicate}
@@ -97,13 +89,10 @@ MESSAGE-VARIABLES-TEST-RESULTS-SEPARATOR      &7, \
 MESSAGE-VARIABLES-TEST-RESULTS                {prefix} &7Das Item kommt &a{count}x &7in Variablen vor: {name_list}&7.
 MESSAGE-NO-ITEM-IN-MAIN-HAND                  {prefix} &cDu hältst kein Item in deiner &4Haupthand&c!
 # - prefix: String
+# - language: String
+MESSAGE-LANGUAGE-SELECTED                     {prefix} &7Die Sprache &a{language} &7wird von nun an für alle weiteren IPP(-verwandten) Befehle, die keine explizite Sprachauswahl fordern, benutzt.
+# - prefix: String
 MESSAGE-MISSING-PERMISSION-COMMAND-IPP        {prefix} &cKeine Berechtigung zur Benutzung des Befehls ipp.
-# - prefix: String
-MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST   {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls test.
-# - prefix: String
-MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls variables.
-# - prefix: String
-MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD {prefix} &cKeine Berechtigung zur Benutzung des Unter-Befehls reload.
 
 # ==================== END Messages ====================
 

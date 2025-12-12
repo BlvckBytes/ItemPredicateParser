@@ -16,6 +16,7 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
 import me.blvckbytes.item_predicate_parser.translation.keyed.ConjunctionKey;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -28,13 +29,19 @@ public class PredicateHelper {
 
   private static final UnquotedStringToken EMPTY_STRING = new UnquotedStringToken(0, 0, null, "");
 
+  private final NameScopedKeyValueStore keyValueStore;
   private final LanguageRegistry languageRegistry;
   private final ConfigKeeper<MainSection> config;
 
   private final Map<TranslationLanguage, TranslatedLangKeyed<?>> conjunctionTranslations;
   private int maxResults;
 
-  public PredicateHelper(LanguageRegistry languageRegistry, ConfigKeeper<MainSection> config) {
+  public PredicateHelper(
+    NameScopedKeyValueStore keyValueStore,
+    LanguageRegistry languageRegistry,
+    ConfigKeeper<MainSection> config
+  ) {
+    this.keyValueStore = keyValueStore;
     this.languageRegistry = languageRegistry;
     this.config = config;
     this.conjunctionTranslations = new HashMap<>();
@@ -53,6 +60,19 @@ public class PredicateHelper {
     updateMaxResults();
 
     config.registerReloadListener(this::updateMaxResults);
+  }
+
+  public TranslationLanguage getSelectedLanguage(Player player) {
+    var languageName = keyValueStore.read(player.getUniqueId().toString(), NameScopedKeyValueStore.KEY_LANGUAGE);
+
+    if (languageName == null)
+      return config.rootSection.defaultSelectedLanguage;
+
+    try {
+      return TranslationLanguage.valueOf(languageName);
+    } catch (Throwable e) {
+      return config.rootSection.defaultSelectedLanguage;
+    }
   }
 
   private void updateMaxResults() {

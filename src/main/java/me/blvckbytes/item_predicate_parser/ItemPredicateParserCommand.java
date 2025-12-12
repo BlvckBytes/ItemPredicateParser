@@ -35,19 +35,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter {
 
   private enum CommandAction implements MatchableEnum {
-    // /ipp reload
     RELOAD,
-
-    // /ipp variables
     VARIABLES,
-
-    // /ipp test <language> <predicate>
-    TEST
+    LANGUAGE,
+    TEST,
     ;
 
     static final EnumMatcher<CommandAction> matcher = new EnumMatcher<>(values());
@@ -56,6 +51,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       return item -> (
         switch (item.constant) {
           case TEST -> PluginPermission.IPP_TEST_COMMAND.has(player);
+          case LANGUAGE -> PluginPermission.IPP_LANGUAGE_COMMAND.has(player);
           case VARIABLES -> PluginPermission.IPP_VARIABLES_COMMAND.has(player);
           case RELOAD -> PluginPermission.IPP_RELOAD_COMMAND.has(player);
         }
@@ -65,6 +61,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
   private final VariablesDisplayHandler variablesDisplayHandler;
   private final LanguageRegistry languageRegistry;
+  private final NameScopedKeyValueStore keyValueStore;
   private final PredicateHelper predicateHelper;
   private final ConfigKeeper<MainSection> config;
   private final Logger logger;
@@ -74,12 +71,14 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
   public ItemPredicateParserCommand(
     VariablesDisplayHandler variablesDisplayHandler,
     LanguageRegistry languageRegistry,
+    NameScopedKeyValueStore keyValueStore,
     PredicateHelper predicateHelper,
     ConfigKeeper<MainSection> config,
     Logger logger
   ) {
     this.variablesDisplayHandler = variablesDisplayHandler;
     this.languageRegistry = languageRegistry;
+    this.keyValueStore = keyValueStore;
     this.predicateHelper = predicateHelper;
     this.config = config;
     this.logger = logger;
@@ -128,33 +127,13 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           return true;
         }
 
-        if (!PluginPermission.IPP_TEST_COMMAND.has(player)) {
-          if ((message = config.rootSection.playerMessages.missingPermissionIppTestCommand) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
-          return true;
-        }
-
-        NormalizedConstant<TranslationLanguage> language;
-
-        if (args.length < 2 || (language = TranslationLanguage.matcher.matchFirst(args[1])) == null) {
-          if ((message = config.rootSection.playerMessages.usageIppTestCommandLanguage) != null) {
-            message.sendMessage(
-              sender,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("label", label)
-                .withStaticVariable("action", action.getNormalizedName())
-                .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
-                .build()
-            );
-          }
-          return true;
-        }
+        var language = predicateHelper.getSelectedLanguage(player);
 
         ItemPredicate predicate;
 
         try {
-          var tokens = predicateHelper.parseTokens(args, 2);
-          predicate = predicateHelper.parsePredicate(language.constant, tokens);
+          var tokens = predicateHelper.parseTokens(args, 1);
+          predicate = predicateHelper.parsePredicate(language, tokens);
         } catch (ItemPredicateParseException e) {
           if ((message = config.rootSection.playerMessages.predicateParseError) != null) {
             message.sendMessage(
@@ -176,7 +155,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         }
 
         if (predicate == null) {
-          var variables = variablesByLanguage.getOrDefault(language.constant, Collections.emptyList());
+          var variables = variablesByLanguage.getOrDefault(language, Collections.emptyList());
           var matchingNames = new ArrayList<String>();
 
           for (var variable : variables) {
@@ -219,13 +198,44 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         return true;
       }
 
-      case RELOAD -> {
-        if (sender instanceof Player player && !PluginPermission.IPP_RELOAD_COMMAND.has(player)) {
-          if ((message = config.rootSection.playerMessages.missingPermissionIppReloadCommand) != null)
+      case LANGUAGE -> {
+        if (!(sender instanceof Player player)) {
+          if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
             message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
           return true;
         }
 
+        NormalizedConstant<TranslationLanguage> language;
+
+        if (args.length < 2 || (language = TranslationLanguage.matcher.matchFirst(args[1])) == null) {
+          if ((message = config.rootSection.playerMessages.usageIppLanguageCommandLanguage) != null) {
+            message.sendMessage(
+              sender,
+              config.rootSection.getBaseEnvironment()
+                .withStaticVariable("label", label)
+                .withStaticVariable("action", action.getNormalizedName())
+                .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
+                .build()
+            );
+          }
+          return true;
+        }
+
+        keyValueStore.write(player.getUniqueId().toString(), NameScopedKeyValueStore.KEY_LANGUAGE, language.constant.name());
+
+        if ((message = config.rootSection.playerMessages.languageSelected) != null) {
+          message.sendMessage(
+            player,
+            config.rootSection.getBaseEnvironment()
+              .withStaticVariable("language", language.getNormalizedName())
+              .build()
+          );
+        }
+
+        return true;
+      }
+
+      case RELOAD -> {
         try {
           config.reload();
 
@@ -248,33 +258,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           return true;
         }
 
-        if (!PluginPermission.IPP_VARIABLES_COMMAND.has(player)) {
-          if ((message = config.rootSection.playerMessages.missingPermissionIppVariablesCommand) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
-          return true;
-        }
-
-        NormalizedConstant<TranslationLanguage> language;
-
-        if (args.length < 2 || (language = TranslationLanguage.matcher.matchFirst(args[1])) == null) {
-          if ((message = config.rootSection.playerMessages.usageIppVariablesCommandLanguage) != null) {
-            message.sendMessage(
-              sender,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("label", label)
-                .withStaticVariable("action", action.getNormalizedName())
-                .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
-                .build()
-            );
-          }
-          return true;
-        }
-
-        var targetName = args.length > 2 ? args[2] : null;
+        var language = predicateHelper.getSelectedLanguage(player);
+        var targetName = args.length > 1 ? args[1] : null;
         var variables = new ArrayList<DisplayedVariable>();
-        var translationRegistry = languageRegistry.getTranslationRegistry(language.constant);
+        var translationRegistry = languageRegistry.getTranslationRegistry(language);
 
-        for (var item : variablesByLanguage.getOrDefault(language.constant, Collections.emptyList())) {
+        for (var item : variablesByLanguage.getOrDefault(language, Collections.emptyList())) {
           if (targetName != null && !item.normalizedUnPrefixedTranslation.equals(targetName))
             continue;
 
@@ -347,23 +336,21 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       return List.of();
     }
 
-    if (action.constant == CommandAction.VARIABLES) {
-      if (!PluginPermission.IPP_VARIABLES_COMMAND.has(player))
-        return List.of();
-
+    if (action.constant == CommandAction.LANGUAGE) {
       if (args.length == 2)
         return TranslationLanguage.matcher.createCompletions(args[1]);
 
-      var language = TranslationLanguage.matcher.matchFirst(args[1]);
+      return List.of();
+    }
 
-      if (language == null)
-        return List.of();
+    if (action.constant == CommandAction.VARIABLES) {
+      var language = predicateHelper.getSelectedLanguage(player);
 
-      if (args.length == 3) {
-        return variablesByLanguage.get(language.constant)
+      if (args.length == 2) {
+        return variablesByLanguage.get(language)
           .stream()
           .map(it -> it.normalizedUnPrefixedTranslation)
-          .filter(it -> StringUtils.startsWithIgnoreCase(it, args[2]))
+          .filter(it -> StringUtils.startsWithIgnoreCase(it, args[1]))
           .toList();
       }
 
@@ -371,20 +358,11 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     }
 
     if (action.constant == CommandAction.TEST) {
-      if (!PluginPermission.IPP_TEST_COMMAND.has(player))
-        return List.of();
-
-      if (args.length == 2)
-        return TranslationLanguage.matcher.createCompletions(args[1]);
-
-      var language = TranslationLanguage.matcher.matchFirst(args[1]);
-
-      if (language == null)
-        return List.of();
+      var language = predicateHelper.getSelectedLanguage(player);
 
       try {
-        var tokens = predicateHelper.parseTokens(args, 2);
-        var completion = predicateHelper.createCompletion(language.constant, tokens);
+        var tokens = predicateHelper.parseTokens(args, 1);
+        var completion = predicateHelper.createCompletion(language, tokens);
 
         if (completion.expandedPreviewOrError() != null)
           showActionBarMessage(player, completion.expandedPreviewOrError());
@@ -399,6 +377,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     return List.of();
   }
 
+  @SuppressWarnings("deprecation")
   private void showActionBarMessage(Player player, String message) {
     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
   }

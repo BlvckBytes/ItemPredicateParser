@@ -12,15 +12,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.logging.Level;
 
 public class ItemPredicateParserPlugin extends JavaPlugin {
 
   private static ItemPredicateParserPlugin instance;
+
   private PredicateHelper predicateHelper;
   private LanguageRegistry languageRegistry;
   private VariablesDisplayHandler variablesDisplayHandler;
+  private NameScopedKeyValueStore keyValueStore;
 
   @Override
   public void onEnable() {
@@ -30,8 +33,12 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       var configManager = new ConfigManager(this, "config");
       var config = new ConfigKeeper<>(configManager, "config.yml", MainSection.class);
 
+      keyValueStore = new NameScopedKeyValueStore(getFileAndEnsureExistence("user-preferences.json"), logger);
+
+      Bukkit.getScheduler().runTaskTimerAsynchronously(this, keyValueStore::saveToDisk, 20 * 60L, 20 * 60L);
+
       languageRegistry = new LanguageRegistry(this, config, new PluginTranslationResolver(this));
-      this.predicateHelper = new PredicateHelper(languageRegistry, config);
+      this.predicateHelper = new PredicateHelper(keyValueStore, languageRegistry, config);
 
       variablesDisplayHandler = new VariablesDisplayHandler(config, this);
       Bukkit.getServer().getPluginManager().registerEvents(variablesDisplayHandler, this);
@@ -39,7 +46,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       var commandUpdater = new CommandUpdater(this);
       var command = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
 
-      command.setExecutor(new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, predicateHelper, config, logger));
+      command.setExecutor(new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger));
 
       Runnable updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);
@@ -64,6 +71,11 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       variablesDisplayHandler.onShutdown();
       variablesDisplayHandler = null;
     }
+
+    if (keyValueStore != null) {
+      keyValueStore.saveToDisk();
+      keyValueStore = null;
+    }
   }
 
   public TranslationLanguageRegistry getTranslationLanguageRegistry() {
@@ -76,5 +88,21 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
   public static @Nullable ItemPredicateParserPlugin getInstance() {
     return instance;
+  }
+
+  private File getFileAndEnsureExistence(String name) throws Exception {
+    var file = new File(getDataFolder(), name);
+
+    if (!file.exists()) {
+      var parentDirectory = file.getParentFile();
+
+      if (!parentDirectory.exists() && !parentDirectory.mkdirs())
+        throw new IllegalStateException("Could not create parent-directories of the file " + file);
+
+      if (!file.createNewFile())
+        throw new IllegalStateException("Could not create the file " + file);
+    }
+
+    return file;
   }
 }

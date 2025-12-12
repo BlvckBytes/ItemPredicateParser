@@ -11,8 +11,7 @@ public class PlayerMessagesSection extends AConfigSection {
   public @Nullable BukkitEvaluable pluginReloadedSuccess;
   public @Nullable BukkitEvaluable pluginReloadedError;
   public @Nullable BukkitEvaluable usageIppCommandAction;
-  public @Nullable BukkitEvaluable usageIppTestCommandLanguage;
-  public @Nullable BukkitEvaluable usageIppVariablesCommandLanguage;
+  public @Nullable BukkitEvaluable usageIppLanguageCommandLanguage;
   public @Nullable BukkitEvaluable predicateTestResult;
   public @Nullable BukkitEvaluable predicateParseError;
   public @Nullable BukkitEvaluable showingVariables;
@@ -20,10 +19,8 @@ public class PlayerMessagesSection extends AConfigSection {
   public @Nullable BukkitEvaluable variablesTestNoResults;
   public @Nullable BukkitEvaluable variablesTestResults;
   public @Nullable BukkitEvaluable noItemInMainHand;
+  public @Nullable BukkitEvaluable languageSelected;
 
-  public @Nullable BukkitEvaluable missingPermissionIppTestCommand;
-  public @Nullable BukkitEvaluable missingPermissionIppVariablesCommand;
-  public @Nullable BukkitEvaluable missingPermissionIppReloadCommand;
   public @Nullable BukkitEvaluable missingPermissionIppCommand;
 
   public PlayerMessagesSection(EvaluationEnvironmentBuilder baseEnvironment) {

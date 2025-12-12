@@ -6,6 +6,7 @@ public enum PluginPermission {
   IPP_RELOAD_COMMAND("command.ipp.reload"),
   IPP_VARIABLES_COMMAND("command.ipp.variables"),
   IPP_TEST_COMMAND("command.ipp.test"),
+  IPP_LANGUAGE_COMMAND("command.ipp.language"),
   ;
 
   private static final String PREFIX = "itempredicateparser";

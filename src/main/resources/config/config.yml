@@ -47,15 +47,9 @@ playerMessages:
   # - label: String
   # - action: String
   # - languages: Collection<String>
-  usageIppTestCommandLanguage$: |
-    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-TEST-LANGUAGE-SEPARATOR})
-    @{MESSAGE-USAGE-IPP-TEST-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
-  # - label: String
-  # - action: String
-  # - languages: Collection<String>
-  usageIppVariablesCommandLanguage$: |
-    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE-SEPARATOR})
-    @{MESSAGE-USAGE-IPP-VARIABLES-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
+  usageIppLanguageCommandLanguage$: |
+    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-SEPARATOR})
+    @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
   # - entered_predicate: String
   # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
   predicateTestResult$:
@@ -74,10 +68,11 @@ playerMessages:
     name_list = iter_cat(names, (name) => @{MESSAGE-VARIABLES-TEST-RESULTS-RESULT}, @{MESSAGE-VARIABLES-TEST-RESULTS-SEPARATOR})
     @{MESSAGE-VARIABLES-TEST-RESULTS(prefix=lut["MESSAGE_PREFIX"])}
   noItemInMainHand$: '@{MESSAGE-NO-ITEM-IN-MAIN-HAND(prefix=lut["MESSAGE_PREFIX"])}'
+  # - language: String
+  languageSelected$: '@{MESSAGE-LANGUAGE-SELECTED(prefix=lut["MESSAGE_PREFIX"])}'
   missingPermissionIppCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP(prefix=lut["MESSAGE_PREFIX"])}'
-  missingPermissionIppTestCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-TEST(prefix=lut["MESSAGE_PREFIX"])}'
-  missingPermissionIppVariablesCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'
-  missingPermissionIppReloadCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
+
+defaultSelectedLanguage: ENGLISH_US
 
 commands:
   itempredicateparser:

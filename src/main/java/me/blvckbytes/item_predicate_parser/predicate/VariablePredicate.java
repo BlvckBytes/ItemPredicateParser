@@ -13,9 +13,10 @@ public record VariablePredicate(
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
     var variable = translatedLangKeyed.langKeyed.getWrapped();
+    var materials = variable.getEffectiveMaterials();
 
-    if (!variable.materials.isEmpty()) {
-      if (variable.materials.stream().noneMatch(material -> material.equals(state.item.getType())))
+    if (!materials.isEmpty()) {
+      if (materials.stream().noneMatch(material -> material.equals(state.item.getType())))
         return this;
     }
 

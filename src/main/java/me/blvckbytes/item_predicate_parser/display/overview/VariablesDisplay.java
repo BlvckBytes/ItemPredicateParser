@@ -116,12 +116,16 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
 
       var variable = displayData.variables().get(currentSlot);
       var materialTokenLines = makeTokenLines(variable.materialDisplayNames());
+      var inheritedMaterialTokenLines = makeTokenLines(variable.inheritedMaterialDisplayNames());
+      var parentsTokenLines = makeTokenLines(variable.parentDisplayNames());
 
       var item = config.rootSection.variablesDisplay.items.variable.build(
         new EvaluationEnvironmentBuilder()
           .withStaticVariable("icon_type", variable.icon().name())
           .withStaticVariable("display_name", variable.displayName())
           .withStaticVariable("material_token_lines", materialTokenLines)
+          .withStaticVariable("inherited_material_token_lines", inheritedMaterialTokenLines)
+          .withStaticVariable("parents_token_lines", parentsTokenLines)
           .build()
       );
 

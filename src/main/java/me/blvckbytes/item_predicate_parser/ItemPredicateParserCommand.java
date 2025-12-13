@@ -268,8 +268,11 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             continue;
 
           var materialDisplayNames = new ArrayList<String>();
+          var inheritedMaterialDisplayNames = new ArrayList<String>();
 
-          for (var material : item.langKeyed.getWrapped().materials) {
+          var variable = item.langKeyed.getWrapped();
+
+          for (var material : variable.materials) {
             var translation = translationRegistry.getTranslationBySingleton(material);
 
             if (translation == null)
@@ -278,7 +281,27 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             materialDisplayNames.add(translation);
           }
 
-          variables.add(new DisplayedVariable(item.langKeyed.getWrapped().icon, item.normalizedUnPrefixedTranslation, materialDisplayNames));
+          for (var material : variable.getInheritedMaterials()) {
+            var translation = translationRegistry.getTranslationBySingleton(material);
+
+            if (translation == null)
+              translation = "<null>";
+
+            inheritedMaterialDisplayNames.add(translation);
+          }
+
+          var parentDisplayNames = new ArrayList<String>();
+
+          for (var parent : variable.parents)
+            parentDisplayNames.add(parent.getFinalName(language));
+
+          variables.add(new DisplayedVariable(
+            variable.icon,
+            item.normalizedUnPrefixedTranslation,
+            materialDisplayNames,
+            parentDisplayNames,
+            inheritedMaterialDisplayNames
+          ));
         }
 
         if (targetName != null && variables.isEmpty()) {
@@ -387,6 +410,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     for (var language : TranslationLanguage.values()) {
       var translationRegistry = languageRegistry.getTranslationRegistry(language);
       var variables = translationRegistry.lookup(VariableKey.class);
+      variables.sort(Comparator.comparing(it -> it.langKeyed.getWrapped().defaultName));
       this.variablesByLanguage.put(language, variables);
     }
   }

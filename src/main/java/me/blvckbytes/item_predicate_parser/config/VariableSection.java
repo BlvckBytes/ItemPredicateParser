@@ -10,10 +10,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VariableSection extends AConfigSection {
 
@@ -21,7 +18,10 @@ public class VariableSection extends AConfigSection {
   public @CSIgnore Material _icon = Material.BARRIER;
 
   public List<String> materials;
-  public @CSIgnore List<Material> _materials = new ArrayList<>();
+  public @CSIgnore Set<Material> _materials = new HashSet<>();
+
+  public List<String> parents;
+  public @CSIgnore Set<String> _parentNames = new HashSet<>();
 
   public Map<String, String> names;
   public @CSIgnore Map<TranslationLanguage, String> _names = new HashMap<>();
@@ -50,7 +50,15 @@ public class VariableSection extends AConfigSection {
         if (xMaterial.isEmpty())
           throw new MappingError("Unknown material \"" + material + "\"");
 
-        _materials.add(xMaterial.get().get());
+        if (!_materials.add(xMaterial.get().get()))
+          throw new MappingError("Duplicate material \"" + material + "\"");
+      }
+    }
+
+    if (parents != null) {
+      for (var parentName : parents) {
+        if (!_parentNames.add(parentName))
+          throw new MappingError("Duplicate parent \"" + parentName + "\"");
       }
     }
 

@@ -9,9 +9,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VariablesSection extends AConfigSection {
 
@@ -30,6 +28,8 @@ public class VariablesSection extends AConfigSection {
     if (variables == null)
       return;
 
+    var variableByNameLower = new HashMap<String, Variable>();
+
     for (var variableEntry : variables.entrySet()) {
       var defaultName = variableEntry.getKey();
 
@@ -41,9 +41,14 @@ public class VariablesSection extends AConfigSection {
       if (variableSection == null)
         variableSection = new VariableSection(getBaseEnvironment());
 
-      var variable = new Variable(variableSection._icon, defaultName, variableSection._materials, variableSection._names);
+      var variable = new Variable(variableSection._icon, defaultName, variableSection._materials, variableSection._parentNames, variableSection._names);
 
       _variableKeys.add(new VariableKey(variable));
+      variableByNameLower.put(defaultName, variable);
     }
+
+    variableByNameLower.values().forEach(variable -> {
+      variable.resolveInheritance(variableByNameLower, new Stack<>());
+    });
   }
 }

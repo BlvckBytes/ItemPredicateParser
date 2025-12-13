@@ -124,19 +124,45 @@ variablesDisplay:
       name$: '@{VARIABLES-ENTRY-NAME}'
       lore$:
         - '" "'
-        - '@{ANY-CONTROL-LORE-SPACER}'
-        - '@{VARIABLES-ENTRY-MATERIAL-TITLE}'
-        - '" "'
         - |
-          map(
-            material_token_lines,
-            (token_line) => iter_cat(
-              token_line.tokens,
-              (line_token) => (@{VARIABLES-ENTRY-MATERIAL-TOKEN}),
-              @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
-            ) & if token_line.wraps then "" else @{VARIABLES-ENTRY-MATERIAL-SEPARATOR},
-            @{VARIABLES-ENTRY-MATERIAL-NO-ENTRIES}
-          )
+          if len(material_token_lines) > 0 then flatten(list_of(
+            @{ANY-CONTROL-LORE-SPACER},
+            @{VARIABLES-ENTRY-MATERIAL-TITLE},
+            " ",
+            map(
+              material_token_lines,
+              (token_line) => iter_cat(
+                token_line.tokens,
+                (line_token) => (@{VARIABLES-ENTRY-MATERIAL-TOKEN}),
+                @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
+              ) & if token_line.wraps then "" else @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
+            )
+          )) else null
+        - |
+          if len(inherited_material_token_lines) > 0 then flatten(list_of(
+            @{ANY-CONTROL-LORE-SPACER},
+            @{INHERITED-VARIABLES-ENTRY-PARENTS-TITLE},
+            " ",
+            map(
+              parents_token_lines,
+              (token_line) => iter_cat(
+                token_line.tokens,
+                (line_token) => (@{INHERITED-VARIABLES-ENTRY-PARENT-TOKEN}),
+                @{INHERITED-VARIABLES-ENTRY-PARENT-SEPARATOR}
+              ) & if token_line.wraps then "" else @{INHERITED-VARIABLES-ENTRY-PARENT-SEPARATOR}
+            ),
+            @{ANY-CONTROL-LORE-SPACER},
+            @{INHERITED-VARIABLES-ENTRY-MATERIAL-TITLE},
+            " ",
+            map(
+              inherited_material_token_lines,
+              (token_line) => iter_cat(
+                token_line.tokens,
+                (line_token) => (@{INHERITED-VARIABLES-ENTRY-MATERIAL-TOKEN}),
+                @{INHERITED-VARIABLES-ENTRY-MATERIAL-SEPARATOR}
+              ) & if token_line.wraps then "" else @{INHERITED-VARIABLES-ENTRY-MATERIAL-SEPARATOR}
+            )
+          )) else null
         - '@{ANY-CONTROL-LORE-SPACER}'
     filler:
       slots$:

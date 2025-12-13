@@ -110,10 +110,20 @@ VARIABLES-DISPLAY-TITLE &8Variables &e{current_page}&8/&e{number_pages}
 
 # - display_name: String
 VARIABLES-ENTRY-NAME                &8» &6{display_name} &8«
+
 VARIABLES-ENTRY-MATERIAL-TITLE      &7➥ Materials:
 # - line_token: String
 VARIABLES-ENTRY-MATERIAL-TOKEN      &6{line_token}
 VARIABLES-ENTRY-MATERIAL-SEPARATOR  &e, \
-VARIABLES-ENTRY-MATERIAL-NO-ENTRIES &cNo entries found!
+
+INHERITED-VARIABLES-ENTRY-MATERIAL-TITLE &7➥ Inherited materials:
+# - line_token: String
+INHERITED-VARIABLES-ENTRY-MATERIAL-TOKEN      &5{line_token}
+INHERITED-VARIABLES-ENTRY-MATERIAL-SEPARATOR  &d, \
+
+INHERITED-VARIABLES-ENTRY-PARENTS-TITLE &7➥ Inherits from:
+# - line_token: String
+INHERITED-VARIABLES-ENTRY-PARENT-TOKEN      &5{line_token}
+INHERITED-VARIABLES-ENTRY-PARENT-SEPARATOR  &d, \
 
 # ==================== END Variables-Display ====================

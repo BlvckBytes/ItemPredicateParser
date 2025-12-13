@@ -7,5 +7,7 @@ import java.util.List;
 public record DisplayedVariable(
   Material icon,
   String displayName,
-  List<String> materialDisplayNames
+  List<String> materialDisplayNames,
+  List<String> parentDisplayNames,
+  List<String> inheritedMaterialDisplayNames
 ) {}

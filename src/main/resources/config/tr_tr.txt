@@ -56,6 +56,14 @@ MESSAGE-USAGE-IPP-ACTION-SEPARATOR        &7, \
 # - action_list: String
 # - prefix: String
 MESSAGE-USAGE-IPP-ACTION                  {prefix} &7Kullanım: /{label} <{action_list}&7>
+# - language: String
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-ITEM      &e{language}
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-SEPARATOR &7, \
+# - label: String
+# - action: String
+# - language_list: String
+# - prefix: String
+MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE     {prefix} &7Usage: /{label} {action} <{language_list}&7> - Select a personal language
 MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
 # - entered_predicate: String
 MESSAGE-TEST-RESULT-ENTERED              &8> &7Gir: &e{entered_predicate}

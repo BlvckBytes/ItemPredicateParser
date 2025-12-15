@@ -6,7 +6,9 @@ public record CustomTranslations(
   String disjunction,
   String conjunction,
   String exact,
-  String amount
+  String amount,
+  String innerSome,
+  String innerAll
 ) {
   public static CustomTranslations ENGLISH = new CustomTranslations(
     "Deterioration",
@@ -14,7 +16,9 @@ public record CustomTranslations(
     "or",
     "and",
     "exact",
-    "Amount"
+    "Amount",
+    "inner-some",
+    "inner-all"
   );
 
   public static CustomTranslations FRENCH = new CustomTranslations(
@@ -23,7 +27,9 @@ public record CustomTranslations(
     "ou",
     "et",
     "exacte",
-    "Quantité"
+    "Quantité",
+    "inner-some",
+    "inner-all"
   );
 
   public static CustomTranslations GERMAN = new CustomTranslations(
@@ -32,7 +38,9 @@ public record CustomTranslations(
     "oder",
     "und",
     "exakt",
-    "Anzahl"
+    "Anzahl",
+    "innen-manche",
+    "innen-alle"
   );
 
   public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
@@ -41,7 +49,9 @@ public record CustomTranslations(
     "或",
     "和",
     "精确",
-    "数量"
+    "数量",
+    "inner-some",
+    "inner-all"
   );
 
   public static CustomTranslations TURKISH = new CustomTranslations(
@@ -50,6 +60,8 @@ public record CustomTranslations(
     "veya",
     "ve",
     "kesin",
-    "Miktar"
+    "Miktar",
+    "inner-some",
+    "inner-all"
   );
 }

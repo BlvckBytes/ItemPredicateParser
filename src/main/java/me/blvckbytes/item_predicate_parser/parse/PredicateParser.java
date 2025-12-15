@@ -103,7 +103,15 @@ public class PredicateParser {
   }
 
   private @Nullable ItemPredicate parseNegationNode() {
-    return parseUnaryNode(this::parseExactNode, NegationKey.class, NegationNode::new);
+    return parseUnaryNode(this::parseInnerAllNode, NegationKey.class, NegationNode::new);
+  }
+
+  private @Nullable ItemPredicate parseInnerAllNode() {
+    return parseUnaryNode(this::parseInnerSomeNode, InnerAllKey.class, InnerAllNode::new);
+  }
+
+  private @Nullable ItemPredicate parseInnerSomeNode() {
+    return parseUnaryNode(this::parseExactNode, InnerSomeKey.class, InnerSomeNode::new);
   }
 
   private @Nullable ItemPredicate parseExactNode() {

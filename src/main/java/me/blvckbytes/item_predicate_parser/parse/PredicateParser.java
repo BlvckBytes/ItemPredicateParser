@@ -330,6 +330,7 @@ public class PredicateParser {
         case VARIABLE -> {
           tokens.remove(0);
           predicates.add(new VariablePredicate(currentToken, (TranslatedLangKeyed<VariableKey>) shortestMatch));
+          continue;
         }
         default -> {}
       }

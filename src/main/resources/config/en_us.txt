@@ -64,13 +64,10 @@ MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-SEPARATOR &7, \
 # - language_list: String
 # - prefix: String
 MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE     {prefix} &7Usage: /{label} {action} <{language_list}&7> - Select a personal language
-MESSAGE-TEST-RESULT-SPACER               &8&m                &8[&6ItemPredicateParser&8]&m                \
-# - entered_predicate: String
-MESSAGE-TEST-RESULT-ENTERED              &8> &7Entered: &e{entered_predicate}
 MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH    &a
 MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH &c
 # - colored_predicate: String
-MESSAGE-TEST-RESULT-MATCH                &8> &7Match: &e{colored_predicate}
+MESSAGE-TEST-RESULT-MATCH                {prefix} &7Result: &e{colored_predicate}
 # - exception_message: String
 # - prefix: String
 MESSAGE-PREDICATE-PARSE-ERROR                 {prefix} {exception_message}

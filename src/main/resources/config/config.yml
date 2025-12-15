@@ -52,13 +52,9 @@ playerMessages:
     @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
   # - entered_predicate: String
   # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
-  predicateTestResult$:
-    - '@{MESSAGE-TEST-RESULT-SPACER}'
-    - '@{MESSAGE-TEST-RESULT-ENTERED}'
-    - |
-      colored_predicate = expanded_predicate(@{MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH}, @{MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH})
-      @{MESSAGE-TEST-RESULT-MATCH}
-    - '@{MESSAGE-TEST-RESULT-SPACER}'
+  predicateTestResult$: |
+    colored_predicate = expanded_predicate(@{MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH}, @{MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH})
+    @{MESSAGE-TEST-RESULT-MATCH(prefix=lut["MESSAGE_PREFIX"])}
   # - exception_message: String
   predicateParseError$: '@{MESSAGE-PREDICATE-PARSE-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
   showingVariables$: '@{MESSAGE-SHOWING-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'

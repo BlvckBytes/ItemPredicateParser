@@ -57,4 +57,9 @@ public record DeteriorationPredicate(
       state.appendString(deteriorationPercentageMax.stringify());
     }
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
 }

@@ -35,4 +35,9 @@ public record DisjunctionNode(
     state.appendSpace();
     state.appendPredicate(rhs);
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return lhs == node || lhs.isTransitiveParentTo(node) || rhs == node || rhs.isTransitiveParentTo(node);
+  }
 }

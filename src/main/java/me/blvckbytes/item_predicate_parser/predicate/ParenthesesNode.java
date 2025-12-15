@@ -17,4 +17,9 @@ public record ParenthesesNode (
     state.appendPredicate(inner);
     state.appendString(")");
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return inner == node || inner.isTransitiveParentTo(node);
+  }
 }

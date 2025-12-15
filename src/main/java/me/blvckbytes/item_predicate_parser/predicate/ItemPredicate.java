@@ -21,4 +21,7 @@ public interface ItemPredicate extends Predicate<ItemStack> {
   }
 
   void stringify(StringifyState state);
+
+  boolean isTransitiveParentTo(ItemPredicate node);
+
 }

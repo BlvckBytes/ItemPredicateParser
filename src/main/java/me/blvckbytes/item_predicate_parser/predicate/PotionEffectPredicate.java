@@ -56,6 +56,11 @@ public record PotionEffectPredicate(
     }
   }
 
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
+
   private boolean doesAmplifierMismatch(int amplifier) {
     if (this.amplifierArgument == null)
       return false;

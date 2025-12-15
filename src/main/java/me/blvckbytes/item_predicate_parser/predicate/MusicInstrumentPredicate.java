@@ -29,4 +29,9 @@ public record MusicInstrumentPredicate(
     else
       state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
 }

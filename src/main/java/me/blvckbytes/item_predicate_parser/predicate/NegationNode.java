@@ -25,7 +25,14 @@ public record NegationNode(
     else
       state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    state.appendSpace();
+    if (!(operand instanceof ParenthesesNode))
+      state.appendSpace();
+
     state.appendPredicate(operand);
+  }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return operand == node || operand.isTransitiveParentTo(node);
   }
 }

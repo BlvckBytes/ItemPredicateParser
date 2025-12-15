@@ -30,4 +30,9 @@ public record AmountPredicate(
     state.appendSpace();
     state.appendString(amountArgument.stringify());
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
 }

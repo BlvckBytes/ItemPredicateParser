@@ -160,6 +160,11 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof TextSearchPredicate that)) return false;

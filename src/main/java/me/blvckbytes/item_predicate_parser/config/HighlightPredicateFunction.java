@@ -26,7 +26,14 @@ public class HighlightPredicateFunction extends AExpressionFunction {
 
     return new StringifyState(
       false,
-      (node, output) -> output.append(node == failureNode ? failurePrefix : matchingPrefix),
+      (node, output) -> {
+        if (failureNode == null) {
+          output.append(matchingPrefix);
+          return;
+        }
+
+        output.append(node == failureNode || failureNode.isTransitiveParentTo(node) ? failurePrefix : matchingPrefix);
+      },
       null
     )
       .appendPredicate(rootNode)

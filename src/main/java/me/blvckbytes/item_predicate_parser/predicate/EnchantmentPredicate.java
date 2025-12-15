@@ -50,4 +50,9 @@ public record EnchantmentPredicate(
       state.appendString(this.levelArgument.stringify());
     }
   }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
 }

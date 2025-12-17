@@ -107,7 +107,15 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     }
 
     var result = new ArrayList<TranslatedLangKeyed<?>>();
-    var querySyllablesResult = Syllables.forStringWithWildcardSupport(query.value(), Syllables.DELIMITER_SEARCH_PATTERN);
+
+    var isVariableSearch = query.value().startsWith(Variable.ENCLOSING_MARKER);
+
+    var queryValue = query.value();
+
+    if (isVariableSearch)
+      queryValue = Variable.ENCLOSING_MARKER + "-" + queryValue.substring(1);
+
+    var querySyllablesResult = Syllables.forStringWithWildcardSupport(queryValue, Syllables.DELIMITER_SEARCH_PATTERN);
 
     if (querySyllablesResult.numberOfWildcardSyllables() > 1)
       throw new ItemPredicateParseException(query, ParseConflict.MULTIPLE_SEARCH_PATTERN_WILDCARDS);
@@ -120,8 +128,6 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
 
     var matcher = new SyllablesMatcher();
     matcher.setQuery(querySyllables);
-
-    var isVariableSearch = query.value().startsWith(Variable.ENCLOSING_MARKER);
 
     for (var entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
       var entry = entries[entryIndex];

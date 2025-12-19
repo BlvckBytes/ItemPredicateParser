@@ -8,5 +8,6 @@ public enum LangKeyedPredicateType {
   DETERIORATION,
   AMOUNT,
   VARIABLE,
-  NOT_A_PREDICATE
+  NOT_A_PREDICATE,
+  ANY,
 }

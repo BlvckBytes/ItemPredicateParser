@@ -1,0 +1,33 @@
+package me.blvckbytes.item_predicate_parser.predicate;
+
+import me.blvckbytes.item_predicate_parser.token.Token;
+import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
+import me.blvckbytes.item_predicate_parser.translation.keyed.AnyKey;
+import org.jetbrains.annotations.Nullable;
+
+public record AnyPredicate(
+  Token token,
+  @Nullable TranslatedLangKeyed<AnyKey> translatedLangKeyed
+) implements ItemPredicate {
+
+  @Override
+  public @Nullable ItemPredicate testForFailure(PredicateState state) {
+    if (state.item.getType().isAir())
+      return this;
+
+    return null;
+  }
+
+  @Override
+  public void stringify(StringifyState state) {
+    if (state.useTokens || translatedLangKeyed == null)
+      state.appendString(token.stringify());
+    else
+      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  }
+
+  @Override
+  public boolean isTransitiveParentTo(ItemPredicate node) {
+    return false;
+  }
+}

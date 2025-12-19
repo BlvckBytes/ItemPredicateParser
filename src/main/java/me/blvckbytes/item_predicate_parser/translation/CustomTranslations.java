@@ -8,7 +8,8 @@ public record CustomTranslations(
   String exact,
   String amount,
   String innerSome,
-  String innerAll
+  String innerAll,
+  String any
 ) {
   public static CustomTranslations ENGLISH = new CustomTranslations(
     "Deterioration",
@@ -18,7 +19,8 @@ public record CustomTranslations(
     "exact",
     "Amount",
     "inner-some",
-    "inner-all"
+    "inner-all",
+    "Any"
   );
 
   public static CustomTranslations FRENCH = new CustomTranslations(
@@ -29,7 +31,8 @@ public record CustomTranslations(
     "exacte",
     "Quantité",
     "inner-some",
-    "inner-all"
+    "inner-all",
+    "Any"
   );
 
   public static CustomTranslations GERMAN = new CustomTranslations(
@@ -40,7 +43,8 @@ public record CustomTranslations(
     "exakt",
     "Anzahl",
     "innen-manche",
-    "innen-alle"
+    "innen-alle",
+    "Etwas"
   );
 
   public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
@@ -51,7 +55,8 @@ public record CustomTranslations(
     "精确",
     "数量",
     "inner-some",
-    "inner-all"
+    "inner-all",
+    "Any"
   );
 
   public static CustomTranslations TURKISH = new CustomTranslations(
@@ -62,6 +67,7 @@ public record CustomTranslations(
     "kesin",
     "Miktar",
     "inner-some",
-    "inner-all"
+    "inner-all",
+    "Any"
   );
 }

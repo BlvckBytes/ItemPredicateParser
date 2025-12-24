@@ -35,7 +35,7 @@ public abstract class InnerNode implements ItemPredicate {
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
-    var innerItems = getInnerItems(state.meta);
+    var innerItems = getInnerItems(state.getMeta());
 
     // Mismatch if the item does not even have any inner items
     if (innerItems == null)

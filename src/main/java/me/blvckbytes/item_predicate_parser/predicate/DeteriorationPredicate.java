@@ -16,7 +16,7 @@ public record DeteriorationPredicate(
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
-    if (!(state.meta instanceof Damageable damageableMeta))
+    if (!(state.getMeta() instanceof Damageable damageableMeta))
       return this;
 
     var damage = damageableMeta.getDamage();

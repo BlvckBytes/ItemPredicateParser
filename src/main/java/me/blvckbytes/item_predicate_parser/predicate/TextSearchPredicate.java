@@ -21,7 +21,9 @@ public class TextSearchPredicate implements ItemPredicate {
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
-    if (state.meta == null)
+    var meta = state.getMeta();
+
+    if (meta == null)
       return this;
 
     int matchCount;
@@ -34,8 +36,8 @@ public class TextSearchPredicate implements ItemPredicate {
     // Display Name
     // ================================================================================
 
-    if (state.meta.hasDisplayName()) {
-      var displayNameSyllables = Syllables.forString(state.meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
+    if (meta.hasDisplayName()) {
+      var displayNameSyllables = Syllables.forString(meta.getDisplayName(), Syllables.DELIMITER_FREE_TEXT);
 
       matcher.setTarget(displayNameSyllables);
       matchCount = matcher.match();
@@ -51,10 +53,10 @@ public class TextSearchPredicate implements ItemPredicate {
     // Lore Lines
     // ================================================================================
 
-    if (state.meta.hasLore()) {
+    if (meta.hasLore()) {
       matchCount = 0;
 
-      for (var loreLine : Objects.requireNonNull(state.meta.getLore())) {
+      for (var loreLine : Objects.requireNonNull(meta.getLore())) {
         var loreLineSyllables = Syllables.forString(loreLine, Syllables.DELIMITER_FREE_TEXT);
 
         matcher.setTarget(loreLineSyllables);
@@ -68,7 +70,7 @@ public class TextSearchPredicate implements ItemPredicate {
         return this;
     }
 
-    if (state.meta instanceof BookMeta bookMeta) {
+    if (meta instanceof BookMeta bookMeta) {
 
       // ================================================================================
       // Book Author
@@ -130,7 +132,7 @@ public class TextSearchPredicate implements ItemPredicate {
     // Skull Owner
     // ================================================================================
 
-    if (state.meta instanceof SkullMeta skullMeta) {
+    if (meta instanceof SkullMeta skullMeta) {
       var ownerProfile = skullMeta.getOwnerProfile();
 
       if (ownerProfile != null) {

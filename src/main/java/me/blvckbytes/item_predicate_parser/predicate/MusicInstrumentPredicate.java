@@ -13,7 +13,7 @@ public record MusicInstrumentPredicate(
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
-    if (!(state.meta instanceof MusicInstrumentMeta instrumentMeta))
+    if (!(state.getMeta() instanceof MusicInstrumentMeta instrumentMeta))
       return this;
 
     if (translatedLangKeyed.langKeyed.getWrapped().equals(instrumentMeta.getInstrument()))

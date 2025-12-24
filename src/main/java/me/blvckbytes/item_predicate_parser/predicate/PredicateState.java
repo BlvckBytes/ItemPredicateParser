@@ -13,8 +13,11 @@ import java.util.*;
 public class PredicateState {
 
   public final ItemStack item;
+
   // Caching the meta spares the need to access it over and over again, which internally causes useless allocations
-  public final @Nullable ItemMeta meta;
+  private @Nullable ItemMeta _meta;
+  private boolean didGetMeta;
+
   public final boolean isExactMode;
 
   private List<Map.Entry<Enchantment, Integer>> remainingEnchantments = null;
@@ -22,13 +25,22 @@ public class PredicateState {
 
   public PredicateState(ItemStack item) {
     this.item = item;
-    this.meta = item.getItemMeta();
     this.isExactMode = false;
   }
 
-  private PredicateState(ItemStack item, @Nullable ItemMeta meta, boolean isExactMode) {
+  public @Nullable ItemMeta getMeta() {
+    if (!didGetMeta) {
+      didGetMeta = true;
+      _meta = item.getItemMeta();
+    }
+
+    return _meta;
+  }
+
+  private PredicateState(ItemStack item, @Nullable ItemMeta _meta, boolean didGetMeta, boolean isExactMode) {
     this.item = item;
-    this.meta = meta;
+    this._meta = _meta;
+    this.didGetMeta = didGetMeta;
     this.isExactMode = isExactMode;
   }
 
@@ -40,7 +52,7 @@ public class PredicateState {
   }
 
   public PredicateState copyAndEnterExact() {
-    var state = new PredicateState(this.item, this.meta, true);
+    var state = new PredicateState(this.item, this._meta, this.didGetMeta, true);
 
     // Deeper exact-nodes should not influence the remaining state of their parents
 
@@ -56,6 +68,8 @@ public class PredicateState {
   // Lazily access enchantments and effects to speed up simple predicates
 
   public List<Map.Entry<Enchantment, Integer>> getEnchantments() {
+    var meta = getMeta();
+
     if (meta == null)
       return List.of();
 
@@ -71,7 +85,7 @@ public class PredicateState {
 
   public List<PotionEffect> getEffects() {
     if (this.remainingEffects == null) {
-      if (!(meta instanceof PotionMeta potionMeta))
+      if (!(getMeta() instanceof PotionMeta potionMeta))
         return List.of();
 
       var baseType = potionMeta.getBasePotionType();

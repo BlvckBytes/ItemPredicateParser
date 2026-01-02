@@ -135,6 +135,7 @@
                             <!-- [1] Shouldn't be necessary anymore on newer versions of bukkit, but I prefer backwards-compatibility over file-size. -->
                             <include>org.yaml:snakeyaml</include>
                             <include>com.github.cryptomorin:XSeries</include>
+                            <include>org.jetbrains:annotations</include>
                         </includes>
                     </artifactSet>
 
@@ -155,6 +156,16 @@
                         <relocation>
                             <pattern>com.cryptomorin.xseries</pattern>
                             <shadedPattern>me.blvckbytes.item_predicate_parser.com.cryptomorin.xseries</shadedPattern>
+                        </relocation>
+
+                        <relocation>
+                            <pattern>org.jetbrains.annotations</pattern>
+                            <shadedPattern>at.blvckbytes.item_predicate_parser.jetbrains_annotations</shadedPattern>
+                        </relocation>
+
+                        <relocation>
+                            <pattern>org.intellij.lang.annotations</pattern>
+                            <shadedPattern>at.blvckbytes.item_predicate_parser.intellij_annotations</shadedPattern>
                         </relocation>
                     </relocations>
 

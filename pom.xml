@@ -160,12 +160,12 @@
 
                         <relocation>
                             <pattern>org.jetbrains.annotations</pattern>
-                            <shadedPattern>at.blvckbytes.item_predicate_parser.jetbrains_annotations</shadedPattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.jetbrains_annotations</shadedPattern>
                         </relocation>
 
                         <relocation>
                             <pattern>org.intellij.lang.annotations</pattern>
-                            <shadedPattern>at.blvckbytes.item_predicate_parser.intellij_annotations</shadedPattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.intellij_annotations</shadedPattern>
                         </relocation>
                     </relocations>
 

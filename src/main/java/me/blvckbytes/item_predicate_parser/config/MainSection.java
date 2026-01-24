@@ -23,6 +23,7 @@ public class MainSection extends AConfigSection {
   public Map<String, BukkitEvaluable> parseConflicts;
   public VariablesSection variables;
   public VariablesDisplaySection variablesDisplay;
+  public int variablesServerPort;
 
   @CSAlways
   public PlayerMessagesSection playerMessages;

@@ -78,6 +78,8 @@ commands:
 
 variables:
 
+variablesServerPort: 8150
+
 # - current_page: Integer
 # - number_pages: Integer
 # - number_of_rows: Integer

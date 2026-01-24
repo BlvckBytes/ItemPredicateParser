@@ -24,6 +24,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
   private LanguageRegistry languageRegistry;
   private VariablesDisplayHandler variablesDisplayHandler;
   private NameScopedKeyValueStore keyValueStore;
+  private WebApiServer webApiServer;
 
   @Override
   public void onEnable() {
@@ -58,6 +59,10 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
       Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this, config), this);
 
+      webApiServer = new WebApiServer(languageRegistry, config, logger);
+
+      webApiServer.restart();
+
       instance = this;
     } catch (Throwable e) {
       getLogger().log(Level.SEVERE, "Could not download and or initialize languages", e);
@@ -75,6 +80,11 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
     if (keyValueStore != null) {
       keyValueStore.saveToDisk();
       keyValueStore = null;
+    }
+
+    if (webApiServer != null) {
+      webApiServer.stop();
+      webApiServer = null;
     }
   }
 

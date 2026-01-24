@@ -33,11 +33,18 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
   public static String normalize(String input) {
     var result = input.toCharArray();
+    var nextResultIndex = 0;
 
-    for (var i = 0; i < result.length; ++i) {
-      var c = result[i];
+    for (var charIndex = 0; charIndex < result.length; ++charIndex) {
+      var currentChar = result[charIndex];
 
-      var newChar = switch (c) {
+      // Collapse separators
+      if (currentChar == ' ' || currentChar == '_' || currentChar == '-') {
+        if (nextResultIndex > 0 && result[nextResultIndex - 1] == '-')
+          continue;
+      }
+
+      var newChar = switch (currentChar) {
         // Avoids ambiguity in relation to quoted strings
         case '"' -> '\'';
         // Avoids ambiguity in relation to logical groups
@@ -47,13 +54,12 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
         case ' ' -> '-';
         // Just for uniformity
         case '_' -> '-';
-        default -> c;
+        default -> currentChar;
       };
 
-      if (newChar != c)
-        result[i] = newChar;
+      result[nextResultIndex++] = newChar;
     }
 
-    return new String(result);
+    return new String(result, 0, nextResultIndex);
   }
 }

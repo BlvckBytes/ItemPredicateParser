@@ -146,6 +146,13 @@ public class PredicateParserTests extends ParseTestBase {
         "(My_custom) item \":)\""
       )
     );
+
+    assertEquals(
+      "This-is-a-test!",
+      TranslatedLangKeyed.normalize(
+        "This is - a - test!"
+      )
+    );
   }
 
   @Test

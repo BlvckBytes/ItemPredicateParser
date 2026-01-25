@@ -12,6 +12,7 @@ public interface IVersionDependentCode {
   Iterable<? extends LangKeyed<?>> getEnchantments();
   Iterable<? extends LangKeyed<?>> getEffects();
   Iterable<? extends LangKeyed<?>> getItemMaterials(JsonObject languageJson);
+  Iterable<? extends LangKeyed<?>> getPotionTypes();
 
   @Nullable Iterable<? extends LangKeyed<?>> getInstruments();
 

@@ -38,6 +38,11 @@ public class VersionDependentCode_GT_1_20 implements IVersionDependentCode {
   }
 
   @Override
+  public Iterable<? extends LangKeyed<?>> getPotionTypes() {
+    return Registry.POTION.stream().map(LangKeyedPotionType::new).toList();
+  }
+
+  @Override
   public @Nullable Iterable<? extends LangKeyed<?>> getInstruments() {
     return Registry.INSTRUMENT.stream().map(LangKeyedMusicInstrument::new).toList();
   }

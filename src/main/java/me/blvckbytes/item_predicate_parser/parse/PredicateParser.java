@@ -301,6 +301,11 @@ public class PredicateParser {
           predicates.add(new PotionEffectPredicate(currentToken, (TranslatedLangKeyed<LangKeyedPotionEffectType>) shortestMatch, potionEffectAmplifier, potionEffectDuration));
           continue;
         }
+        case POTION_TYPE -> {
+          tokens.remove(0);
+          predicates.add(new PotionTypePredicate(currentToken, (TranslatedLangKeyed<LangKeyedPotionType>) shortestMatch));
+          continue;
+        }
         case DETERIORATION -> {
           tokens.remove(0);
 

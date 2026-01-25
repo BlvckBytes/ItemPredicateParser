@@ -136,6 +136,11 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
     );
 
     result.add(new LangKeyedSource(
+      versionDependentCode.getPotionTypes(),
+      collisionPrefixes.forPotionTypes())
+    );
+
+    result.add(new LangKeyedSource(
       versionDependentCode.getItemMaterials(languageJson),
       collisionPrefixes.forMaterials()
     ));

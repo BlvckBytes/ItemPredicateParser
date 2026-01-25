@@ -8,6 +8,7 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.*;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -38,6 +39,11 @@ public class VersionDependentCode_LT_1_20 implements IVersionDependentCode {
   @Override
   public Iterable<? extends LangKeyed<?>> getItemMaterials(JsonObject languageJson) {
     return Arrays.stream(Material.values()).filter(Material::isItem).map(it -> new LangKeyedItemMaterial(it, serverVersion, languageJson)).toList();
+  }
+
+  @Override
+  public Iterable<? extends LangKeyed<?>> getPotionTypes() {
+    return Arrays.stream(PotionType.values()).map(LangKeyedPotionType::new).toList();
   }
 
   @Override

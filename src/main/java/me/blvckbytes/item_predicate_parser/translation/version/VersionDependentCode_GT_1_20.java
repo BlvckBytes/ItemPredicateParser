@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class VersionDependentCode_GT_1_20 implements IVersionDependentCode {
@@ -39,7 +40,7 @@ public class VersionDependentCode_GT_1_20 implements IVersionDependentCode {
 
   @Override
   public Iterable<? extends LangKeyed<?>> getPotionTypes() {
-    return Registry.POTION.stream().map(LangKeyedPotionType::new).toList();
+    return Registry.POTION.stream().map(LangKeyedPotionType::instantiateIfUsed).filter(Objects::nonNull).toList();
   }
 
   @Override

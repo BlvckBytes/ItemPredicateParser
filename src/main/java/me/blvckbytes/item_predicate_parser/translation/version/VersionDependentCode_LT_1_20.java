@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class VersionDependentCode_LT_1_20 implements IVersionDependentCode {
@@ -43,7 +44,7 @@ public class VersionDependentCode_LT_1_20 implements IVersionDependentCode {
 
   @Override
   public Iterable<? extends LangKeyed<?>> getPotionTypes() {
-    return Arrays.stream(PotionType.values()).map(LangKeyedPotionType::new).toList();
+    return Arrays.stream(PotionType.values()).map(LangKeyedPotionType::instantiateIfUsed).filter(Objects::nonNull).toList();
   }
 
   @Override

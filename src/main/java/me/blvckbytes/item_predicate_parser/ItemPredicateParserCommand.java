@@ -9,9 +9,9 @@ import me.blvckbytes.item_predicate_parser.display.overview.DisplayedVariable;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayData;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHandler;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
+import me.blvckbytes.item_predicate_parser.predicate.stringify.TokenHighlighter;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
 import me.blvckbytes.item_predicate_parser.predicate.PredicateState;
-import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
 import me.blvckbytes.item_predicate_parser.predicate.VariablePredicate;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
@@ -177,17 +177,13 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           return true;
         }
 
-        // TODO: Migrate this to the new way of ComponentMarkup
+        var failedPredicate = predicate.testForFailure(new PredicateState(itemInHand));
 
-        var failure = predicate.testForFailure(new PredicateState(itemInHand));
         if ((message = config.rootSection.playerMessages.predicateTestResult) != null) {
           message.sendMessage(
             player,
             new InterpretationEnvironment()
-              .withVariable("entered_predicate",
-                new StringifyState(true).appendPredicate(predicate).toString()
-              )
-//              .withFunction("expanded_predicate", new HighlightPredicateFunction(predicate, failure))
+              .withVariable("entered_predicate", TokenHighlighter.highlightFailure(config, predicate, failedPredicate))
           );
         }
 

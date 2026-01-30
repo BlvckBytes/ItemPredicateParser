@@ -7,18 +7,17 @@ import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvir
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import me.blvckbytes.item_predicate_parser.config.variables_display.VariablesDisplaySection;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 @CSAlways
 public class MainSection extends ConfigSection {
 
-  public @Nullable ComponentMarkup expandedPreview;
+  public ComponentMarkup expandedPreview;
   public int maxCompletionsCount = 30;
-  public @Nullable ComponentMarkup maxCompletionsExceeded;
-  public @Nullable ComponentMarkup inputNonHighlightPrefix;
-  public @Nullable ComponentMarkup inputHighlightPrefix;
+  public ComponentMarkup maxCompletionsExceeded;
+  public ComponentMarkup validPredicatePart;
+  public ComponentMarkup failedPredicatePart;
   public TranslationLanguage defaultSelectedLanguage;
   public CommandsSection commands;
   public Map<String, ComponentMarkup> parseConflicts;

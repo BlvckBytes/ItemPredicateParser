@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedItemMaterial;
@@ -35,11 +36,13 @@ public record MaterialPredicate(
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    if (state.useTokens || translatedLangKeyed == null)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> {
+      if (handler.useTokens() || translatedLangKeyed == null)
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+    });
   }
 
   @Override

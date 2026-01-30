@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.keyed.AmountKey;
@@ -21,14 +22,16 @@ public record AmountPredicate(
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    if (state.useTokens)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> {
+      if (handler.useTokens())
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    state.appendSpace();
-    state.appendString(amountArgument.stringify());
+      output.appendSpace();
+      output.appendString(amountArgument.stringify());
+    });
   }
 
   @Override

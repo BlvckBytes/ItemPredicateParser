@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
@@ -23,17 +24,21 @@ public record DisjunctionNode(
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    state.appendPredicate(lhs);
-    state.appendSpace();
+  public void stringify(StringifyHandler handler) {
+    lhs.stringify(handler);
 
-    if (state.useTokens)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+    handler.stringify(this, output -> {
+      output.appendSpace();
 
-    state.appendSpace();
-    state.appendPredicate(rhs);
+      if (handler.useTokens())
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+
+      output.appendSpace();
+    });
+
+    rhs.stringify(handler);
   }
 
   @Override

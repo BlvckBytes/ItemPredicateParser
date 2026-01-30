@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.keyed.DeteriorationKey;
@@ -41,21 +42,23 @@ public record DeteriorationPredicate(
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    if (state.useTokens)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> {
+      if (handler.useTokens())
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (deteriorationPercentageMin != null) {
-      state.appendSpace();
-      state.appendString(deteriorationPercentageMin.stringify());
-    }
+      if (deteriorationPercentageMin != null) {
+        output.appendSpace();
+        output.appendString(deteriorationPercentageMin.stringify());
+      }
 
-    if (deteriorationPercentageMax != null) {
-      state.appendSpace();
-      state.appendString(deteriorationPercentageMax.stringify());
-    }
+      if (deteriorationPercentageMax != null) {
+        output.appendSpace();
+        output.appendString(deteriorationPercentageMax.stringify());
+      }
+    });
   }
 
   @Override

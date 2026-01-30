@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.QuotedStringToken;
 import me.blvckbytes.syllables_matcher.Syllables;
 import me.blvckbytes.syllables_matcher.SyllablesMatcher;
@@ -157,8 +158,8 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    state.appendString(token.stringify());
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> output.appendString(token.stringify()));
   }
 
   @Override

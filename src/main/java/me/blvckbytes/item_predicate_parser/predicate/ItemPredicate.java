@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public interface ItemPredicate extends Predicate<ItemStack> {
     return test(new PredicateState(item));
   }
 
-  void stringify(StringifyState state);
+  void stringify(StringifyHandler handler);
 
   boolean isTransitiveParentTo(ItemPredicate node);
 

@@ -8,7 +8,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
-import me.blvckbytes.item_predicate_parser.predicate.StringifyState;
+import me.blvckbytes.item_predicate_parser.predicate.stringify.PlainStringifier;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.token.UnquotedStringToken;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
@@ -131,7 +131,7 @@ public class PredicateHelper {
           new InterpretationEnvironment()
             .withVariable(
               "predicate_representation",
-              new StringifyState(false).appendPredicate(predicate).toString()
+              PlainStringifier.stringify(predicate, false)
             )
         );
       }

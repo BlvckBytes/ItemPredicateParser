@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.block.Container;
@@ -59,16 +60,18 @@ public abstract class InnerNode implements ItemPredicate {
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    if (state.useTokens)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> {
+      if (handler.useTokens())
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (!(operand instanceof ParenthesesNode))
-      state.appendSpace();
+      if (!(operand instanceof ParenthesesNode))
+        output.appendSpace();
+    });
 
-    state.appendPredicate(operand);
+    operand.stringify(handler);
   }
 
   @Override
@@ -76,7 +79,6 @@ public abstract class InnerNode implements ItemPredicate {
     return operand == node || operand.isTransitiveParentTo(node);
   }
 
-  @SuppressWarnings("UnstableApiUsage")
   private List<ItemStack> getInnerItems(ItemMeta meta) {
     if (meta instanceof BlockStateMeta blockStateMeta) {
       if (blockStateMeta.getBlockState() instanceof Container container)

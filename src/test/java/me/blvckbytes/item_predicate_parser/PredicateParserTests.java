@@ -4,6 +4,7 @@ import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
 import me.blvckbytes.item_predicate_parser.predicate.*;
+import me.blvckbytes.item_predicate_parser.predicate.stringify.PlainStringifier;
 import me.blvckbytes.item_predicate_parser.token.ComparisonMode;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.*;
@@ -1252,7 +1253,7 @@ public class PredicateParserTests extends ParseTestBase {
     var ast = predicateParser.parseAst();
 
     assertNotNull(ast);
-    assertEquals(expected, new StringifyState(stringifyTokens).appendPredicate(ast).toString());
+    assertEquals(expected, PlainStringifier.stringify(ast, stringifyTokens));
   }
 
   private void makeCase(String[] args, @Nullable ItemPredicate expected) {

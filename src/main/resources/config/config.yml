@@ -15,8 +15,8 @@ expandedPreview$: '@{PREVIEW-EXPANDED}'
 maxCompletionsCount: 30
 # - excess_count: Int
 maxCompletionsExceeded$: '@{PREVIEW-MAX-COMPLETIONS-EXCEEDED}'
-inputNonHighlightPrefix: '@{PREVIEW-INPUT-NON-HIGHLIGHT-PREFIX}'
-inputHighlightPrefix: '@{PREVIEW-INPUT-HIGHLIGHT-PREFIX}'
+validPredicatePart: ''
+failedPredicatePart: ''
 # highlighted_input: String
 parseConflicts$:
   EXPECTED_CORRECT_INTEGER: '@{PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER}'

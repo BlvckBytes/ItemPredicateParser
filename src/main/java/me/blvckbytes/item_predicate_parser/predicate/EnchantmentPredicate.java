@@ -1,13 +1,12 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import me.blvckbytes.item_predicate_parser.token.IntegerToken;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 public record EnchantmentPredicate(
   Token token,
@@ -39,16 +38,18 @@ public record EnchantmentPredicate(
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    if (state.useTokens)
-      state.appendString(token.stringify());
-    else
-      state.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> {
+      if (handler.useTokens())
+        output.appendString(token.stringify());
+      else
+        output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
 
-    if (this.levelArgument != null) {
-      state.appendSpace();
-      state.appendString(this.levelArgument.stringify());
-    }
+      if (this.levelArgument != null) {
+        output.appendSpace();
+        output.appendString(this.levelArgument.stringify());
+      }
+    });
   }
 
   @Override

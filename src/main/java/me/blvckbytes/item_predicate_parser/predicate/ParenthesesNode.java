@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser.predicate;
 
+import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import org.jetbrains.annotations.Nullable;
 
 public record ParenthesesNode (
@@ -12,10 +13,10 @@ public record ParenthesesNode (
   }
 
   @Override
-  public void stringify(StringifyState state) {
-    state.appendString("(");
-    state.appendPredicate(inner);
-    state.appendString(")");
+  public void stringify(StringifyHandler handler) {
+    handler.stringify(this, output -> output.appendString("("));
+    inner.stringify(handler);
+    handler.stringify(this, output -> output.appendString(")"));
   }
 
   @Override

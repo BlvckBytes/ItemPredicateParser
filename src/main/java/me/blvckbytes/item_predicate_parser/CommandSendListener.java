@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;

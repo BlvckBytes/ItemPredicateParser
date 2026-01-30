@@ -1,5 +1,6 @@
 package me.blvckbytes.item_predicate_parser;
 
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -13,6 +14,6 @@ import java.util.List;
  */
 public record CompletionResult(
   @Nullable List<String> suggestions,
-  @Nullable String expandedPreviewOrError,
+  @Nullable Component expandedPreviewOrError,
   boolean didParseErrorOccur
 ) {}

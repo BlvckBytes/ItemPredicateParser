@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser.translation.keyed;
 
-import me.blvckbytes.bbconfigmapper.MappingError;
+import at.blvckbytes.cm_mapper.mapper.MappingError;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import org.bukkit.Material;
 

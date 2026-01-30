@@ -1,10 +1,11 @@
 package me.blvckbytes.item_predicate_parser.config;
 
+import at.blvckbytes.cm_mapper.mapper.MappingError;
+import at.blvckbytes.cm_mapper.mapper.section.CSIgnore;
+import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import com.cryptomorin.xseries.XMaterial;
-import me.blvckbytes.bbconfigmapper.MappingError;
-import me.blvckbytes.bbconfigmapper.sections.AConfigSection;
-import me.blvckbytes.bbconfigmapper.sections.CSIgnore;
-import me.blvckbytes.gpeee.interpreter.EvaluationEnvironmentBuilder;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import org.bukkit.Material;
@@ -12,7 +13,7 @@ import org.bukkit.Material;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class VariableSection extends AConfigSection {
+public class VariableSection extends ConfigSection {
 
   public String icon;
   public @CSIgnore Material _icon = Material.BARRIER;
@@ -26,8 +27,8 @@ public class VariableSection extends AConfigSection {
   public Map<String, String> names;
   public @CSIgnore Map<TranslationLanguage, String> _names = new HashMap<>();
 
-  public VariableSection(EvaluationEnvironmentBuilder baseEnvironment) {
-    super(baseEnvironment);
+  public VariableSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
+    super(baseEnvironment, interpreterLogger);
   }
 
   @Override

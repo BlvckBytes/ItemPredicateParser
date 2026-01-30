@@ -1,29 +1,30 @@
 package me.blvckbytes.item_predicate_parser.config;
 
-import me.blvckbytes.bbconfigmapper.sections.AConfigSection;
-import me.blvckbytes.bukkitevaluable.BukkitEvaluable;
-import me.blvckbytes.gpeee.interpreter.EvaluationEnvironmentBuilder;
+import at.blvckbytes.cm_mapper.cm.ComponentMarkup;
+import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import org.jetbrains.annotations.Nullable;
 
-public class PlayerMessagesSection extends AConfigSection {
+public class PlayerMessagesSection extends ConfigSection {
 
-  public @Nullable BukkitEvaluable commandOnlyForPlayers;
-  public @Nullable BukkitEvaluable pluginReloadedSuccess;
-  public @Nullable BukkitEvaluable pluginReloadedError;
-  public @Nullable BukkitEvaluable usageIppCommandAction;
-  public @Nullable BukkitEvaluable usageIppLanguageCommandLanguage;
-  public @Nullable BukkitEvaluable predicateTestResult;
-  public @Nullable BukkitEvaluable predicateParseError;
-  public @Nullable BukkitEvaluable showingVariables;
-  public @Nullable BukkitEvaluable unknownVariableName;
-  public @Nullable BukkitEvaluable variablesTestNoResults;
-  public @Nullable BukkitEvaluable variablesTestResults;
-  public @Nullable BukkitEvaluable noItemInMainHand;
-  public @Nullable BukkitEvaluable languageSelected;
+  public @Nullable ComponentMarkup commandOnlyForPlayers;
+  public @Nullable ComponentMarkup pluginReloadedSuccess;
+  public @Nullable ComponentMarkup pluginReloadedError;
+  public @Nullable ComponentMarkup usageIppCommandAction;
+  public @Nullable ComponentMarkup usageIppLanguageCommandLanguage;
+  public @Nullable ComponentMarkup predicateTestResult;
+  public @Nullable ComponentMarkup predicateParseError;
+  public @Nullable ComponentMarkup showingVariables;
+  public @Nullable ComponentMarkup unknownVariableName;
+  public @Nullable ComponentMarkup variablesTestNoResults;
+  public @Nullable ComponentMarkup variablesTestResults;
+  public @Nullable ComponentMarkup noItemInMainHand;
+  public @Nullable ComponentMarkup languageSelected;
 
-  public @Nullable BukkitEvaluable missingPermissionIppCommand;
+  public @Nullable ComponentMarkup missingPermissionIppCommand;
 
-  public PlayerMessagesSection(EvaluationEnvironmentBuilder baseEnvironment) {
-    super(baseEnvironment);
+  public PlayerMessagesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
+    super(baseEnvironment, interpreterLogger);
   }
 }

@@ -1,6 +1,6 @@
 package me.blvckbytes.item_predicate_parser.display.overview;
 
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.DisplayHandler;
 import org.bukkit.entity.Player;

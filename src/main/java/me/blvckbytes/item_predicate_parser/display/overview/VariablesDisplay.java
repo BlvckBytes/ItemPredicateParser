@@ -1,8 +1,7 @@
 package me.blvckbytes.item_predicate_parser.display.overview;
 
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
-import me.blvckbytes.gpeee.interpreter.EvaluationEnvironmentBuilder;
-import me.blvckbytes.gpeee.interpreter.IEvaluationEnvironment;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.AsyncTaskQueue;
 import me.blvckbytes.item_predicate_parser.display.Display;
@@ -19,7 +18,7 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
 
   private int numberOfPages;
 
-  private IEvaluationEnvironment pageEnvironment;
+  private InterpretationEnvironment pageEnvironment;
 
   private int currentPage = 1;
 
@@ -33,25 +32,22 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
 
     this.asyncQueue = new AsyncTaskQueue(plugin);
 
-    setupEnvironments();
-
     // Within async context already, see corresponding command
     show();
   }
 
-  private void setupEnvironments() {
+  private void setupEnvironment() {
     var numberOfDisplaySlots = config.rootSection.variablesDisplay.getPaginationSlots().size();
     this.numberOfPages = Math.max(1, (int) Math.ceil(displayData.variables().size() / (double) numberOfDisplaySlots));
 
-    this.pageEnvironment = new EvaluationEnvironmentBuilder()
-      .withLiveVariable("current_page", () -> this.currentPage)
-      .withLiveVariable("number_pages", () -> this.numberOfPages)
-      .build(config.rootSection.variablesDisplay.inventoryEnvironment);
+    this.pageEnvironment = config.rootSection.variablesDisplay.inventoryEnvironment
+      .copy()
+      .withVariable("current_page", this.currentPage)
+      .withVariable("number_pages", this.numberOfPages);
   }
 
   @Override
   public void onConfigReload() {
-    setupEnvironments();
     show();
   }
 
@@ -97,6 +93,7 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
 
   @Override
   public void show() {
+    setupEnvironment();
     super.show();
   }
 
@@ -120,13 +117,12 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
       var parentsTokenLines = makeTokenLines(variable.parentDisplayNames());
 
       var item = config.rootSection.variablesDisplay.items.variable.build(
-        new EvaluationEnvironmentBuilder()
-          .withStaticVariable("icon_type", variable.icon().name())
-          .withStaticVariable("display_name", variable.displayName())
-          .withStaticVariable("material_token_lines", materialTokenLines)
-          .withStaticVariable("inherited_material_token_lines", inheritedMaterialTokenLines)
-          .withStaticVariable("parents_token_lines", parentsTokenLines)
-          .build()
+        new InterpretationEnvironment()
+          .withVariable("icon_type", variable.icon().name())
+          .withVariable("display_name", variable.displayName())
+          .withVariable("material_token_lines", materialTokenLines)
+          .withVariable("inherited_material_token_lines", inheritedMaterialTokenLines)
+          .withVariable("parents_token_lines", parentsTokenLines)
       );
 
       inventory.setItem(slot, item);

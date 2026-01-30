@@ -27,9 +27,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>me.blvckbytes</groupId>
-            <artifactId>BukkitEvaluable</artifactId>
-            <version>0.1</version>
+            <groupId>at.blvckbytes</groupId>
+            <artifactId>CMMapper</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>me.blvckbytes</groupId>
@@ -50,9 +50,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.21.1-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -128,9 +128,6 @@
                     <artifactSet>
                         <includes>
                             <!-- Include all libs for shading -->
-                            <include>me.blvckbytes:BBConfigMapper</include>
-                            <include>me.blvckbytes:BukkitEvaluable</include>
-                            <include>me.blvckbytes:GPEEE</include>
                             <include>me.blvckbytes:SyllablesMatcher</include>
                             <!-- [1] Shouldn't be necessary anymore on newer versions of bukkit, but I prefer backwards-compatibility over file-size. -->
                             <include>org.yaml:snakeyaml</include>
@@ -142,15 +139,18 @@
                     <relocations>
                         <!-- Relocate all libs into the root package -->
                         <relocation>
-                            <pattern>me/blvckbytes/(bbconfigmapper|bukkitevaluable|gpeee|syllables_matcher)/(.*)</pattern>
-                            <shadedPattern>me/blvckbytes/item_predicate_parser/$1/$2</shadedPattern>
-                            <rawString>true</rawString>
+                            <pattern>me.blvckbytes.syllables_matcher</pattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.syllables_matcher</shadedPattern>
                         </relocation>
 
-                        <!-- See [1] -->
                         <relocation>
-                            <pattern>org.yaml.snakeyaml</pattern>
-                            <shadedPattern>me.blvckbytes.item_predicate_parser.org.yaml.snakeyaml</shadedPattern>
+                            <pattern>at.blvckbytes.cm_mapper</pattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.cm_mapper</shadedPattern>
+                        </relocation>
+
+                        <relocation>
+                            <pattern>at.blvckbytes.component_markup</pattern>
+                            <shadedPattern>me.blvckbytes.item_predicate_parser.component_markup</shadedPattern>
                         </relocation>
 
                         <relocation>

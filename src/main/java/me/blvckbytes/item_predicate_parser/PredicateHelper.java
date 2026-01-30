@@ -1,8 +1,8 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.bbconfigmapper.ScalarType;
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
-import me.blvckbytes.gpeee.GPEEE;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.constructor.SlotType;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.PredicateParser;
@@ -16,6 +16,7 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
 import me.blvckbytes.item_predicate_parser.translation.keyed.ConjunctionKey;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,7 +77,7 @@ public class PredicateHelper {
   }
 
   private void updateMaxResults() {
-    maxResults = config.rootSection.maxCompletionsCount.asScalar(ScalarType.INT, config.rootSection.builtBaseEnvironment);
+    maxResults = config.rootSection.maxCompletionsCount;
   }
 
   /**
@@ -118,21 +119,20 @@ public class PredicateHelper {
    * @throws ItemPredicateParseException Various errors during the parsing process
    */
   public CompletionResult createCompletion(TranslationLanguage language, List<Token> tokens) throws ItemPredicateParseException {
-    String expandedPreviewOrError = null;
+    Component expandedPreviewOrError = null;
     boolean didParseErrorOccur = false;
 
     try {
       var predicate = _parsePredicate(language, tokens, true);
 
       if (predicate != null && config.rootSection.expandedPreview != null) {
-        expandedPreviewOrError = config.rootSection.expandedPreview.asScalar(
-          ScalarType.STRING,
-          config.rootSection.getBaseEnvironment()
-            .withStaticVariable(
+        config.rootSection.expandedPreview.interpret(
+          SlotType.SINGLE_LINE_CHAT,
+          new InterpretationEnvironment()
+            .withVariable(
               "predicate_representation",
               new StringifyState(false).appendPredicate(predicate).toString()
             )
-            .build()
         );
       }
     } catch (ItemPredicateParseException e) {
@@ -151,28 +151,30 @@ public class PredicateHelper {
    * Creates an exception message as configured within the config, by highlighting user-input and
    * attaching a conflict-specific description message
    */
-  public String createExceptionMessage(ItemPredicateParseException exception) {
-    String highlightPrefix = "", nonHighlightPrefix = "";
-
-    if (config.rootSection.inputHighlightPrefix != null)
-      highlightPrefix = config.rootSection.inputHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
-
-    if (config.rootSection.inputNonHighlightPrefix != null)
-      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
-
-    var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
-
-    var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
-
-    if (conflictEvaluable == null)
-      return highlightedInput;
-
-    return conflictEvaluable.asScalar(
-      ScalarType.STRING,
-      config.rootSection.getBaseEnvironment()
-        .withStaticVariable("highlighted_input", highlightedInput)
-        .build()
-    );
+  public Component createExceptionMessage(ItemPredicateParseException exception) {
+    // TODO: Oh boy - this will be some fun work right there...
+//    String highlightPrefix = "", nonHighlightPrefix = "";
+//
+//    if (config.rootSection.inputHighlightPrefix != null)
+//      highlightPrefix = config.rootSection.inputHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
+//
+//    if (config.rootSection.inputNonHighlightPrefix != null)
+//      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
+//
+//    var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
+//
+//    var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
+//
+//    if (conflictEvaluable == null)
+//      return highlightedInput;
+//
+//    return conflictEvaluable.asScalar(
+//      ScalarType.STRING,
+//      config.rootSection.getBaseEnvironment()
+//        .withStaticVariable("highlighted_input", highlightedInput)
+//        .build()
+//    );
+    throw new UnsupportedOperationException();
   }
 
   private @Nullable ItemPredicate _parsePredicate(TranslationLanguage language, List<Token> tokens, boolean allowMissingClosingParentheses) {
@@ -249,11 +251,9 @@ public class PredicateHelper {
       .collect(Collectors.toList());
 
     if (resultCount > maxResults && config.rootSection.maxCompletionsExceeded != null) {
-      resultTexts.add(config.rootSection.maxCompletionsExceeded.asScalar(
-        ScalarType.STRING,
-        config.rootSection.getBaseEnvironment()
-          .withStaticVariable("excess_count", resultCount - maxResults)
-          .build()
+      resultTexts.add(config.rootSection.maxCompletionsExceeded.asPlainString(
+        new InterpretationEnvironment()
+          .withVariable("excess_count", resultCount - maxResults)
       ));
     }
 

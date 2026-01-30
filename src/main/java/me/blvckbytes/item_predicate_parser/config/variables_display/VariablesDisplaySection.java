@@ -1,13 +1,14 @@
 package me.blvckbytes.item_predicate_parser.config.variables_display;
 
-import me.blvckbytes.gpeee.interpreter.EvaluationEnvironmentBuilder;
-import me.blvckbytes.item_predicate_parser.config.display_common.PaginatedGuiSection;
+import at.blvckbytes.cm_mapper.section.gui.PaginatedGuiSection;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 
 public class VariablesDisplaySection extends PaginatedGuiSection<VariablesDisplayItemsSection> {
 
   public int maxTokenLineWidth = 35;
 
-  public VariablesDisplaySection(EvaluationEnvironmentBuilder baseEnvironment) {
-    super(VariablesDisplayItemsSection.class, baseEnvironment);
+  public VariablesDisplaySection(Class<VariablesDisplayItemsSection> itemsSectionClass, InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
+    super(itemsSectionClass, baseEnvironment, interpreterLogger);
   }
 }

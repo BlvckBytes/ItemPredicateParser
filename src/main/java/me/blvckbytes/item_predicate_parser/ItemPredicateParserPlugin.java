@@ -1,8 +1,8 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.bukkitevaluable.CommandUpdater;
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
-import me.blvckbytes.bukkitevaluable.ConfigManager;
+import at.blvckbytes.cm_mapper.ConfigHandler;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.section.command.CommandUpdater;
 import me.blvckbytes.item_predicate_parser.config.ItemPredicateParserCommandSection;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHandler;
@@ -31,8 +31,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
     var logger = getLogger();
 
     try {
-      var configManager = new ConfigManager(this, "config");
-      var config = new ConfigKeeper<>(configManager, "config.yml", MainSection.class);
+      var configHandler = new ConfigHandler(this, "config");
+      var config = new ConfigKeeper<>(configHandler, "config.yml", MainSection.class);
 
       keyValueStore = new NameScopedKeyValueStore(getFileAndEnsureExistence("user-preferences.json"), logger);
 

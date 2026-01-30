@@ -1,12 +1,12 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ReloadPriority;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
-import me.blvckbytes.bukkitevaluable.ReloadPriority;
 import me.blvckbytes.item_predicate_parser.TranslationLanguageRegistry;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.keyed.*;

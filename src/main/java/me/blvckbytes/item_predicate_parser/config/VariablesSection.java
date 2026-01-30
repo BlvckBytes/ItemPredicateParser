@@ -1,24 +1,25 @@
 package me.blvckbytes.item_predicate_parser.config;
 
-import me.blvckbytes.bbconfigmapper.MappingError;
-import me.blvckbytes.bbconfigmapper.sections.AConfigSection;
-import me.blvckbytes.bbconfigmapper.sections.CSIgnore;
-import me.blvckbytes.bbconfigmapper.sections.CSInlined;
-import me.blvckbytes.gpeee.interpreter.EvaluationEnvironmentBuilder;
+import at.blvckbytes.cm_mapper.mapper.MappingError;
+import at.blvckbytes.cm_mapper.mapper.section.CSIgnore;
+import at.blvckbytes.cm_mapper.mapper.section.CSInlined;
+import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class VariablesSection extends AConfigSection {
+public class VariablesSection extends ConfigSection {
 
   public @CSInlined Map<String, VariableSection> variables;
 
   public @CSIgnore List<VariableKey> _variableKeys = new ArrayList<>();
 
-  public VariablesSection(EvaluationEnvironmentBuilder baseEnvironment) {
-    super(baseEnvironment);
+  public VariablesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
+    super(baseEnvironment, interpreterLogger);
   }
 
   @Override
@@ -39,7 +40,7 @@ public class VariablesSection extends AConfigSection {
       var variableSection = variableEntry.getValue();
 
       if (variableSection == null)
-        variableSection = new VariableSection(getBaseEnvironment());
+        variableSection = new VariableSection(baseEnvironment, interpreterLogger);
 
       var variable = new Variable(variableSection._icon, defaultName, variableSection._materials, variableSection._parentNames, variableSection._names);
 

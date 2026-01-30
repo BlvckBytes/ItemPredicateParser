@@ -1,9 +1,9 @@
 package me.blvckbytes.item_predicate_parser;
 
-import me.blvckbytes.bukkitevaluable.BukkitEvaluable;
-import me.blvckbytes.bukkitevaluable.ConfigKeeper;
-import me.blvckbytes.bukkitevaluable.ReloadPriority;
-import me.blvckbytes.item_predicate_parser.config.HighlightPredicateFunction;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ReloadPriority;
+import at.blvckbytes.cm_mapper.cm.ComponentMarkup;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.overview.DisplayedVariable;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayData;
@@ -21,9 +21,7 @@ import me.blvckbytes.syllables_matcher.EnumMatcher;
 import me.blvckbytes.syllables_matcher.EnumPredicate;
 import me.blvckbytes.syllables_matcher.MatchableEnum;
 import me.blvckbytes.syllables_matcher.NormalizedConstant;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -94,7 +92,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
     var actionFilter = makeFilter(sender);
 
-    BukkitEvaluable message;
+    ComponentMarkup message;
     NormalizedConstant<CommandAction> action;
 
     if (args.length < 1 || (action = CommandAction.matcher.matchFirst(args[0], actionFilter)) == null) {
@@ -102,17 +100,16 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
       if (suggestions.isEmpty()) {
         if ((message = config.rootSection.playerMessages.missingPermissionIppCommand) != null)
-          message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+          message.sendMessage(sender);
         return true;
       }
 
       if ((message = config.rootSection.playerMessages.usageIppCommandAction) != null) {
         message.sendMessage(
           sender,
-          config.rootSection.getBaseEnvironment()
-            .withStaticVariable("label", label)
-            .withStaticVariable("actions", suggestions)
-            .build()
+          new InterpretationEnvironment()
+            .withVariable("label", label)
+            .withVariable("actions", suggestions)
         );
       }
 
@@ -123,7 +120,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       case TEST -> {
         if (!(sender instanceof Player player)) {
           if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(sender);
           return true;
         }
 
@@ -138,9 +135,8 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           if ((message = config.rootSection.playerMessages.predicateParseError) != null) {
             message.sendMessage(
               sender,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("exception_message", predicateHelper.createExceptionMessage(e))
-                .build()
+              new InterpretationEnvironment()
+                .withVariable("exception_message", predicateHelper.createExceptionMessage(e))
             );
           }
           return true;
@@ -150,7 +146,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
         if (itemInHand.getType().isAir()) {
           if ((message = config.rootSection.playerMessages.noItemInMainHand) != null)
-            message.sendMessage(player, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(player);
           return true;
         }
 
@@ -165,33 +161,33 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
           if (matchingNames.isEmpty()) {
             if ((message = config.rootSection.playerMessages.variablesTestNoResults) != null)
-              message.sendMessage(player, config.rootSection.builtBaseEnvironment);
+              message.sendMessage(player);
             return true;
           }
 
           if ((message = config.rootSection.playerMessages.variablesTestResults) != null) {
             message.sendMessage(
               player,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("count", matchingNames.size())
-                .withStaticVariable("names", matchingNames)
-                .build()
+              new InterpretationEnvironment()
+                .withVariable("count", matchingNames.size())
+                .withVariable("names", matchingNames)
             );
           }
 
           return true;
         }
 
+        // TODO: Migrate this to the new way of ComponentMarkup
+
         var failure = predicate.testForFailure(new PredicateState(itemInHand));
         if ((message = config.rootSection.playerMessages.predicateTestResult) != null) {
           message.sendMessage(
             player,
-            config.rootSection.getBaseEnvironment()
-              .withStaticVariable("entered_predicate",
+            new InterpretationEnvironment()
+              .withVariable("entered_predicate",
                 new StringifyState(true).appendPredicate(predicate).toString()
               )
-              .withFunction("expanded_predicate", new HighlightPredicateFunction(predicate, failure))
-              .build()
+//              .withFunction("expanded_predicate", new HighlightPredicateFunction(predicate, failure))
           );
         }
 
@@ -201,7 +197,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       case LANGUAGE -> {
         if (!(sender instanceof Player player)) {
           if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(sender);
           return true;
         }
 
@@ -211,11 +207,10 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           if ((message = config.rootSection.playerMessages.usageIppLanguageCommandLanguage) != null) {
             message.sendMessage(
               sender,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("label", label)
-                .withStaticVariable("action", action.getNormalizedName())
-                .withStaticVariable("languages", TranslationLanguage.matcher.createCompletions(null))
-                .build()
+              new InterpretationEnvironment()
+                .withVariable("label", label)
+                .withVariable("action", action.getNormalizedName())
+                .withVariable("languages", TranslationLanguage.matcher.createCompletions(null))
             );
           }
           return true;
@@ -226,9 +221,8 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         if ((message = config.rootSection.playerMessages.languageSelected) != null) {
           message.sendMessage(
             player,
-            config.rootSection.getBaseEnvironment()
-              .withStaticVariable("language", language.getNormalizedName())
-              .build()
+            new InterpretationEnvironment()
+              .withVariable("language", language.getNormalizedName())
           );
         }
 
@@ -240,12 +234,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           config.reload();
 
           if ((message = config.rootSection.playerMessages.pluginReloadedSuccess) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(sender);
         } catch (Exception e) {
           logger.log(Level.SEVERE, "An error occurred while trying to reload the config", e);
 
           if ((message = config.rootSection.playerMessages.pluginReloadedError) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(sender);
         }
 
         return true;
@@ -254,7 +248,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       case VARIABLES -> {
         if (!(sender instanceof Player player)) {
           if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-            message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+            message.sendMessage(sender);
           return true;
         }
 
@@ -308,9 +302,8 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           if ((message = config.rootSection.playerMessages.unknownVariableName) != null) {
             message.sendMessage(
               player,
-              config.rootSection.getBaseEnvironment()
-                .withStaticVariable("name", targetName)
-                .build()
+              new InterpretationEnvironment()
+                .withVariable("name", targetName)
             );
           }
 
@@ -320,9 +313,8 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         if ((message = config.rootSection.playerMessages.showingVariables) != null) {
           message.sendMessage(
             player,
-            config.rootSection.getBaseEnvironment()
-              .withStaticVariable("count", variables.size())
-              .build()
+            new InterpretationEnvironment()
+              .withVariable("count", variables.size())
           );
         }
 
@@ -351,10 +343,10 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       return List.of();
 
     if (!(sender instanceof Player player)) {
-      BukkitEvaluable message;
+      ComponentMarkup message;
 
       if ((message = config.rootSection.playerMessages.commandOnlyForPlayers) != null)
-        message.sendMessage(sender, config.rootSection.builtBaseEnvironment);
+        message.sendMessage(sender);
 
       return List.of();
     }
@@ -388,21 +380,16 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         var completion = predicateHelper.createCompletion(language, tokens);
 
         if (completion.expandedPreviewOrError() != null)
-          showActionBarMessage(player, completion.expandedPreviewOrError());
+          player.sendActionBar(completion.expandedPreviewOrError());
 
         return completion.suggestions();
       } catch (ItemPredicateParseException e) {
-        showActionBarMessage(player, predicateHelper.createExceptionMessage(e));
+        player.sendActionBar(predicateHelper.createExceptionMessage(e));
         return List.of();
       }
     }
 
     return List.of();
-  }
-
-  @SuppressWarnings("deprecation")
-  private void showActionBarMessage(Player player, String message) {
-    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
   }
 
   private void findVariables() {

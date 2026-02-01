@@ -17,11 +17,7 @@ import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
-import me.blvckbytes.syllables_matcher.EnumMatcher;
-import me.blvckbytes.syllables_matcher.EnumPredicate;
-import me.blvckbytes.syllables_matcher.MatchableEnum;
-import me.blvckbytes.syllables_matcher.NormalizedConstant;
-import org.apache.commons.lang3.StringUtils;
+import me.blvckbytes.syllables_matcher.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -358,11 +354,23 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       var language = predicateHelper.getSelectedLanguage(player);
 
       if (args.length == 2) {
-        return variablesByLanguage.get(language)
-          .stream()
-          .map(it -> it.normalizedUnPrefixedTranslation)
-          .filter(it -> StringUtils.startsWithIgnoreCase(it, args[1]))
-          .toList();
+        var result = new ArrayList<String>();
+        var syllablesMatcher = new SyllablesMatcher();
+
+        syllablesMatcher.setQuery(Syllables.forString(args[1], Syllables.DELIMITER_SEARCH_PATTERN));
+
+        for (var variable : variablesByLanguage.get(language)) {
+          syllablesMatcher.resetQueryMatches();
+          syllablesMatcher.setTarget(variable.syllables);
+          syllablesMatcher.match();
+
+          if (syllablesMatcher.hasUnmatchedQuerySyllables())
+            continue;
+
+          result.add(variable.normalizedUnPrefixedTranslation);
+        }
+
+        return result;
       }
 
       return List.of();

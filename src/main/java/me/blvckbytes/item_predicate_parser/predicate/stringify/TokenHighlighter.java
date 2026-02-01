@@ -39,8 +39,8 @@ public class TokenHighlighter implements StringifyHandler {
   @Override
   public void stringify(ItemPredicate predicate, Consumer<StringifyOutput> stringifier) {
     var representation = predicate == failedPredicate
-      ? config.rootSection.failedPredicatePart
-      : config.rootSection.validPredicatePart;
+      ? config.rootSection.mismatchedPredicatePart
+      : config.rootSection.matchedPredicatePart;
 
     var contents = new StringBuilder();
 

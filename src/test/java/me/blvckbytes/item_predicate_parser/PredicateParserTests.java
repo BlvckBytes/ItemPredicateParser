@@ -1,5 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
+import at.blvckbytes.cm_mapper.cm.ComponentMarkup;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.parse.ItemPredicateParseException;
 import me.blvckbytes.item_predicate_parser.parse.ParseConflict;
 import me.blvckbytes.item_predicate_parser.parse.TokenParser;
@@ -8,23 +10,30 @@ import me.blvckbytes.item_predicate_parser.predicate.stringify.PlainStringifier;
 import me.blvckbytes.item_predicate_parser.token.ComparisonMode;
 import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PredicateParserTests extends ParseTestBase {
 
+  private static final ComponentMarkup malformedRender = new ComponentMarkup("<&4>{predicate}", new InterpretationEnvironment(), null);
+  private static final ComponentMarkup remainingRender = new ComponentMarkup("<&c>{predicate}", new InterpretationEnvironment(), null);
+
   @Test
   public void shouldThrowOnMissingLeftHandSide() {
     assertEquals(
-      "§4and", // Highlighted input
+      parseLegacyColors("§4and"),
       makeExceptionCase(
         new String[] {
           "and"
@@ -34,7 +43,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§4or", // Highlighted input
+      parseLegacyColors("§4or"),
       makeExceptionCase(
         new String[] {
           "or"
@@ -44,7 +53,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§4and §cand", // Highlighted input
+      parseLegacyColors("§4and §cand"),
       makeExceptionCase(
         new String[] {
           "and", "and"
@@ -56,7 +65,7 @@ public class PredicateParserTests extends ParseTestBase {
     // Back-to-back binary-operators cause the corresponding parsing-stage to fail, so an exception
     // is thrown before the second occurrence is even reached; this is desired behavior.
     assertEquals(
-      "§cdia and dia §4or §cand", // Highlighted input
+      parseLegacyColors("§cdia and dia §4or §cand"),
       makeExceptionCase(
         new String[] {
           "dia", "and", "dia", "or", "and"
@@ -69,7 +78,7 @@ public class PredicateParserTests extends ParseTestBase {
   @Test
   public void shouldHighlightInput() {
     assertEquals(
-      "§cback-to-back§4\"unterminated stringinput-data",
+      parseLegacyColors("§cback-to-back§4\"unterminated stringinput-data"),
       makeExceptionCase(
         new String[] {
           "back-to-back\"unterminated", "stringinput-data",
@@ -78,8 +87,8 @@ public class PredicateParserTests extends ParseTestBase {
       )
     );
 
-    assertEquals(
-      "§cback-to-back§4\"   \"§c51",
+    assertComponentsEqual(
+      parseLegacyColors("§cback-to-back§4\"   \"§c51"),
       makeExceptionCase(
         new String[] {
           "back-to-back\"", "", "", "\"51"
@@ -89,7 +98,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§cback-to-back§4\"\"§c51",
+      parseLegacyColors("§cback-to-back§4\"\"§c51"),
       makeExceptionCase(
         new String[] {
           "back-to-back\"\"51"
@@ -99,7 +108,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§csearch-term §4\"\" §c51",
+      parseLegacyColors("§csearch-term §4\"\" §c51"),
       makeExceptionCase(
         new String[] {
           "search-term", "\"\"", "51"
@@ -109,7 +118,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§csearch-term §4\" \" §c51",
+      parseLegacyColors("§csearch-term §4\" \" §c51"),
       makeExceptionCase(
         new String[] {
           "search-term", "\"", "\"", "51"
@@ -119,7 +128,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§4\" \" §c51",
+      parseLegacyColors("§4\" \" §c51"),
       makeExceptionCase(
         new String[] {
           "\"", "\"", "51"
@@ -129,7 +138,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     assertEquals(
-      "§451a §csearch-term",
+      parseLegacyColors("§451a §csearch-term"),
       makeExceptionCase(
         new String[] {
           "51a", "search-term"
@@ -1236,7 +1245,7 @@ public class PredicateParserTests extends ParseTestBase {
     );
   }
 
-  private String makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
+  private Component makeExceptionCase(String[] args, int expectedArgumentIndex, ParseConflict expectedConflict) {
     var exception = assertThrows(ItemPredicateParseException.class, () -> {
       var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), false);
       predicateParser.parseAst();
@@ -1245,7 +1254,7 @@ public class PredicateParserTests extends ParseTestBase {
     assertEquals(expectedArgumentIndex, exception.getToken().beginCommandArgumentIndex());
     assertEquals(expectedConflict, exception.getConflict());
 
-    return exception.highlightedInput("§c", "§4");
+    return exception.highlightedInput(malformedRender, remainingRender);
   }
 
   private void makeStringificationCase(String[] args, String expected, boolean allowMissingClosingParentheses, boolean stringifyTokens) {
@@ -1264,5 +1273,70 @@ public class PredicateParserTests extends ParseTestBase {
     var predicateParser = parserFactory.create(TokenParser.parseTokens(args, 0), allowMissingClosingParentheses);
     var actual = predicateParser.parseAst();
     equalityChecker.check(expected, actual);
+  }
+
+  private static Component parseLegacyColors(String input) {
+    var result = Component.empty();
+
+    NamedTextColor lastColor = null;
+    int lastBeginning = -1;
+
+    String part;
+
+    for (var charIndex = 0; charIndex < input.length(); ++charIndex) {
+      var currentChar = input.charAt(charIndex);
+      var isLast = charIndex == input.length() - 1;
+      var isSpace = currentChar == ' ';
+
+      if (currentChar == '§') {
+        if (lastBeginning > 0) {
+          part = input.substring(lastBeginning, charIndex);
+          result = result.append(Component.text(part).color(lastColor));
+          lastBeginning = -1;
+        }
+
+        if (isLast)
+          throw new IllegalStateException("Trailing color-sequence-initiator");
+
+        lastColor = switch (input.charAt(++charIndex)) {
+          case 'c' -> NamedTextColor.RED;
+          case '4' -> NamedTextColor.DARK_RED;
+          default -> throw new IllegalStateException("Unsupported color: " + input.charAt(charIndex));
+        };
+
+        continue;
+      }
+
+      if (!isSpace && lastBeginning < 0)
+        lastBeginning = charIndex;
+
+      if (isSpace || isLast) {
+        if (lastBeginning > 0) {
+          part = input.substring(lastBeginning, charIndex + (isSpace ? 0 : 1));
+          result = result.append(Component.text(part).color(lastColor));
+          lastBeginning = -1;
+        }
+
+        // Spaces are always unformatted
+        if (isSpace)
+          result = result.append(Component.space());
+      }
+    }
+
+    return result;
+  }
+
+  private static String formattedStringification(Component component) {
+    // This surely is a bit hackish, but it's more than enough to get a proper side-by-side diff-view
+    return component.toString()
+      .replace("{", "{\n")
+      .replace(",", ",\n");
+  }
+
+  private static void assertComponentsEqual(Component expected, Component actual) {
+    if (Objects.equals(expected, actual))
+      return;
+
+    throw new AssertionFailedError("Components differed", formattedStringification(expected), formattedStringification(actual));
   }
 }

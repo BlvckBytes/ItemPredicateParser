@@ -12,8 +12,10 @@ expandedPreview: '<&a>{predicate}'
 maxCompletionsCount: 30
 # 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
 maxCompletionsExceeded: '𱍊 and {excess_count} more'
-validPredicatePart: '<&a>{predicate}'
-failedPredicatePart: '<&c>{predicate}'
+matchedPredicatePart: '<&a>{predicate}'
+mismatchedPredicatePart: '<&c>{predicate}'
+malformedPredicatePart: '<&4>{predicate}'
+remainingPredicatePart: '<&c>{predicate}'
 parseConflicts:
   EXPECTED_CORRECT_INTEGER: '<&c>Expected a valid integer: {predicate}'
   TOO_MANY_TIME_NOTATION_BLOCKS: '<&c>More than 3 colon-separated blocks: {predicate}'
@@ -36,13 +38,13 @@ playerMessages:
   pluginReloadedSuccess: '{lut.prefix} <&7>The plugin has been <&a>reloaded successfully<&7>.'
   pluginReloadedError: '{lut.prefix} <&c>An error occurred while trying to reload the plugin. Check the console!'
   usageIppCommandAction: '{lut.prefix} <&7>Usage: /{label} <&7>\<<&e *for-action="actions" *for-separator={<&7>,<space/>}>{action}</&e><&7>>'
-  usageIppLanguageCommandLanguage: '{lut.prefix} <&7>Usage: /{label} {action} <&7>\<<&e *for-language="languages">{language}</&e><&7>> - Select a personal language'
+  usageIppLanguage: '{lut.prefix} <&7>Usage: /{label} {action} <&7>\<<&e *for-language="languages" *for-separator={<&7>,<space/>}>{language}</&e><&7>>'
   predicateTestResult: '{lut.prefix} <&7>Result: {predicate}'
-  predicateParseError: '{lut.prefix} {exception}'
+  predicateParseError: '{lut.prefix} <&c>Malformed predicate: {exception}'
   showingVariables: '{lut.prefix} <&7>Displaying the overview with <&a>{count} variables<&7>.'
   unknownVariableName: '{lut.prefix} <&c>There''s no variable called <&4>{name}<&c>!'
   variablesTestNoResults: '{lut.prefix} <&c>The item is <&4>not <&c>covered by any variable!'
-  variablesTestResults: '{lut.prefix} <&7>The item is covered <&a>{count}x <&7>by the variables: <&a *for-name="names">{name}</&a><&7>.'
+  variablesTestResults: '{lut.prefix} <&7>The item is covered <&a>{count}x <&7>by the variables: <&a *for-name="names" *for-separator={<&7>,<space/>}>{name}</&a><&7>.'
   noItemInMainHand: '{lut.prefix} <&c>You''re not holding an item in your <&4>main hand<&c>!'
   languageSelected: '{lut.prefix} <&7>The language <&a>{language} <&7>will from now on be used with all IPP(-related) commands, if they do not ask for an explicit language themselves.'
   missingPermissionIppCommand: '{lut.prefix} <&c>You don''t have the permission to use the ipp command.'
@@ -60,7 +62,7 @@ variables:
 variablesServerPort: -1
 
 variablesDisplay:
-  title: '<&8>Variables <&e>{current_page}<&8>/<&e>{number_pages}'
+  title: '<&8>Variables <&e>{current_page}<&8>/<&e>{number_of_pages}'
   rows: 6
   paginationSlots: '0..44'
   items:
@@ -86,10 +88,10 @@ variablesDisplay:
     nextPage:
       slots: 'last_slot'
       type: PLAYER_HEAD
-      textures: '{lut["textures"][current_page < number_pages then "ARROW_RIGHT" else "ARROW_RIGHT_RED"]}'
+      textures: '{lut["textures"][current_page < number_of_pages then "ARROW_RIGHT" else "ARROW_RIGHT_RED"]}'
       name: |
         <reset>
-          <container *if="current_page < num_pages">
+          <container *if="current_page < number_of_pages">
             <&8>» <&6>Next Page <&8>«
           </container>
           <container *else>

@@ -16,8 +16,10 @@ public class MainSection extends ConfigSection {
   public ComponentMarkup expandedPreview;
   public int maxCompletionsCount = 30;
   public ComponentMarkup maxCompletionsExceeded;
-  public ComponentMarkup validPredicatePart;
-  public ComponentMarkup failedPredicatePart;
+  public ComponentMarkup matchedPredicatePart;
+  public ComponentMarkup mismatchedPredicatePart;
+  public ComponentMarkup malformedPredicatePart;
+  public ComponentMarkup remainingPredicatePart;
   public TranslationLanguage defaultSelectedLanguage;
   public CommandsSection commands;
   public Map<String, ComponentMarkup> parseConflicts;

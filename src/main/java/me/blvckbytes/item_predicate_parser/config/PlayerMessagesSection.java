@@ -12,7 +12,7 @@ public class PlayerMessagesSection extends ConfigSection {
   public @Nullable ComponentMarkup pluginReloadedSuccess;
   public @Nullable ComponentMarkup pluginReloadedError;
   public @Nullable ComponentMarkup usageIppCommandAction;
-  public @Nullable ComponentMarkup usageIppLanguageCommandLanguage;
+  public @Nullable ComponentMarkup usageIppLanguage;
   public @Nullable ComponentMarkup predicateTestResult;
   public @Nullable ComponentMarkup predicateParseError;
   public @Nullable ComponentMarkup showingVariables;

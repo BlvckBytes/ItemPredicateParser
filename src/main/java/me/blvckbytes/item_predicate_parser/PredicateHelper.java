@@ -126,14 +126,14 @@ public class PredicateHelper {
       var predicate = _parsePredicate(language, tokens, true);
 
       if (predicate != null && config.rootSection.expandedPreview != null) {
-        config.rootSection.expandedPreview.interpret(
+        expandedPreviewOrError = config.rootSection.expandedPreview.interpret(
           SlotType.SINGLE_LINE_CHAT,
           new InterpretationEnvironment()
             .withVariable(
               "predicate",
               PlainStringifier.stringify(predicate, false)
             )
-        );
+        ).get(0);
       }
     } catch (ItemPredicateParseException e) {
       didParseErrorOccur = true;
@@ -152,15 +152,11 @@ public class PredicateHelper {
    * attaching a conflict-specific description message
    */
   public Component createExceptionMessage(ItemPredicateParseException exception) {
-    // TODO: Oh boy - this will be some fun work right there...
-    String highlightPrefix = "§4", nonHighlightPrefix = "§c";
-
-    var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
-
+    var highlightedInput = exception.highlightedInput(config.rootSection.malformedPredicatePart, config.rootSection.remainingPredicatePart);
     var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
 
     if (conflictEvaluable == null)
-      return Component.text(highlightedInput);
+      return highlightedInput;
 
     return conflictEvaluable.interpret(
       SlotType.SINGLE_LINE_CHAT,

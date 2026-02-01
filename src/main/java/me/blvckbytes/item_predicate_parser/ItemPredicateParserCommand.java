@@ -183,7 +183,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           message.sendMessage(
             player,
             new InterpretationEnvironment()
-              .withVariable("entered_predicate", TokenHighlighter.highlightFailure(config, predicate, failedPredicate))
+              .withVariable("predicate", TokenHighlighter.highlightFailure(config, predicate, failedPredicate))
           );
         }
 
@@ -200,7 +200,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
         NormalizedConstant<TranslationLanguage> language;
 
         if (args.length < 2 || (language = TranslationLanguage.matcher.matchFirst(args[1])) == null) {
-          if ((message = config.rootSection.playerMessages.usageIppLanguageCommandLanguage) != null) {
+          if ((message = config.rootSection.playerMessages.usageIppLanguage) != null) {
             message.sendMessage(
               sender,
               new InterpretationEnvironment()

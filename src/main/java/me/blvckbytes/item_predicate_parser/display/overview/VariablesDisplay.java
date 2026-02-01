@@ -40,7 +40,7 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
     this.pageEnvironment = config.rootSection.variablesDisplay.inventoryEnvironment
       .copy()
       .withVariable("current_page", this.currentPage)
-      .withVariable("number_pages", this.numberOfPages);
+      .withVariable("number_of_pages", this.numberOfPages);
   }
 
   @Override

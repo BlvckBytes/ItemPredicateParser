@@ -32,6 +32,9 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
     try {
       var configHandler = new ConfigHandler(this, "config");
+
+      configHandler.saveDefaultConfig("template_de_de.yml", true);
+
       var config = new ConfigKeeper<>(configHandler, "config.yml", MainSection.class);
 
       keyValueStore = new NameScopedKeyValueStore(getFileAndEnsureExistence("user-preferences.json"), logger);

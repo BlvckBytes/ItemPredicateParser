@@ -11,45 +11,45 @@
 expandedPreview: '<&a>{predicate}'
 maxCompletionsCount: 30
 # 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
-maxCompletionsExceeded: '𱍊 and {excess_count} more'
+maxCompletionsExceeded: '𱍊 und {excess_count} weitere'
 matchedPredicatePart: '<&a>{predicate}'
 mismatchedPredicatePart: '<&c>{predicate}'
 malformedPredicatePart: '<&4>{predicate}'
 remainingPredicatePart: '<&c>{predicate}'
 parseConflicts:
-  EXPECTED_CORRECT_INTEGER: '<&c>Expected a valid integer: {predicate}'
-  TOO_MANY_TIME_NOTATION_BLOCKS: '<&c>More than 3 colon-separated blocks: {predicate}'
-  EXPECTED_FOLLOWING_INTEGER: '<&c>This predicate requires an integer argument: {predicate}'
-  EXPECTED_SEARCH_PATTERN: '<&c>Expected a name to search for: {predicate}'
-  NO_SEARCH_MATCH: '<&c>Found no matches: {predicate}'
-  MISSING_STRING_TERMINATION: '<&c>String has not been terminated: {predicate}'
-  MULTIPLE_SEARCH_PATTERN_WILDCARDS: '<&c>Used multiple ? within one argument: {predicate}'
-  ONLY_SEARCH_PATTERN_WILDCARD: '<&c>Cannot search just for a wildcard: {predicate}'
-  DOES_NOT_ACCEPT_TIME_NOTATION: '<&c>This argument does not accept time notation: {predicate}'
-  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON: '<&c>This argument does not accept comparison notation: {predicate}'
-  EXPECTED_EXPRESSION_AFTER_OPERATOR: '<&c>This operator has to to be followed up by another expression: {predicate}'
-  EXPECTED_OPENING_PARENTHESIS: '<&c>Expected a opening parenthesis: {predicate}'
-  EXPECTED_CLOSING_PARENTHESIS: '<&c>Expected a closing parenthesis: {predicate}'
-  EMPTY_OR_BLANK_QUOTED_STRING: '<&c>Strings are not allowed to be blank: {predicate}'
-  EXPECTED_LEFT_HAND_SIDE: '<&c>Expected a left-hand-side expression: {predicate}'
+  EXPECTED_CORRECT_INTEGER: '<&c>Valide Ganzzahl erwartet: {predicate}'
+  TOO_MANY_TIME_NOTATION_BLOCKS: '<&c>Mehr als drei Doppelpunkt-getrennte Blöcke: {predicate}'
+  EXPECTED_FOLLOWING_INTEGER: '<&c>Dieses Prädikat benötigt ein ganzzahliges Argument: {predicate}'
+  EXPECTED_SEARCH_PATTERN: '<&c>Suchbegriff erwartet: {predicate}'
+  NO_SEARCH_MATCH: '<&c>Keine Übereinstimmungen gefunden: {predicate}'
+  MISSING_STRING_TERMINATION: '<&c>Unterminierte Zeichenkette: {predicate}'
+  MULTIPLE_SEARCH_PATTERN_WILDCARDS: '<&c>Mehrfache Benutzung von ? im selben Suchbegriff: {predicate}'
+  ONLY_SEARCH_PATTERN_WILDCARD: '<&c>Kann nicht nur nach einem Platzhalter suchen: {predicate}'
+  DOES_NOT_ACCEPT_TIME_NOTATION: '<&c>Dieses Argument akzeptiert keine Zeitnotation: {predicate}'
+  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON: '<&c>Dieses Argument akzeptiert keine Vergleichsnotation: {predicate}'
+  EXPECTED_EXPRESSION_AFTER_OPERATOR: '<&c>Dieser Operator erwartet einen nachfolgenden Ausdruck: {predicate}'
+  EXPECTED_OPENING_PARENTHESIS: '<&c>Öffnende Klammer erwartet: {predicate}'
+  EXPECTED_CLOSING_PARENTHESIS: '<&c>Schließende Klammer erwartet: {predicate}'
+  EMPTY_OR_BLANK_QUOTED_STRING: '<&c>Zeichenketten dürfen nicht leer sein: {predicate}'
+  EXPECTED_LEFT_HAND_SIDE: '<&c>Vorangestellter Ausdruck erwartet: {predicate}'
 
 playerMessages:
-  commandOnlyForPlayers: '{lut.prefix} <&c>This command is only available to players.'
-  pluginReloadedSuccess: '{lut.prefix} <&7>The plugin has been <&a>reloaded successfully<&7>.'
-  pluginReloadedError: '{lut.prefix} <&c>An error occurred while trying to reload the plugin. Check the console!'
-  usageIppCommandAction: '{lut.prefix} <&7>Usage: /{label} <&7>\<<&e *for-action="actions" *for-separator={<&7>,<space/>}>{action}</&e><&7>>'
-  usageIppLanguage: '{lut.prefix} <&7>Usage: /{label} {action} <&7>\<<&e *for-language="languages" *for-separator={<&7>,<space/>}>{language}</&e><&7>>'
-  predicateTestResult: '{lut.prefix} <&7>Result: {predicate}'
-  predicateParseError: '{lut.prefix} <&c>Malformed predicate: {exception}'
-  showingVariables: '{lut.prefix} <&7>Displaying the overview with <&a>{count} variables<&7>.'
-  unknownVariableName: '{lut.prefix} <&c>There''s no variable called <&4>{name}<&c>!'
-  variablesTestNoResults: '{lut.prefix} <&c>The item is <&4>not <&c>covered by any variable!'
-  variablesTestResults: '{lut.prefix} <&7>The item is covered <&a>{count}x <&7>by the variables: <&a *for-name="names" *for-separator={<&7>,<space/>}>{name}</&a><&7>.'
-  noItemInMainHand: '{lut.prefix} <&c>You''re not holding an item in your <&4>main hand<&c>!'
-  languageSelected: '{lut.prefix} <&7>The language <&a>{language} <&7>will from now on be used with all IPP(-related) commands, if they do not ask for an explicit language themselves.'
-  missingPermissionIppCommand: '{lut.prefix} <&c>You''re lacking the required permission to use this command.'
+  commandOnlyForPlayers: '{lut.prefix} <&c>Dieser Befehl steht nur Spielern zur Verfügung.'
+  pluginReloadedSuccess: '{lut.prefix} <&7>Das Plugin wurde <&a>erfolgreich neu geladen<&7>.'
+  pluginReloadedError: '{lut.prefix} <&c>Ein Fehler trat während des Ladeprozesses auf. Überprüfe die Konsole!'
+  usageIppCommandAction: '{lut.prefix} <&7>Benutzung: /{label} <&7>\<<&e *for-action="actions" *for-separator={<&7>,<space/>}>{action}</&e><&7>>'
+  usageIppLanguage: '{lut.prefix} <&7>Benutzung: /{label} {action} <&7>\<<&e *for-language="languages" *for-separator={<&7>,<space/>}>{language}</&e><&7>>'
+  predicateTestResult: '{lut.prefix} <&7>Ergebnis: {predicate}'
+  predicateParseError: '{lut.prefix} <&c>Fehlerhaftes Prädikat: {exception}'
+  showingVariables: '{lut.prefix} <&7>Öffne die Übersicht mit <&a>{count} Variablen<&7>.'
+  unknownVariableName: '{lut.prefix} <&c>Es existiert keine Variable mit dem Namen <&4>{name}<&c>!'
+  variablesTestNoResults: '{lut.prefix} <&c>Das Item kommt in <&4>keiner <&c>Variable vor!'
+  variablesTestResults: '{lut.prefix} <&7>Das Item kommt <&a>{count}x <&7>in den folgenden Variablen vor: <&a *for-name="names" *for-separator={<&7>,<space/>}>{name}</&a><&7>.'
+  noItemInMainHand: '{lut.prefix} <&c>Du hältst kein Item in deiner <&4>Haupthand<&c>!'
+  languageSelected: '{lut.prefix} <&7>Die Sprache <&a>{language} <&7>7wird von nun an für alle weiteren IPP(-verwandten) Befehle, die keine explizite Sprachauswahl fordern, benutzt.'
+  missingPermissionIppCommand: '{lut.prefix} <&c>Dir fehlen die nötigen Rechte, um diesen Befehl benutzen zu können.'
 
-defaultSelectedLanguage: ENGLISH_US
+defaultSelectedLanguage: GERMAN_DE
 
 commands:
   itempredicateparser:
@@ -62,7 +62,7 @@ variables:
 variablesServerPort: -1
 
 variablesDisplay:
-  title: '<&8>Variables <&e>{current_page}<&8>/<&e>{number_of_pages}'
+  title: '<&8>Variablen <&e>{current_page}<&8>/<&e>{number_of_pages}'
   rows: 6
   paginationSlots: '0..44'
   items:
@@ -73,17 +73,17 @@ variablesDisplay:
       name: |
         <reset>
           <container *if="current_page > 1">
-            <&8>» <&6>Previous Page <&8>«
+            <&8>» <&6>Vorherige Seite <&8>«
           </container>
           <container *else>
-            <&8>» <&c>No Previous Page <&8>«
+            <&8>» <&c>Keine vorherige Seite <&8>«
           </container>
       lore: |
         <reset>
           <br/>
           {lut.spacer}<br/>
-          <&8>➥ <&e>Left-Click <&7>Navigate to previous page<br/>
-          <&8>➥ <&e>Right-Click <&7>Jump to very first page<br/>
+          <&8>➥ <&e>Linksklick <&7>Navigiere zur vorherigen Seite<br/>
+          <&8>➥ <&e>Rechtsklick <&7>Springe zur ersten Seite<br/>
           {lut.spacer}
     nextPage:
       slots: 'last_slot'
@@ -92,17 +92,17 @@ variablesDisplay:
       name: |
         <reset>
           <container *if="current_page < number_of_pages">
-            <&8>» <&6>Next Page <&8>«
+            <&8>» <&6>Nächste Seite <&8>«
           </container>
           <container *else>
-            <&8>» <&c>No Next Page <&8>«
+            <&8>» <&c>Keine nächste Seite <&8>«
           </container>
       lore: |
         <reset>
           <br/>
           {lut.spacer}<br/>
-          <&8>➥ <&e>Left-Click <&7>Navigate to next page<br/>
-          <&8>➥ <&e>Right-Click <&7>Jump to very last page<br/>
+          <&8>➥ <&e>Linksklick <&7>Navigiere zur nächsten Seite<br/>
+          <&8>➥ <&e>Rechtsklick <&7>Springe zur letzten Seite<br/>
           {lut.spacer}
     variable:
       type: '{icon_type}'
@@ -114,17 +114,17 @@ variablesDisplay:
           <br/>
           <container *if="len(materials) > 0">
             {lut.spacer}<br/>
-            <&7>➥ Materials:<br/>
+            <&7>➥ Materialien:<br/>
             <br/>
             <word-wrap [values]="materials" width=35 separator={<&e>,<space/>} renderer={<&6>{token}} /><br/>
           </container>
           <container *if="len(inherited_materials) > 0">
             {lut.spacer}<br/>
-            <&7>➥ Inherits from:<br/>
+            <&7>➥ Erbt von:<br/>
             <br/>
             <word-wrap [values]="parents" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
             {lut.spacer}<br/>
-            <&7>➥ Inherited materials:<br/>
+            <&7>➥ Geerbte Materialien:<br/>
             <br/>
             <word-wrap [values]="inherited_materials" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
           </container>

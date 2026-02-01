@@ -116,17 +116,17 @@ variablesDisplay:
             {lut.spacer}<br/>
             <&7>➥ Materialien:<br/>
             <br/>
-            <word-wrap [values]="materials" width=35 separator={<&e>,<space/>} renderer={<&6>{token}} /><br/>
+            <&6><word-wrap [...value]="materials" width=35 value-separator={<&e>,<space/>} /><br/>
           </container>
           <container *if="len(inherited_materials) > 0">
             {lut.spacer}<br/>
             <&7>➥ Erbt von:<br/>
             <br/>
-            <word-wrap [values]="parents" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
+            <&5><word-wrap [...value]="parents" width=35 value-separator={<&d>,<space/>} /><br/>
             {lut.spacer}<br/>
             <&7>➥ Geerbte Materialien:<br/>
             <br/>
-            <word-wrap [values]="inherited_materials" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
+            <&5><word-wrap [...value]="inherited_materials" width=35 value-separator={<&d>,<space/>} /><br/>
           </container>
           {lut.spacer}
     filler:

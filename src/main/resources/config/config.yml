@@ -7,66 +7,45 @@
 # ItemPredicateParser - Developed by BlvckBytes <blvckbytes@gmail.com>
 # Repository - https://github.com/BlvckBytes/ItemPredicateParser
 # ASCII-Art - https://patorjk.com/software/taag/#p=display&f=Speed
-#
-# PRE-PROCESSOR-INPUT en_us.txt
 
-# - predicate_representation: String
-expandedPreview$: '@{PREVIEW-EXPANDED}'
+expandedPreview: '<&a>{predicate}'
 maxCompletionsCount: 30
-# - excess_count: Int
-maxCompletionsExceeded$: '@{PREVIEW-MAX-COMPLETIONS-EXCEEDED}'
-validPredicatePart: ''
-failedPredicatePart: ''
-# highlighted_input: String
-parseConflicts$:
-  EXPECTED_CORRECT_INTEGER: '@{PREVIEW-CONFLICT-EXPECTED-CORRECT-INTEGER}'
-  TOO_MANY_TIME_NOTATION_BLOCKS: '@{PREVIEW-CONFLICT-TOO-MANY-TIME-NOTATION-BLOCKS}'
-  EXPECTED_FOLLOWING_INTEGER: '@{PREVIEW-CONFLICT-EXPECTED-FOLLOWING-INTEGER}'
-  EXPECTED_SEARCH_PATTERN: '@{PREVIEW-CONFLICT-EXPECTED-SEARCH-PATTERN}'
-  NO_SEARCH_MATCH: '@{PREVIEW-CONFLICT-NO-SEARCH-MATCH}'
-  MISSING_STRING_TERMINATION: '@{PREVIEW-CONFLICT-MISSING-STRING-TERMINATION}'
-  MULTIPLE_SEARCH_PATTERN_WILDCARDS: '@{PREVIEW-CONFLICT-MULTIPLE-SEARCH-PATTERN-WILDCARDS}'
-  ONLY_SEARCH_PATTERN_WILDCARD: '@{PREVIEW-CONFLICT-ONLY-SEARCH-PATTERN-WILDCARD}'
-  DOES_NOT_ACCEPT_TIME_NOTATION: '@{PREVIEW-CONFLICT-DOES-NOT-ACCEPT-TIME-NOTATION}'
-  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON: '@{PREVIEW-CONFLICT-DOES-NOT-ACCEPT-NON-EQUALS-COMPARISON}'
-  EXPECTED_EXPRESSION_AFTER_OPERATOR: '@{PREVIEW-CONFLICT-EXPECTED-EXPRESSION-AFTER-OPERATOR}'
-  EXPECTED_OPENING_PARENTHESIS: '@{PREVIEW-CONFLICT-EXPECTED-OPENING-PARENTHESIS}'
-  EXPECTED_CLOSING_PARENTHESIS: '@{PREVIEW-CONFLICT-EXPECTED-CLOSING-PARENTHESIS}'
-  EMPTY_OR_BLANK_QUOTED_STRING: '@{PREVIEW-CONFLICT-EMPTY-OR-BLANK-QUOTED-STRING}'
-  EXPECTED_LEFT_HAND_SIDE: '@{PREVIEW-CONFLICT-EXPECTED-LEFT-HAND-SIDE}'
+# 𱍊 is a really high UTF-16 character, so it should always be sorted last by the client
+maxCompletionsExceeded: '𱍊 and {excess_count} more'
+validPredicatePart: '<&a>{predicate}'
+failedPredicatePart: '<&c>{predicate}'
+parseConflicts:
+  EXPECTED_CORRECT_INTEGER: '<&c>Expected a valid integer: {predicate}'
+  TOO_MANY_TIME_NOTATION_BLOCKS: '<&c>More than 3 colon-separated blocks: {predicate}'
+  EXPECTED_FOLLOWING_INTEGER: '<&c>This predicate requires an integer argument: {predicate}'
+  EXPECTED_SEARCH_PATTERN: '<&c>Expected a name to search for: {predicate}'
+  NO_SEARCH_MATCH: '<&c>Found no matches: {predicate}'
+  MISSING_STRING_TERMINATION: '<&c>String has not been terminated: {predicate}'
+  MULTIPLE_SEARCH_PATTERN_WILDCARDS: '<&c>Used multiple ? within one argument: {predicate}'
+  ONLY_SEARCH_PATTERN_WILDCARD: '<&c>Cannot search just for a wildcard: {predicate}'
+  DOES_NOT_ACCEPT_TIME_NOTATION: '<&c>This argument does not accept time notation: {predicate}'
+  DOES_NOT_ACCEPT_NON_EQUALS_COMPARISON: '<&c>This argument does not accept comparison notation: {predicate}'
+  EXPECTED_EXPRESSION_AFTER_OPERATOR: '<&c>This operator has to to be followed up by another expression: {predicate}'
+  EXPECTED_OPENING_PARENTHESIS: '<&c>Expected a opening parenthesis: {predicate}'
+  EXPECTED_CLOSING_PARENTHESIS: '<&c>Expected a closing parenthesis: {predicate}'
+  EMPTY_OR_BLANK_QUOTED_STRING: '<&c>Strings are not allowed to be blank: {predicate}'
+  EXPECTED_LEFT_HAND_SIDE: '<&c>Expected a left-hand-side expression: {predicate}'
 
 playerMessages:
-  commandOnlyForPlayers$: '@{MESSAGE-COMMAND-ONLY-FOR-PLAYERS(prefix=lut["MESSAGE_PREFIX"])}'
-  pluginReloadedSuccess$: '@{MESSAGE-PLUGIN-RELOAD(prefix=lut["MESSAGE_PREFIX"])}'
-  pluginReloadedError$: '@{MESSAGE-PLUGIN-RELOAD-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
-  # - label: String
-  # - actions: Collection<String>
-  usageIppCommandAction$: |
-    action_list = iter_cat(actions, (action) => @{MESSAGE-USAGE-IPP-ACTION-ITEM}, @{MESSAGE-USAGE-IPP-ACTION-SEPARATOR})
-    @{MESSAGE-USAGE-IPP-ACTION(prefix=lut["MESSAGE_PREFIX"])}
-  # - label: String
-  # - action: String
-  # - languages: Collection<String>
-  usageIppLanguageCommandLanguage$: |
-    language_list = iter_cat(languages, (language) => @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-ITEM}, @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE-SEPARATOR})
-    @{MESSAGE-USAGE-IPP-LANGUAGE-LANGUAGE(prefix=lut["MESSAGE_PREFIX"])}
-  # - entered_predicate: String
-  # - expanded_predicate(matching_prefix: String, failure_prefix: String): String
-  predicateTestResult$: |
-    colored_predicate = expanded_predicate(@{MESSAGE-TEST-RESULT-MATCH-COLOR-MATCH}, @{MESSAGE-TEST-RESULT-MATCH-COLOR-MISMATCH})
-    @{MESSAGE-TEST-RESULT-MATCH(prefix=lut["MESSAGE_PREFIX"])}
-  # - exception_message: String
-  predicateParseError$: '@{MESSAGE-PREDICATE-PARSE-ERROR(prefix=lut["MESSAGE_PREFIX"])}'
-  showingVariables$: '@{MESSAGE-SHOWING-VARIABLES(prefix=lut["MESSAGE_PREFIX"])}'
-  unknownVariableName$: '@{MESSAGE-UNKNOWN-VARIABLE-NAME(prefix=lut["MESSAGE_PREFIX"])}'
-  variablesTestNoResults$: '@{MESSAGE-VARIABLES-TEST-NO-RESULTS(prefix=lut["MESSAGE_PREFIX"])}'
-  variablesTestResults$: |
-    name_list = iter_cat(names, (name) => @{MESSAGE-VARIABLES-TEST-RESULTS-RESULT}, @{MESSAGE-VARIABLES-TEST-RESULTS-SEPARATOR})
-    @{MESSAGE-VARIABLES-TEST-RESULTS(prefix=lut["MESSAGE_PREFIX"])}
-  noItemInMainHand$: '@{MESSAGE-NO-ITEM-IN-MAIN-HAND(prefix=lut["MESSAGE_PREFIX"])}'
-  # - language: String
-  languageSelected$: '@{MESSAGE-LANGUAGE-SELECTED(prefix=lut["MESSAGE_PREFIX"])}'
-  missingPermissionIppCommand$: '@{MESSAGE-MISSING-PERMISSION-COMMAND-IPP(prefix=lut["MESSAGE_PREFIX"])}'
+  commandOnlyForPlayers: '{lut.prefix} <&c>This command is only available to players.'
+  pluginReloadedSuccess: '{lut.prefix} <&7>The plugin has been <&a>reloaded successfully<&7>.'
+  pluginReloadedError: '{lut.prefix} <&c>An error occurred while trying to reload the plugin. Check the console!'
+  usageIppCommandAction: '{lut.prefix} <&7>Usage: /{label} <&7>\<<&e *for-action="actions" *for-separator={<&7>,<space/>}>{action}</&e><&7>>'
+  usageIppLanguageCommandLanguage: '{lut.prefix} <&7>Usage: /{label} {action} <&7>\<<&e *for-language="languages">{language}</&e><&7>> - Select a personal language'
+  predicateTestResult: '{lut.prefix} <&7>Result: {predicate}'
+  predicateParseError: '{lut.prefix} {exception}'
+  showingVariables: '{lut.prefix} <&7>Displaying the overview with <&a>{count} variables<&7>.'
+  unknownVariableName: '{lut.prefix} <&c>There''s no variable called <&4>{name}<&c>!'
+  variablesTestNoResults: '{lut.prefix} <&c>The item is <&4>not <&c>covered by any variable!'
+  variablesTestResults: '{lut.prefix} <&7>The item is covered <&a>{count}x <&7>by the variables: <&a *for-name="names">{name}</&a><&7>.'
+  noItemInMainHand: '{lut.prefix} <&c>You''re not holding an item in your <&4>main hand<&c>!'
+  languageSelected: '{lut.prefix} <&7>The language <&a>{language} <&7>will from now on be used with all IPP(-related) commands, if they do not ask for an explicit language themselves.'
+  missingPermissionIppCommand: '{lut.prefix} <&c>You don''t have the permission to use the ipp command.'
 
 defaultSelectedLanguage: ENGLISH_US
 
@@ -78,105 +57,86 @@ commands:
 
 variables:
 
-variablesServerPort: 8150
+variablesServerPort: -1
 
-# - current_page: Integer
-# - number_pages: Integer
-# - number_of_rows: Integer
-# - last_slot: Integer
 variablesDisplay:
-  title$: '@{VARIABLES-DISPLAY-TITLE}'
+  title: '<&8>Variables <&e>{current_page}<&8>/<&e>{number_pages}'
   rows: 6
-  maxTokenLineWidth: 35
-  paginationSlots$: 'range(0, 44)'
+  paginationSlots: '0..44'
   items:
-    # https://github.com/BlvckBytes/BukkitEvaluable#itemstack-section
     previousPage:
-      slots$: 'last_slot - 8'
+      slots: 'last_slot - 8'
       type: PLAYER_HEAD
-      textures$: 'lut["textures"][if current_page > 1 then "ARROW_LEFT" else "ARROW_LEFT_RED"]'
-      name$: 'if current_page > 1 then @{PREVIOUS-PAGE-NAME-HAS} else @{PREVIOUS-PAGE-NAME-HAS-NOT}'
-      lore$:
-        - '" "'
-        - '@{ANY-CONTROL-LORE-SPACER}'
-        - '@{PREVIOUS-PAGE-LORE-LEFT-CLICK-DESCRIPTION}'
-        - '@{PREVIOUS-PAGE-LORE-RIGHT-CLICK-DESCRIPTION}'
-        - '@{ANY-CONTROL-LORE-SPACER}'
-    # https://github.com/BlvckBytes/BukkitEvaluable#itemstack-section
+      textures: '{lut["textures"][current_page > 1 then "ARROW_LEFT" else "ARROW_LEFT_RED"]}'
+      name: |
+        <reset>
+          <container *if="current_page > 1">
+            <&8>» <&6>Previous Page <&8>«
+          </container>
+          <container *else>
+            <&8>» <&c>No Previous Page <&8>«
+          </container>
+      lore: |
+        <reset>
+          <br/>
+          {lut.spacer}<br/>
+          <&8>➥ <&e>Left-Click <&7>Navigate to previous page<br/>
+          <&8>➥ <&e>Right-Click <&7>Jump to very first page<br/>
+          {lut.spacer}
     nextPage:
-      slots$: 'last_slot'
+      slots: 'last_slot'
       type: PLAYER_HEAD
-      textures$: 'lut["textures"][if current_page < number_pages then "ARROW_RIGHT" else "ARROW_RIGHT_RED"]'
-      name$: 'if current_page < number_pages then @{NEXT-PAGE-NAME-HAS} else @{NEXT-PAGE-NAME-HAS-NOT}'
-      lore$:
-        - '" "'
-        - '@{ANY-CONTROL-LORE-SPACER}'
-        - '@{NEXT-PAGE-LORE-LEFT-CLICK-DESCRIPTION}'
-        - '@{NEXT-PAGE-LORE-RIGHT-CLICK-DESCRIPTION}'
-        - '@{ANY-CONTROL-LORE-SPACER}'
-    # - icon_type: String
-    # - display_name: String
-    # - material_token_lines: List<TokenLine> where TokenLine(tokens: List<String> , wraps: Boolean)
+      textures: '{lut["textures"][current_page < number_pages then "ARROW_RIGHT" else "ARROW_RIGHT_RED"]}'
+      name: |
+        <reset>
+          <container *if="current_page < num_pages">
+            <&8>» <&6>Next Page <&8>«
+          </container>
+          <container *else>
+            <&8>» <&c>No Next Page <&8>«
+          </container>
+      lore: |
+        <reset>
+          <br/>
+          {lut.spacer}<br/>
+          <&8>➥ <&e>Left-Click <&7>Navigate to next page<br/>
+          <&8>➥ <&e>Right-Click <&7>Jump to very last page<br/>
+          {lut.spacer}
     variable:
-      type$: 'icon_type'
-      name$: '@{VARIABLES-ENTRY-NAME}'
-      lore$:
-        - '" "'
-        - |
-          if len(material_token_lines) > 0 then flatten(list_of(
-            @{ANY-CONTROL-LORE-SPACER},
-            @{VARIABLES-ENTRY-MATERIAL-TITLE},
-            " ",
-            map(
-              material_token_lines,
-              (token_line) => iter_cat(
-                token_line.tokens,
-                (line_token) => (@{VARIABLES-ENTRY-MATERIAL-TOKEN}),
-                @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
-              ) & if token_line.wraps then "" else @{VARIABLES-ENTRY-MATERIAL-SEPARATOR}
-            )
-          )) else null
-        - |
-          if len(inherited_material_token_lines) > 0 then flatten(list_of(
-            @{ANY-CONTROL-LORE-SPACER},
-            @{INHERITED-VARIABLES-ENTRY-PARENTS-TITLE},
-            " ",
-            map(
-              parents_token_lines,
-              (token_line) => iter_cat(
-                token_line.tokens,
-                (line_token) => (@{INHERITED-VARIABLES-ENTRY-PARENT-TOKEN}),
-                @{INHERITED-VARIABLES-ENTRY-PARENT-SEPARATOR}
-              ) & if token_line.wraps then "" else @{INHERITED-VARIABLES-ENTRY-PARENT-SEPARATOR}
-            ),
-            @{ANY-CONTROL-LORE-SPACER},
-            @{INHERITED-VARIABLES-ENTRY-MATERIAL-TITLE},
-            " ",
-            map(
-              inherited_material_token_lines,
-              (token_line) => iter_cat(
-                token_line.tokens,
-                (line_token) => (@{INHERITED-VARIABLES-ENTRY-MATERIAL-TOKEN}),
-                @{INHERITED-VARIABLES-ENTRY-MATERIAL-SEPARATOR}
-              ) & if token_line.wraps then "" else @{INHERITED-VARIABLES-ENTRY-MATERIAL-SEPARATOR}
-            )
-          )) else null
-        - '@{ANY-CONTROL-LORE-SPACER}'
+      type: '{icon_type}'
+      name: |
+        <reset>
+          <&8>» <&6>{name} <&8>«
+      lore: |
+        <reset>
+          <br/>
+          <container *if="len(materials) > 0">
+            {lut.spacer}<br/>
+            <&7>➥ Materials:<br/>
+            <br/>
+            <word-wrap [values]="materials" width=35 separator={<&e>,<space/>} renderer={<&6>{token}} /><br/>
+          </container>
+          <container *if="len(inherited_materials) > 0">
+            {lut.spacer}<br/>
+            <&7>➥ Inherits from:<br/>
+            <br/>
+            <word-wrap [values]="parents" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
+            {lut.spacer}<br/>
+            <&7>➥ Inherited materials:<br/>
+            <br/>
+            <word-wrap [values]="inherited_materials" width=35 separator={<&d>,<space/>} renderer={<&5>{token}} /><br/>
+          </container>
+          {lut.spacer}
     filler:
-      slots$:
-        - 'last_slot - 7'
-        - 'last_slot - 6'
-        - 'last_slot - 5'
-        - 'last_slot - 4'
-        - 'last_slot - 3'
-        - 'last_slot - 2'
-        - 'last_slot - 1'
+      slots: '(last_slot - 7)..last_slot'
       type: BLACK_STAINED_GLASS_PANE
-      name: " "
+      name: ' '
 
-# File-global lookup table
-lut:
-  MESSAGE_PREFIX: '@{MESSAGE-PREFIX}'
+cLut:
+  prefix: '<&7>[<&6>IPP<&7>]'
+  spacer: '<&8><&m>{" " ** 45}'
+
+sLut:
   textures:
     ARROW_LEFT: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU1MGI3Zjc0ZTllZDc2MzNhYTI3NGVhMzBjYzNkMmU4N2FiYjM2ZDRkMWY0Y2E2MDhjZDQ0NTkwY2NlMGIifX19'
     ARROW_LEFT_RED: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg0ZjU5NzEzMWJiZTI1ZGMwNThhZjg4OGNiMjk4MzFmNzk1OTliYzY3Yzk1YzgwMjkyNWNlNGFmYmEzMzJmYyJ9fX0='

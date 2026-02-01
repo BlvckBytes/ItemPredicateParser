@@ -130,7 +130,7 @@ public class PredicateHelper {
           SlotType.SINGLE_LINE_CHAT,
           new InterpretationEnvironment()
             .withVariable(
-              "predicate_representation",
+              "predicate",
               PlainStringifier.stringify(predicate, false)
             )
         );
@@ -153,28 +153,20 @@ public class PredicateHelper {
    */
   public Component createExceptionMessage(ItemPredicateParseException exception) {
     // TODO: Oh boy - this will be some fun work right there...
-//    String highlightPrefix = "", nonHighlightPrefix = "";
-//
-//    if (config.rootSection.inputHighlightPrefix != null)
-//      highlightPrefix = config.rootSection.inputHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
-//
-//    if (config.rootSection.inputNonHighlightPrefix != null)
-//      nonHighlightPrefix = config.rootSection.inputNonHighlightPrefix.asScalar(ScalarType.STRING, GPEEE.EMPTY_ENVIRONMENT);
-//
-//    var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
-//
-//    var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
-//
-//    if (conflictEvaluable == null)
-//      return highlightedInput;
-//
-//    return conflictEvaluable.asScalar(
-//      ScalarType.STRING,
-//      config.rootSection.getBaseEnvironment()
-//        .withStaticVariable("highlighted_input", highlightedInput)
-//        .build()
-//    );
-    throw new UnsupportedOperationException();
+    String highlightPrefix = "§4", nonHighlightPrefix = "§c";
+
+    var highlightedInput = exception.highlightedInput(nonHighlightPrefix, highlightPrefix);
+
+    var conflictEvaluable = config.rootSection.parseConflicts.get(exception.getConflict().name());
+
+    if (conflictEvaluable == null)
+      return Component.text(highlightedInput);
+
+    return conflictEvaluable.interpret(
+      SlotType.SINGLE_LINE_CHAT,
+      new InterpretationEnvironment()
+        .withVariable("predicate", highlightedInput)
+    ).get(0);
   }
 
   private @Nullable ItemPredicate _parsePredicate(TranslationLanguage language, List<Token> tokens, boolean allowMissingClosingParentheses) {

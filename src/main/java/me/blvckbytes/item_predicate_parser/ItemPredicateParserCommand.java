@@ -136,7 +136,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             message.sendMessage(
               sender,
               new InterpretationEnvironment()
-                .withVariable("exception_message", predicateHelper.createExceptionMessage(e))
+                .withVariable("exception", predicateHelper.createExceptionMessage(e))
             );
           }
           return true;

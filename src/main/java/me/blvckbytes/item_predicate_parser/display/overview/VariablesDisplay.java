@@ -9,9 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VariablesDisplay extends Display<VariablesDisplayData> {
 
   private final AsyncTaskQueue asyncQueue;
@@ -112,17 +109,14 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
       }
 
       var variable = displayData.variables().get(currentSlot);
-      var materialTokenLines = makeTokenLines(variable.materialDisplayNames());
-      var inheritedMaterialTokenLines = makeTokenLines(variable.inheritedMaterialDisplayNames());
-      var parentsTokenLines = makeTokenLines(variable.parentDisplayNames());
 
       var item = config.rootSection.variablesDisplay.items.variable.build(
         new InterpretationEnvironment()
           .withVariable("icon_type", variable.icon().name())
-          .withVariable("display_name", variable.displayName())
-          .withVariable("material_token_lines", materialTokenLines)
-          .withVariable("inherited_material_token_lines", inheritedMaterialTokenLines)
-          .withVariable("parents_token_lines", parentsTokenLines)
+          .withVariable("name", variable.displayName())
+          .withVariable("materials", variable.materialDisplayNames())
+          .withVariable("inherited_materials", variable.inheritedMaterialDisplayNames())
+          .withVariable("parents", variable.parentDisplayNames())
       );
 
       inventory.setItem(slot, item);
@@ -133,52 +127,6 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
 
     config.rootSection.variablesDisplay.items.previousPage.renderInto(inventory, pageEnvironment);
     config.rootSection.variablesDisplay.items.nextPage.renderInto(inventory, pageEnvironment);
-  }
-
-  private ArrayList<TokenLine> makeTokenLines(List<String> input) {
-    var tokenLines = new ArrayList<TokenLine>();
-
-    var currentLineLength = 0;
-    var maxLineLength = config.rootSection.variablesDisplay.maxTokenLineWidth;
-    var currentLine = new TokenLine();
-
-    for (var materialDisplayName : input) {
-      var nameTokens = materialDisplayName.split(" ");
-      var didAddToLine = false;
-
-      for (var nameToken : nameTokens) {
-        var tokenLength = nameToken.length();
-
-        if (currentLineLength != 0 && currentLineLength + tokenLength > maxLineLength) {
-          if (didAddToLine)
-            currentLine.wraps = true;
-
-          tokenLines.add(currentLine);
-          currentLine = new TokenLine();
-          currentLineLength = 0;
-          didAddToLine = false;
-        }
-
-        // Spaces in-between
-        else if (currentLineLength != 0)
-          ++currentLineLength;
-
-        if (!didAddToLine)
-          currentLine.add(nameToken);
-        else
-          currentLine.append(nameToken);
-
-        currentLineLength += tokenLength;
-        didAddToLine = true;
-      }
-    }
-
-    if (!currentLine.isEmpty()) {
-      currentLine.wraps = true;
-      tokenLines.add(currentLine);
-    }
-
-    return tokenLines;
   }
 
   @Override

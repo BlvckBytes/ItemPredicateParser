@@ -1220,9 +1220,9 @@ public class PredicateParserTests extends ParseTestBase {
     );
 
     makeCase(
-      new String[] { "bu" }, // Bucket, Bundle
+      new String[] { "bu" }, // Bush, Bucket, Bundle
       materialPredicate(
-        Material.BUCKET,
+        Material.BUSH,
         unquotedStringToken(0, 0, "bu")
       )
     );

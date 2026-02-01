@@ -1,6 +1,5 @@
 package me.blvckbytes.item_predicate_parser;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -19,6 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockbukkit.mockbukkit.MockBukkit;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public abstract class ParseTestBase {
   public static void setup() throws Throwable {
     MockBukkit.mock();
 
-    serverVersion = new DetectedServerVersion(1, 21, 0, "1.21.0");
+    serverVersion = new DetectedServerVersion(1, 21, 11, "1.21.11");
 
     try (var inputStream = TranslationRegistry.class.getResourceAsStream("/en_us.json")) {
       if (inputStream == null)

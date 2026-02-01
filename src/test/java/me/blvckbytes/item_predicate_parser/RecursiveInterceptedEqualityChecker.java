@@ -180,7 +180,7 @@ public class RecursiveInterceptedEqualityChecker {
         AssertionFailedError assertionFailedError = (AssertionFailedError) e;
 
         var failureExpected = assertionFailedError.getExpected();
-        var failureActual = assertionFailedError.getExpected();
+        var failureActual = assertionFailedError.getActual();
 
         message = (
           "expected " + (failureExpected == null ? null : failureExpected.getStringRepresentation()) +

@@ -46,7 +46,7 @@ playerMessages:
   variablesTestNoResults: '{lut.prefix} <&c>Das Item kommt in <&4>keiner <&c>Variable vor!'
   variablesTestResults: '{lut.prefix} <&7>Das Item kommt <&a>{count}x <&7>in den folgenden Variablen vor: <&a *for-name="names" *for-separator={<&7>,<space/>}>{name}</&a><&7>.'
   noItemInMainHand: '{lut.prefix} <&c>Du hältst kein Item in deiner <&4>Haupthand<&c>!'
-  languageSelected: '{lut.prefix} <&7>Die Sprache <&a>{language} <&7>7wird von nun an für alle weiteren IPP(-verwandten) Befehle, die keine explizite Sprachauswahl fordern, benutzt.'
+  languageSelected: '{lut.prefix} <&7>Die Sprache <&a>{language} <&7>wird von nun an für alle weiteren IPP(-verwandten) Befehle, die keine explizite Sprachauswahl fordern, benutzt.'
   missingPermissionIppCommand: '{lut.prefix} <&c>Dir fehlen die nötigen Rechte, um diesen Befehl benutzen zu können.'
 
 defaultSelectedLanguage: GERMAN_DE

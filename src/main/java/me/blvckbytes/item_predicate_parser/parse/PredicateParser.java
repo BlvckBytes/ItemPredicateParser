@@ -350,6 +350,11 @@ public class PredicateParser {
           predicates.add(new AnyPredicate(currentToken, (TranslatedLangKeyed<AnyKey>) shortestMatch));
           continue;
         }
+        case HAS_NAME -> {
+          tokens.remove(0);
+          predicates.add(new HasNamePredicate(currentToken, (TranslatedLangKeyed<HasNameKey>) shortestMatch));
+          continue;
+        }
         default -> {}
       }
 

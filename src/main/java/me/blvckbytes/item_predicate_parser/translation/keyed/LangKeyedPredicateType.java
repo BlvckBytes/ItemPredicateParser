@@ -11,4 +11,5 @@ public enum LangKeyedPredicateType {
   VARIABLE,
   NOT_A_PREDICATE,
   ANY,
+  HAS_NAME,
 }

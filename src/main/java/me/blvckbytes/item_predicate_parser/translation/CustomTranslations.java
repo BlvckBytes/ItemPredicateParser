@@ -9,7 +9,8 @@ public record CustomTranslations(
   String amount,
   String innerSome,
   String innerAll,
-  String any
+  String any,
+  String hasName
 ) {
   public static CustomTranslations ENGLISH = new CustomTranslations(
     "Deterioration",
@@ -20,7 +21,8 @@ public record CustomTranslations(
     "Amount",
     "inner-some",
     "inner-all",
-    "Any"
+    "Any",
+    "Has-Name"
   );
 
   public static CustomTranslations FRENCH = new CustomTranslations(
@@ -32,7 +34,8 @@ public record CustomTranslations(
     "Quantité",
     "inner-some",
     "inner-all",
-    "Any"
+    "Any",
+    "Has-Name"
   );
 
   public static CustomTranslations GERMAN = new CustomTranslations(
@@ -44,7 +47,8 @@ public record CustomTranslations(
     "Anzahl",
     "innen-manche",
     "innen-alle",
-    "Etwas"
+    "Etwas",
+    "Hat-Name"
   );
 
   public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
@@ -56,7 +60,8 @@ public record CustomTranslations(
     "数量",
     "inner-some",
     "inner-all",
-    "Any"
+    "Any",
+    "Has-Name"
   );
 
   public static CustomTranslations TURKISH = new CustomTranslations(
@@ -68,6 +73,7 @@ public record CustomTranslations(
     "Miktar",
     "inner-some",
     "inner-all",
-    "Any"
+    "Any",
+    "Has-Name"
   );
 }

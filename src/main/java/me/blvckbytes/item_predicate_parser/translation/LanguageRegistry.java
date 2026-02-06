@@ -159,7 +159,8 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
       AmountKey.INSTANCE,
       InnerAllKey.INSTANCE,
       InnerSomeKey.INSTANCE,
-      AnyKey.INSTANCE
+      AnyKey.INSTANCE,
+      HasNameKey.INSTANCE
     ), ""));
 
     result.add(new LangKeyedSource(config.rootSection.variables._variableKeys, ""));

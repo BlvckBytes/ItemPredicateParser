@@ -253,28 +253,16 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           if (targetName != null && !item.normalizedUnPrefixedTranslation.equals(targetName))
             continue;
 
-          var materialDisplayNames = new ArrayList<String>();
-          var inheritedMaterialDisplayNames = new ArrayList<String>();
-
           var variable = item.langKeyed.getWrapped();
 
-          for (var material : variable.materials) {
-            var translation = translationRegistry.getTranslationBySingleton(material);
+          var materialDisplayNames = new ArrayList<String>();
+          variable.forEachMaterialName(translationRegistry, materialDisplayNames::add);
 
-            if (translation == null)
-              translation = "<null>";
+          var blockedMaterialDisplayNames = new ArrayList<String>();
+          variable.forEachBlockedMaterialName(translationRegistry, blockedMaterialDisplayNames::add);
 
-            materialDisplayNames.add(translation);
-          }
-
-          for (var material : variable.getInheritedMaterials()) {
-            var translation = translationRegistry.getTranslationBySingleton(material);
-
-            if (translation == null)
-              translation = "<null>";
-
-            inheritedMaterialDisplayNames.add(translation);
-          }
+          var inheritedMaterialDisplayNames = new ArrayList<String>();
+          variable.forEachInheritedMaterialName(translationRegistry, inheritedMaterialDisplayNames::add);
 
           var parentDisplayNames = new ArrayList<String>();
 
@@ -285,6 +273,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             variable.icon,
             item.normalizedUnPrefixedTranslation,
             materialDisplayNames,
+            blockedMaterialDisplayNames,
             parentDisplayNames,
             inheritedMaterialDisplayNames
           ));

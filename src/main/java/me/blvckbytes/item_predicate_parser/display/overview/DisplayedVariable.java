@@ -8,6 +8,7 @@ public record DisplayedVariable(
   Material icon,
   String displayName,
   List<String> materialDisplayNames,
+  List<String> blockedMaterialDisplayNames,
   List<String> parentDisplayNames,
   List<String> inheritedMaterialDisplayNames
 ) {}

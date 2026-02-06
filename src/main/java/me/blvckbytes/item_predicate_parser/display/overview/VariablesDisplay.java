@@ -116,6 +116,7 @@ public class VariablesDisplay extends Display<VariablesDisplayData> {
           .withVariable("name", variable.displayName())
           .withVariable("materials", variable.materialDisplayNames())
           .withVariable("inherited_materials", variable.inheritedMaterialDisplayNames())
+          .withVariable("blocked_materials", variable.blockedMaterialDisplayNames())
           .withVariable("parents", variable.parentDisplayNames())
       );
 

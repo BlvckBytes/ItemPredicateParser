@@ -21,6 +21,9 @@ public class VariableSection extends ConfigSection {
   public List<String> materials;
   public @CSIgnore Set<Material> _materials = new HashSet<>();
 
+  public List<String> blockedMaterials;
+  public @CSIgnore Set<Material> _blockedMaterials = new HashSet<>();
+
   public List<String> parents;
   public @CSIgnore Set<String> _parentNames = new HashSet<>();
 
@@ -53,6 +56,18 @@ public class VariableSection extends ConfigSection {
 
         if (!_materials.add(xMaterial.get().get()))
           throw new MappingError("Duplicate material \"" + material + "\"");
+      }
+    }
+
+    if (blockedMaterials != null) {
+      for (var blockedMaterial : blockedMaterials) {
+        var xMaterial = XMaterial.matchXMaterial(blockedMaterial);
+
+        if (xMaterial.isEmpty())
+          throw new MappingError("Unknown blocked-material \"" + blockedMaterial + "\"");
+
+        if (!_blockedMaterials.add(xMaterial.get().get()))
+          throw new MappingError("Duplicate blocked-material \"" + blockedMaterial + "\"");
       }
     }
 

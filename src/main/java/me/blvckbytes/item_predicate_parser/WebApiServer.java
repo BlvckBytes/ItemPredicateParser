@@ -79,28 +79,16 @@ public class WebApiServer {
       availableVariables.sort(Comparator.comparing(it -> it.langKeyed.getWrapped().defaultName));
 
       for (var availableVariable : availableVariables) {
-        var materialDisplayNames = new JsonArray();
-        var inheritedMaterialDisplayNames = new JsonArray();
-
         var variable = availableVariable.langKeyed.getWrapped();
 
-        for (var material : variable.materials) {
-          var translation = translationRegistry.getTranslationBySingleton(material);
+        var materialDisplayNames = new JsonArray();
+        variable.forEachMaterialName(translationRegistry, materialDisplayNames::add);
 
-          if (translation == null)
-            translation = material.name();
+        var blockedMaterialDisplayNames = new JsonArray();
+        variable.forEachBlockedMaterialName(translationRegistry, blockedMaterialDisplayNames::add);
 
-          materialDisplayNames.add(translation);
-        }
-
-        for (var material : variable.getInheritedMaterials()) {
-          var translation = translationRegistry.getTranslationBySingleton(material);
-
-          if (translation == null)
-            translation = material.name();
-
-          inheritedMaterialDisplayNames.add(translation);
-        }
+        var inheritedMaterialDisplayNames = new JsonArray();
+        variable.forEachInheritedMaterialName(translationRegistry, inheritedMaterialDisplayNames::add);
 
         var parentDisplayNames = new JsonArray();
 
@@ -112,6 +100,7 @@ public class WebApiServer {
 
         variableEntry.addProperty("displayName", availableVariable.normalizedUnPrefixedTranslation);
         variableEntry.add("materialDisplayNames", materialDisplayNames);
+        variableEntry.add("blockedMaterialDisplayNames", blockedMaterialDisplayNames);
         variableEntry.add("inheritedMaterialDisplayNames", inheritedMaterialDisplayNames);
         variableEntry.add("parentDisplayNames", parentDisplayNames);
       }

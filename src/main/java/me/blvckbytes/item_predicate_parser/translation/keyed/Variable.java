@@ -2,9 +2,11 @@ package me.blvckbytes.item_predicate_parser.translation.keyed;
 
 import at.blvckbytes.cm_mapper.mapper.MappingError;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
+import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
 import org.bukkit.Material;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Variable {
@@ -25,6 +27,7 @@ public class Variable {
 
   private final Set<Material> _materials;
   public final List<Material> materials;
+  public final Set<Material> blockedMaterials;
 
   public final List<String> parentNames;
   public final List<Variable> parents;
@@ -40,6 +43,7 @@ public class Variable {
     Material icon,
     String defaultName,
     Set<Material> materials,
+    Set<Material> blockedMaterials,
     Set<String> parentNames,
     Map<TranslationLanguage, String> nameByLanguage
   ) {
@@ -51,6 +55,7 @@ public class Variable {
 
     this._materials = Set.copyOf(materials);
     this.materials = List.copyOf(materials);
+    this.blockedMaterials = Set.copyOf(blockedMaterials);
 
     this.parentNames = List.copyOf(parentNames);
     this.parents = new ArrayList<>();
@@ -58,6 +63,29 @@ public class Variable {
     this.nameByLanguage = nameByLanguage;
 
     this._inheritedMaterials = new HashSet<>();
+  }
+
+  private void resolveMaterialNames(Collection<Material> materials, TranslationRegistry registry, Consumer<String> nameHandler) {
+    for (var material : materials) {
+      var translation = registry.getTranslationBySingleton(material);
+
+      if (translation == null)
+        translation = material.name();
+
+      nameHandler.accept(translation);
+    }
+  }
+
+  public void forEachMaterialName(TranslationRegistry registry, Consumer<String> nameHandler) {
+    resolveMaterialNames(materials, registry, nameHandler);
+  }
+
+  public void forEachBlockedMaterialName(TranslationRegistry registry, Consumer<String> nameHandler) {
+    resolveMaterialNames(blockedMaterials, registry, nameHandler);
+  }
+
+  public void forEachInheritedMaterialName(TranslationRegistry registry, Consumer<String> nameHandler) {
+    resolveMaterialNames(inheritedMaterials, registry, nameHandler);
   }
 
   public List<Material> getEffectiveMaterials() {
@@ -95,11 +123,17 @@ public class Variable {
         if (_materials.contains(parentMaterial))
           continue;
 
+        if (blockedMaterials.contains(parentMaterial))
+          continue;
+
         _inheritedMaterials.add(parentMaterial);
       }
 
       for (var parentMaterial : parentVariable.materials) {
         if (_materials.contains(parentMaterial))
+          continue;
+
+        if (blockedMaterials.contains(parentMaterial))
           continue;
 
         _inheritedMaterials.add(parentMaterial);

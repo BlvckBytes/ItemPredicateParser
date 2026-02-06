@@ -42,7 +42,14 @@ public class VariablesSection extends ConfigSection {
       if (variableSection == null)
         variableSection = new VariableSection(baseEnvironment, interpreterLogger);
 
-      var variable = new Variable(variableSection._icon, defaultName, variableSection._materials, variableSection._parentNames, variableSection._names);
+      var variable = new Variable(
+        variableSection._icon,
+        defaultName,
+        variableSection._materials,
+        variableSection._blockedMaterials,
+        variableSection._parentNames,
+        variableSection._names
+      );
 
       _variableKeys.add(new VariableKey(variable));
       variableByNameLower.put(defaultName, variable);

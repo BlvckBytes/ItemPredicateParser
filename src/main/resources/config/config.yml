@@ -123,6 +123,12 @@ variablesDisplay:
             <&7>➥ Inherits from:<br/>
             <br/>
             <&5><word-wrap [@value]="parents" width=35 value-separator={<&d>,<space/>} /><br/>
+            <container *if="len(blocked_materials) > 0">
+              {lut.spacer}<br/>
+              <&7>➥ Not inherited:<br/>
+              <br/>
+              <&4><word-wrap [@value]="blocked_materials" width=35 value-separator={<&c>,<space/>} /><br/>
+            </container>
             {lut.spacer}<br/>
             <&7>➥ Inherited materials:<br/>
             <br/>

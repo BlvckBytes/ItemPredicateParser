@@ -107,11 +107,19 @@ public class PredicateParser {
   }
 
   private @Nullable ItemPredicate parseInnerAllNode() {
-    return parseUnaryNode(this::parseInnerSomeNode, InnerAllKey.class, InnerAllNode::new);
+    return parseUnaryNode(this::parseInnerAllOrSelfNode, InnerAllKey.class, InnerAllNode::new);
+  }
+
+  private @Nullable ItemPredicate parseInnerAllOrSelfNode() {
+    return parseUnaryNode(this::parseInnerSomeNode, InnerAllOrSelfKey.class, InnerAllOrSelfNode::new);
   }
 
   private @Nullable ItemPredicate parseInnerSomeNode() {
-    return parseUnaryNode(this::parseExactNode, InnerSomeKey.class, InnerSomeNode::new);
+    return parseUnaryNode(this::parseInnerSomeOrSelfNode, InnerSomeKey.class, InnerSomeNode::new);
+  }
+
+  private @Nullable ItemPredicate parseInnerSomeOrSelfNode() {
+    return parseUnaryNode(this::parseExactNode, InnerSomeOrSelfKey.class, InnerSomeOrSelfNode::new);
   }
 
   private @Nullable ItemPredicate parseExactNode() {

@@ -8,7 +8,9 @@ public record CustomTranslations(
   String exact,
   String amount,
   String innerSome,
+  String innerSomeOrSelf,
   String innerAll,
+  String innerAllOrSelf,
   String any,
   String hasName
 ) {
@@ -20,7 +22,9 @@ public record CustomTranslations(
     "exact",
     "Amount",
     "inner-some",
+    "inner-some-or-self",
     "inner-all",
+    "inner-all-or-self",
     "Any",
     "Has-Name"
   );
@@ -33,7 +37,9 @@ public record CustomTranslations(
     "exacte",
     "Quantité",
     "inner-some",
+    "inner-some-or-self",
     "inner-all",
+    "inner-all-or-self",
     "Any",
     "Has-Name"
   );
@@ -46,7 +52,9 @@ public record CustomTranslations(
     "exakt",
     "Anzahl",
     "innen-manche",
+    "innen-manche-oder-selbst",
     "innen-alle",
+    "innen-alle-oder-selbst",
     "Etwas",
     "Hat-Name"
   );
@@ -59,7 +67,9 @@ public record CustomTranslations(
     "精确",
     "数量",
     "inner-some",
+    "inner-some-or-self",
     "inner-all",
+    "inner-all-or-self",
     "Any",
     "Has-Name"
   );
@@ -72,7 +82,9 @@ public record CustomTranslations(
     "kesin",
     "Miktar",
     "inner-some",
+    "inner-some-or-self",
     "inner-all",
+    "inner-all-or-self",
     "Any",
     "Has-Name"
   );

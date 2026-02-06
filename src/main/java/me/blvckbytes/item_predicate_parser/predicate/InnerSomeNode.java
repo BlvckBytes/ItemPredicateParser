@@ -6,6 +6,6 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 public class InnerSomeNode extends InnerNode {
 
   public InnerSomeNode(Token token, TranslatedLangKeyed<?> translatedLangKeyed, ItemPredicate operand) {
-    super(token, translatedLangKeyed, operand, InnerMode.SOME);
+    super(token, translatedLangKeyed, operand, InnerMode.SOME, false);
   }
 }

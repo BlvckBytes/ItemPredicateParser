@@ -158,7 +158,9 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
       ExactKey.INSTANCE,
       AmountKey.INSTANCE,
       InnerAllKey.INSTANCE,
+      InnerAllOrSelfKey.INSTANCE,
       InnerSomeKey.INSTANCE,
+      InnerSomeOrSelfKey.INSTANCE,
       AnyKey.INSTANCE,
       HasNameKey.INSTANCE
     ), ""));

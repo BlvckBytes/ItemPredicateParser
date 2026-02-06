@@ -26,21 +26,33 @@ public abstract class InnerNode implements ItemPredicate {
   private final TranslatedLangKeyed<?> translatedLangKeyed;
   private final ItemPredicate operand;
   private final InnerMode mode;
+  private final boolean allowSelf;
 
-  protected InnerNode(Token token, TranslatedLangKeyed<?> translatedLangKeyed, ItemPredicate operand, InnerMode mode) {
+  protected InnerNode(
+    Token token,
+    TranslatedLangKeyed<?> translatedLangKeyed,
+    ItemPredicate operand,
+    InnerMode mode,
+    boolean allowSelf
+  ) {
     this.token = token;
     this.translatedLangKeyed = translatedLangKeyed;
     this.operand = operand;
     this.mode = mode;
+    this.allowSelf = allowSelf;
   }
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
     var innerItems = getInnerItems(state.getMeta());
 
-    // Mismatch if the item does not even have any inner items
-    if (innerItems == null)
+    if (innerItems == null) {
+      if (allowSelf && operand.test(state.item))
+        return null;
+
+      // Mismatch if the item does not even have any inner items
       return this;
+    }
 
     if (mode == InnerMode.SOME) {
       if (innerItems.stream().anyMatch(operand))

@@ -32,6 +32,7 @@ parseConflicts:
   EXPECTED_CLOSING_PARENTHESIS: '<&c>Expected a closing parenthesis: {predicate}'
   EMPTY_OR_BLANK_QUOTED_STRING: '<&c>Strings are not allowed to be blank: {predicate}'
   EXPECTED_LEFT_HAND_SIDE: '<&c>Expected a left-hand-side expression: {predicate}'
+  LABEL_CANNOT_CONTAIN_HASHTAG: '<&c>Label-names cannot contain hashtags: {predicate}'
 
 playerMessages:
   commandOnlyForPlayers: '{lut.prefix} <&c>This command is only available to players.'

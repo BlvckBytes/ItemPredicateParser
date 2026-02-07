@@ -32,6 +32,7 @@ parseConflicts:
   EXPECTED_CLOSING_PARENTHESIS: '<&c>Schließende Klammer erwartet: {predicate}'
   EMPTY_OR_BLANK_QUOTED_STRING: '<&c>Zeichenketten dürfen nicht leer sein: {predicate}'
   EXPECTED_LEFT_HAND_SIDE: '<&c>Vorangestellter Ausdruck erwartet: {predicate}'
+  LABEL_CANNOT_CONTAIN_HASHTAG: '<&c>Label-Namen dürfen keine Hashtags beinhalten: {predicate}'
 
 playerMessages:
   commandOnlyForPlayers: '{lut.prefix} <&c>Dieser Befehl steht nur Spielern zur Verfügung.'

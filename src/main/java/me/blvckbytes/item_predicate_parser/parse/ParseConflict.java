@@ -63,5 +63,10 @@ public enum ParseConflict {
    * Quoted strings which are either completely empty or consist of only whitespace
    * are useless when searching for text-content, so they may not reach execution
    */
-  EMPTY_OR_BLANK_QUOTED_STRING
+  EMPTY_OR_BLANK_QUOTED_STRING,
+  /**
+   * When attaching a label to a predicate, in the form of #name, the name itself
+   * must not contain any occurrences of the indicating hashtag itself.
+   */
+  LABEL_CANNOT_CONTAIN_HASHTAG,
 }

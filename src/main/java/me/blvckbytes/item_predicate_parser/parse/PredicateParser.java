@@ -252,10 +252,18 @@ public class PredicateParser {
       if (currentToken instanceof ParenthesisToken)
         break;
 
-      if (!(currentToken instanceof UnquotedStringToken translationSearch))
+      if (!(currentToken instanceof UnquotedStringToken unquotedString))
         throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_SEARCH_PATTERN);
 
-      var searchResult = translationRegistry.search(translationSearch);
+      if (unquotedString.value().startsWith("#")) {
+        if (unquotedString.value().substring(1).contains("#"))
+          throw new ItemPredicateParseException(currentToken, ParseConflict.LABEL_CANNOT_CONTAIN_HASHTAG);
+
+        tokens.remove(0);
+        return new LabelPredicate(unquotedString);
+      }
+
+      var searchResult = translationRegistry.search(unquotedString);
       var searchResultEntries = searchResult.result();
 
       // Wildcards may only apply to materials, not only because that's the only place where they make sense, but
@@ -271,7 +279,7 @@ public class PredicateParser {
         if (materials.isEmpty())
           throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
-        predicates.add(new MaterialPredicate(translationSearch, null, materials));
+        predicates.add(new MaterialPredicate(unquotedString, null, materials));
         tokens.remove(0);
         continue;
       }
@@ -285,7 +293,7 @@ public class PredicateParser {
 
       switch (shortestMatch.langKeyed.getPredicateType()) {
         case ITEM_MATERIAL -> {
-          predicates.add(new MaterialPredicate(translationSearch, (TranslatedLangKeyed<LangKeyedItemMaterial>) shortestMatch, null));
+          predicates.add(new MaterialPredicate(unquotedString, (TranslatedLangKeyed<LangKeyedItemMaterial>) shortestMatch, null));
           tokens.remove(0);
           continue;
         }

@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.function.Predicate;
 
 public interface ItemPredicate extends Predicate<ItemStack> {
@@ -46,5 +45,40 @@ public interface ItemPredicate extends Predicate<ItemStack> {
     }
 
     return false;
+  }
+
+  /**
+   * @return Clone with the removal carried out; null if there was nothing left.
+   */
+  default @Nullable ItemPredicate removeNodes(Predicate<ItemPredicate> condition) {
+    if (condition.test(this))
+      return null;
+
+    if (this instanceof UnaryNode unaryNode) {
+      var newOperand = unaryNode.removeNodes(condition);
+
+      if (newOperand == null)
+        return null;
+
+      return unaryNode.cloneWithNewOperand(newOperand);
+    }
+
+    if (this instanceof BinaryNode binaryNode) {
+      var newLhs = binaryNode.getLHS().removeNodes(condition);
+      var newRhs = binaryNode.getRHS().removeNodes(condition);
+
+      if (newLhs != null && newRhs != null)
+        return binaryNode.cloneWithNewOperands(newLhs, newRhs);
+
+      if (newLhs == null && newRhs == null)
+        return null;
+
+      if (newLhs == null)
+        return newRhs;
+
+      return newLhs;
+    }
+
+    return this;
   }
 }

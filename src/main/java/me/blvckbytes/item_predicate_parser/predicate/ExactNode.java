@@ -54,4 +54,9 @@ public record ExactNode(
   public ItemPredicate getOperand() {
     return operand;
   }
+
+  @Override
+  public UnaryNode cloneWithNewOperand(ItemPredicate newOperand) {
+    return new ExactNode(token, translatedLangKeyed, newOperand);
+  }
 }

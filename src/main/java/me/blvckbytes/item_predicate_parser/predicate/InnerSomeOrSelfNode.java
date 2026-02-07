@@ -8,4 +8,9 @@ public class InnerSomeOrSelfNode extends InnerNode {
   public InnerSomeOrSelfNode(Token token, TranslatedLangKeyed<?> translatedLangKeyed, ItemPredicate operand) {
     super(token, translatedLangKeyed, operand, InnerMode.SOME, true);
   }
+
+  @Override
+  public UnaryNode cloneWithNewOperand(ItemPredicate newOperand) {
+    return new InnerSomeOrSelfNode(token, translatedLangKeyed, newOperand);
+  }
 }

@@ -46,4 +46,9 @@ public record NegationNode(
   public ItemPredicate getOperand() {
     return operand;
   }
+
+  @Override
+  public UnaryNode cloneWithNewOperand(ItemPredicate newOperand) {
+    return new NegationNode(token, translatedLangKeyed, newOperand);
+  }
 }

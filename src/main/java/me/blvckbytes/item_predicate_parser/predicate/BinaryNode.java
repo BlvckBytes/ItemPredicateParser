@@ -6,4 +6,6 @@ public interface BinaryNode extends ItemPredicate {
 
   ItemPredicate getRHS();
 
+  BinaryNode cloneWithNewOperands(ItemPredicate newLhs, ItemPredicate newRhs);
+
 }

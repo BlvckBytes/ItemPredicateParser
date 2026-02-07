@@ -4,4 +4,6 @@ public interface UnaryNode extends ItemPredicate {
 
   ItemPredicate getOperand();
 
+  UnaryNode cloneWithNewOperand(ItemPredicate newOperand);
+
 }

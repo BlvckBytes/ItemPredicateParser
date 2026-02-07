@@ -8,4 +8,9 @@ public class InnerAllNode extends InnerNode {
   public InnerAllNode(Token token, TranslatedLangKeyed<?> translatedLangKeyed, ItemPredicate operand) {
     super(token, translatedLangKeyed, operand, InnerMode.ALL, false);
   }
+
+  @Override
+  public UnaryNode cloneWithNewOperand(ItemPredicate newOperand) {
+    return new InnerAllNode(token, translatedLangKeyed, newOperand);
+  }
 }

@@ -22,8 +22,8 @@ public abstract class InnerNode implements UnaryNode {
     AIR_LIST = Collections.singletonList(ItemPredicate.AIR_ITEM);
   }
 
-  private final Token token;
-  private final TranslatedLangKeyed<?> translatedLangKeyed;
+  protected final Token token;
+  protected final TranslatedLangKeyed<?> translatedLangKeyed;
   private final ItemPredicate operand;
   private final InnerMode mode;
   private final boolean allowSelf;

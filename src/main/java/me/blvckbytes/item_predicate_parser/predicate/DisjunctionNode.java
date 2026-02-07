@@ -61,4 +61,9 @@ public record DisjunctionNode(
   public ItemPredicate getRHS() {
     return rhs;
   }
+
+  @Override
+  public BinaryNode cloneWithNewOperands(ItemPredicate newLhs, ItemPredicate newRhs) {
+    return new DisjunctionNode(token, translatedLangKeyed, newLhs, newRhs);
+  }
 }

@@ -65,4 +65,9 @@ public record ConjunctionNode(
   public ItemPredicate getRHS() {
     return rhs;
   }
+
+  @Override
+  public BinaryNode cloneWithNewOperands(ItemPredicate newLhs, ItemPredicate newRhs) {
+    return new ConjunctionNode(token, translatedLangKeyed, newLhs, newRhs);
+  }
 }

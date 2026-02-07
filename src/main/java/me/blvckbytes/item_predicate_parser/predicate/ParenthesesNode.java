@@ -31,4 +31,9 @@ public record ParenthesesNode (
   public ItemPredicate getOperand() {
     return inner;
   }
+
+  @Override
+  public UnaryNode cloneWithNewOperand(ItemPredicate newOperand) {
+    return new ParenthesesNode(newOperand);
+  }
 }

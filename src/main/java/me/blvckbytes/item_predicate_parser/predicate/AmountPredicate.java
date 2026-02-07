@@ -7,8 +7,6 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.AmountKey;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record AmountPredicate(
   Token token,
   TranslatedLangKeyed<AmountKey> translatedLangKeyed,
@@ -34,11 +32,6 @@ public record AmountPredicate(
       output.appendSpace();
       output.appendString(amountArgument.stringify());
     });
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

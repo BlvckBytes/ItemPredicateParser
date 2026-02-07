@@ -8,7 +8,6 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantmen
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.Objects;
 
 public record EnchantmentPredicate(
@@ -53,11 +52,6 @@ public record EnchantmentPredicate(
         output.appendString(this.levelArgument.stringify());
       }
     });
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

@@ -8,7 +8,6 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.Objects;
 
 public record DeteriorationPredicate(
@@ -62,11 +61,6 @@ public record DeteriorationPredicate(
         output.appendString(deteriorationPercentageMax.stringify());
       }
     });
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

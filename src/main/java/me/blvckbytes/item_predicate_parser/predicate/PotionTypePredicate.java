@@ -7,8 +7,6 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedPotionType
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record PotionTypePredicate(
   Token token,
   TranslatedLangKeyed<LangKeyedPotionType> translatedLangKeyed
@@ -33,11 +31,6 @@ public record PotionTypePredicate(
       else
         output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
     });
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

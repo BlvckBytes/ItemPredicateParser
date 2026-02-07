@@ -6,8 +6,6 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.HasNameKey;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record HasNamePredicate(
   Token token,
   @Nullable TranslatedLangKeyed<HasNameKey> translatedLangKeyed
@@ -34,11 +32,6 @@ public record HasNamePredicate(
       else
         output.appendString(translatedLangKeyed.normalizedPrefixedTranslation);
     });
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

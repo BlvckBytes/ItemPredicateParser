@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.Objects;
 
 public class TextSearchPredicate implements ItemPredicate {
@@ -161,11 +160,6 @@ public class TextSearchPredicate implements ItemPredicate {
   @Override
   public void stringify(StringifyHandler handler) {
     handler.stringify(this, output -> output.appendString(token.stringify()));
-  }
-
-  @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node);
   }
 
   @Override

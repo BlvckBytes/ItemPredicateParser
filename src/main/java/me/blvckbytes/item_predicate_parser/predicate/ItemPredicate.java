@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Predicate;
 
 public interface ItemPredicate extends Predicate<ItemStack> {
@@ -30,6 +31,20 @@ public interface ItemPredicate extends Predicate<ItemStack> {
 
   void stringify(StringifyHandler handler);
 
-  boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags);
+  default boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    if (equals(node))
+      return true;
 
+    if (this instanceof UnaryNode unaryNode)
+      return unaryNode.getOperand().containsOrEqualsPredicate(node, comparisonFlags);
+
+    if (this instanceof BinaryNode binaryNode) {
+      if (binaryNode.getLHS().containsOrEqualsPredicate(node, comparisonFlags))
+        return true;
+
+      return binaryNode.getRHS().containsOrEqualsPredicate(node, comparisonFlags);
+    }
+
+    return false;
+  }
 }

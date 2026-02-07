@@ -5,13 +5,11 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record NegationNode(
   Token token,
   TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate operand
-) implements ItemPredicate {
+) implements UnaryNode {
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
@@ -37,15 +35,15 @@ public record NegationNode(
   }
 
   @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node) || operand.containsOrEqualsPredicate(node, comparisonFlags);
-  }
-
-  @Override
   public boolean equals(Object other) {
     if (!(other instanceof NegationNode otherPredicate))
       return false;
 
     return this.operand.equals(otherPredicate.operand);
+  }
+
+  @Override
+  public ItemPredicate getOperand() {
+    return operand;
   }
 }

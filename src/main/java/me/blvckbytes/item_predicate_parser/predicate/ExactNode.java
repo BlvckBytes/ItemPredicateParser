@@ -5,13 +5,11 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record ExactNode(
   Token token,
   TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate operand
-) implements ItemPredicate {
+) implements UnaryNode {
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
@@ -45,15 +43,15 @@ public record ExactNode(
   }
 
   @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node) || operand.containsOrEqualsPredicate(node, comparisonFlags);
-  }
-
-  @Override
   public boolean equals(Object other) {
     if (!(other instanceof ExactNode otherNode))
       return false;
 
     return this.operand.equals(otherNode.operand);
+  }
+
+  @Override
+  public ItemPredicate getOperand() {
+    return operand;
   }
 }

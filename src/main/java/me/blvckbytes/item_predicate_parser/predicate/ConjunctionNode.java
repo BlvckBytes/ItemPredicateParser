@@ -5,14 +5,12 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
-
 public record ConjunctionNode(
   @Nullable Token token,
   TranslatedLangKeyed<?> translatedLangKeyed,
   ItemPredicate lhs,
   ItemPredicate rhs
-) implements ItemPredicate {
+) implements BinaryNode {
 
   @Override
   public @Nullable ItemPredicate testForFailure(PredicateState state) {
@@ -48,11 +46,6 @@ public record ConjunctionNode(
   }
 
   @Override
-  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
-    return equals(node) || lhs.containsOrEqualsPredicate(node, comparisonFlags) || rhs.containsOrEqualsPredicate(node, comparisonFlags);
-  }
-
-  @Override
   public boolean equals(Object other) {
     if (!(other instanceof ConjunctionNode otherPredicate))
       return false;
@@ -61,5 +54,15 @@ public record ConjunctionNode(
       return false;
 
     return this.lhs.equals(otherPredicate.lhs);
+  }
+
+  @Override
+  public ItemPredicate getLHS() {
+    return lhs;
+  }
+
+  @Override
+  public ItemPredicate getRHS() {
+    return rhs;
   }
 }

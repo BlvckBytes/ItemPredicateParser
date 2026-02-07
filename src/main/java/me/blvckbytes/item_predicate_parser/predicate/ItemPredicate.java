@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public interface ItemPredicate extends Predicate<ItemStack> {
@@ -29,6 +30,6 @@ public interface ItemPredicate extends Predicate<ItemStack> {
 
   void stringify(StringifyHandler handler);
 
-  boolean isTransitiveParentTo(ItemPredicate node);
+  boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags);
 
 }

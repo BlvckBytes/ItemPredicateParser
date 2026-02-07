@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.Objects;
 
 public class TextSearchPredicate implements ItemPredicate {
@@ -163,15 +164,16 @@ public class TextSearchPredicate implements ItemPredicate {
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof TextSearchPredicate that)) return false;
-    return Objects.equals(token.value(), that.token.value());
+  public boolean equals(Object other) {
+    if (!(other instanceof TextSearchPredicate otherPredicate))
+      return false;
+
+    return token.value().equals(otherPredicate.token.value());
   }
 
   @Override

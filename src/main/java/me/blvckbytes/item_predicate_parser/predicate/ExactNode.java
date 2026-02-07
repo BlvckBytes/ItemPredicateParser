@@ -5,6 +5,8 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record ExactNode(
   Token token,
   TranslatedLangKeyed<?> translatedLangKeyed,
@@ -43,7 +45,15 @@ public record ExactNode(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return operand == node || operand.isTransitiveParentTo(node);
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node) || operand.containsOrEqualsPredicate(node, comparisonFlags);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof ExactNode otherNode))
+      return false;
+
+    return this.operand.equals(otherNode.operand);
   }
 }

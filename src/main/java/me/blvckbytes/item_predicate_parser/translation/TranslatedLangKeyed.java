@@ -62,4 +62,12 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
     return new String(result, 0, nextResultIndex);
   }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof TranslatedLangKeyed<?> otherLangKeyed))
+      return false;
+
+    return langKeyed.getWrapped().equals(otherLangKeyed.langKeyed.getWrapped());
+  }
 }

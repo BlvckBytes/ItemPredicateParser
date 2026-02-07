@@ -3,6 +3,8 @@ package me.blvckbytes.item_predicate_parser.predicate;
 import me.blvckbytes.item_predicate_parser.predicate.stringify.StringifyHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record ParenthesesNode (
   ItemPredicate inner
 ) implements ItemPredicate {
@@ -20,7 +22,15 @@ public record ParenthesesNode (
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return inner == node || inner.isTransitiveParentTo(node);
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node) || inner.containsOrEqualsPredicate(node, comparisonFlags);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof ParenthesesNode otherPredicate))
+      return false;
+
+    return this.inner.equals(otherPredicate.inner);
   }
 }

@@ -6,6 +6,8 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.AnyKey;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record AnyPredicate(
   Token token,
   @Nullable TranslatedLangKeyed<AnyKey> translatedLangKeyed
@@ -30,7 +32,12 @@ public record AnyPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof AnyPredicate;
   }
 }

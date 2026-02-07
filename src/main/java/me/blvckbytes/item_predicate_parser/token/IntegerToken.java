@@ -3,6 +3,8 @@ package me.blvckbytes.item_predicate_parser.token;
 import me.blvckbytes.item_predicate_parser.parse.ParserInput;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * @param value The null-value represents a wildcard
  */
@@ -46,5 +48,19 @@ public record IntegerToken(
       return "<" + this.value;
 
     return this.value.toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof IntegerToken otherToken))
+      return false;
+
+    if (this.wasTimeNotation != otherToken.wasTimeNotation)
+      return false;
+
+    if (this.comparisonMode != otherToken.comparisonMode)
+      return false;
+
+    return Objects.equals(this.value, otherToken.value);
   }
 }

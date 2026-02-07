@@ -7,6 +7,8 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedMusicInstr
 import org.bukkit.inventory.meta.MusicInstrumentMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record MusicInstrumentPredicate(
   Token token,
   TranslatedLangKeyed<LangKeyedMusicInstrument> translatedLangKeyed
@@ -34,7 +36,15 @@ public record MusicInstrumentPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof MusicInstrumentPredicate otherPredicate))
+      return false;
+
+    return this.translatedLangKeyed.equals(otherPredicate.translatedLangKeyed);
   }
 }

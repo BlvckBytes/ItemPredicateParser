@@ -8,6 +8,9 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.LangKeyedEnchantmen
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+import java.util.Objects;
+
 public record EnchantmentPredicate(
   Token token,
   TranslatedLangKeyed<LangKeyedEnchantment> translatedLangKeyed,
@@ -53,7 +56,18 @@ public record EnchantmentPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof EnchantmentPredicate otherPredicate))
+      return false;
+
+    if (!this.translatedLangKeyed.equals(otherPredicate.translatedLangKeyed))
+      return false;
+
+    return Objects.equals(levelArgument, otherPredicate.levelArgument);
   }
 }

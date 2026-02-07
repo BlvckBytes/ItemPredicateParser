@@ -6,6 +6,8 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record VariablePredicate(
   @Nullable Token token,
   TranslatedLangKeyed<VariableKey> translatedLangKeyed
@@ -35,7 +37,15 @@ public record VariablePredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof VariablePredicate otherPredicate))
+      return false;
+
+    return this.translatedLangKeyed.equals(otherPredicate.translatedLangKeyed);
   }
 }

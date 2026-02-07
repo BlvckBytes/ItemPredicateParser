@@ -7,6 +7,8 @@ import me.blvckbytes.item_predicate_parser.translation.keyed.AmountKey;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record AmountPredicate(
   Token token,
   TranslatedLangKeyed<AmountKey> translatedLangKeyed,
@@ -35,7 +37,15 @@ public record AmountPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof AmountPredicate otherPredicate))
+      return false;
+
+    return amountArgument.equals(otherPredicate.amountArgument);
   }
 }

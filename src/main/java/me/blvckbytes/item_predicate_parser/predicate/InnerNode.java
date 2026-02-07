@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 public abstract class InnerNode implements ItemPredicate {
@@ -87,8 +88,22 @@ public abstract class InnerNode implements ItemPredicate {
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return operand == node || operand.isTransitiveParentTo(node);
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node) || operand.containsOrEqualsPredicate(node, comparisonFlags);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof InnerNode otherPredicate))
+      return false;
+
+    if (this.mode != otherPredicate.mode)
+      return false;
+
+    if (this.allowSelf != otherPredicate.allowSelf)
+      return false;
+
+    return this.operand.equals(otherPredicate.operand);
   }
 
   private List<ItemStack> getInnerItems(ItemMeta meta) {

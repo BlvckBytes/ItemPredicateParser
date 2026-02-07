@@ -5,6 +5,8 @@ import me.blvckbytes.item_predicate_parser.token.Token;
 import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+
 public record DisjunctionNode(
   Token token,
   TranslatedLangKeyed<?> translatedLangKeyed,
@@ -42,7 +44,18 @@ public record DisjunctionNode(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return lhs == node || lhs.isTransitiveParentTo(node) || rhs == node || rhs.isTransitiveParentTo(node);
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node) || lhs.containsOrEqualsPredicate(node, comparisonFlags) || rhs.containsOrEqualsPredicate(node, comparisonFlags);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof DisjunctionNode otherPredicate))
+      return false;
+
+    if (!this.rhs.equals(otherPredicate.rhs))
+      return false;
+
+    return this.lhs.equals(otherPredicate.lhs);
   }
 }

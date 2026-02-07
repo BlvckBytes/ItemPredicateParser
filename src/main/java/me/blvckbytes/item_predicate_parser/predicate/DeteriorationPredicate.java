@@ -8,6 +8,9 @@ import me.blvckbytes.item_predicate_parser.translation.TranslatedLangKeyed;
 import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+import java.util.Objects;
+
 public record DeteriorationPredicate(
   Token token,
   TranslatedLangKeyed<DeteriorationKey> translatedLangKeyed,
@@ -62,7 +65,18 @@ public record DeteriorationPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof DeteriorationPredicate otherPredicate))
+      return false;
+
+    if (!Objects.equals(this.deteriorationPercentageMin, otherPredicate.deteriorationPercentageMin))
+      return false;
+
+    return Objects.equals(this.deteriorationPercentageMax, otherPredicate.deteriorationPercentageMax);
   }
 }

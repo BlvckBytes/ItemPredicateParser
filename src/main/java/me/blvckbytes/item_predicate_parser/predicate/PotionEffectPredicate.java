@@ -9,6 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+import java.util.Objects;
+
 public record PotionEffectPredicate(
   Token token,
   TranslatedLangKeyed<LangKeyedPotionEffectType> translatedLangKeyed,
@@ -60,8 +63,22 @@ public record PotionEffectPredicate(
   }
 
   @Override
-  public boolean isTransitiveParentTo(ItemPredicate node) {
-    return false;
+  public boolean containsOrEqualsPredicate(ItemPredicate node, EnumSet<ComparisonFlag> comparisonFlags) {
+    return equals(node);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof PotionEffectPredicate otherPredicate))
+      return false;
+
+    if (!this.translatedLangKeyed.equals(otherPredicate.translatedLangKeyed))
+      return false;
+
+    if (!Objects.equals(this.amplifierArgument, otherPredicate.amplifierArgument))
+      return false;
+
+    return Objects.equals(this.durationArgument, otherPredicate.durationArgument);
   }
 
   private boolean doesAmplifierMismatch(int amplifier) {

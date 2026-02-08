@@ -55,7 +55,7 @@ public interface ItemPredicate extends Predicate<ItemStack> {
       return null;
 
     if (this instanceof UnaryNode unaryNode) {
-      var newOperand = unaryNode.removeNodes(condition);
+      var newOperand = unaryNode.getOperand().removeNodes(condition);
 
       if (newOperand == null)
         return null;

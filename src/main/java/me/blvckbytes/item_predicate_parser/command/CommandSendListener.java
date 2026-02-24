@@ -1,6 +1,7 @@
-package me.blvckbytes.item_predicate_parser;
+package me.blvckbytes.item_predicate_parser.command;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import me.blvckbytes.item_predicate_parser.PluginPermission;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;

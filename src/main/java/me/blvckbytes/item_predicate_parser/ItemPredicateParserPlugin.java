@@ -3,6 +3,8 @@ package me.blvckbytes.item_predicate_parser;
 import at.blvckbytes.cm_mapper.ConfigHandler;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.cm_mapper.section.command.CommandUpdater;
+import me.blvckbytes.item_predicate_parser.command.CommandSendListener;
+import me.blvckbytes.item_predicate_parser.command.ItemPredicateParserCommand;
 import me.blvckbytes.item_predicate_parser.config.ItemPredicateParserCommandSection;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHandler;

@@ -4,25 +4,24 @@ import at.blvckbytes.cm_mapper.cm.ComponentMarkup;
 import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
-import org.jetbrains.annotations.Nullable;
 
 public class PlayerMessagesSection extends ConfigSection {
 
-  public @Nullable ComponentMarkup commandOnlyForPlayers;
-  public @Nullable ComponentMarkup pluginReloadedSuccess;
-  public @Nullable ComponentMarkup pluginReloadedError;
-  public @Nullable ComponentMarkup usageIppCommandAction;
-  public @Nullable ComponentMarkup usageIppLanguage;
-  public @Nullable ComponentMarkup predicateTestResult;
-  public @Nullable ComponentMarkup predicateParseError;
-  public @Nullable ComponentMarkup showingVariables;
-  public @Nullable ComponentMarkup unknownVariableName;
-  public @Nullable ComponentMarkup variablesTestNoResults;
-  public @Nullable ComponentMarkup variablesTestResults;
-  public @Nullable ComponentMarkup noItemInMainHand;
-  public @Nullable ComponentMarkup languageSelected;
+  public ComponentMarkup commandOnlyForPlayers;
+  public ComponentMarkup pluginReloadedSuccess;
+  public ComponentMarkup pluginReloadedError;
+  public ComponentMarkup usageIppCommandAction;
+  public ComponentMarkup usageIppLanguage;
+  public ComponentMarkup predicateTestResult;
+  public ComponentMarkup predicateParseError;
+  public ComponentMarkup showingVariables;
+  public ComponentMarkup unknownVariableName;
+  public ComponentMarkup variablesTestNoResults;
+  public ComponentMarkup variablesTestResults;
+  public ComponentMarkup noItemInMainHand;
+  public ComponentMarkup languageSelected;
 
-  public @Nullable ComponentMarkup missingPermissionIppCommand;
+  public ComponentMarkup missingPermissionIppCommand;
 
   public PlayerMessagesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(baseEnvironment, interpreterLogger);

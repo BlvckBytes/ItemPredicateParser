@@ -11,6 +11,9 @@ public enum CommandAction implements MatchableEnum {
   VARIABLES,
   LANGUAGE,
   TEST,
+  GET,
+  SET,
+  SET_LANGUAGE,
   REMOVE,
   ;
 
@@ -23,6 +26,8 @@ public enum CommandAction implements MatchableEnum {
         case LANGUAGE -> PluginPermission.IPP_LANGUAGE_COMMAND.has(player);
         case VARIABLES -> PluginPermission.IPP_VARIABLES_COMMAND.has(player);
         case RELOAD -> PluginPermission.IPP_RELOAD_COMMAND.has(player);
+        case GET -> PluginPermission.IPP_GET_COMMAND.has(player);
+        case SET, SET_LANGUAGE -> PluginPermission.IPP_SET_COMMAND.has(player);
         case REMOVE -> PluginPermission.IPP_REMOVE_COMMAND.has(player);
       }
     );

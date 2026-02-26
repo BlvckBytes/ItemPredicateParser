@@ -20,8 +20,24 @@ public class PlayerMessagesSection extends ConfigSection {
   public ComponentMarkup variablesTestResults;
   public ComponentMarkup noItemInMainHand;
   public ComponentMarkup languageSelected;
-
   public ComponentMarkup missingPermissionIppCommand;
+  public ComponentMarkup accessDeniedForBlock;
+  public ComponentMarkup blockDoesNotSupportPredicates;
+  public ComponentMarkup blockHasPredicateError;
+  public ComponentMarkup blockHasNoPredicateSet;
+  public ComponentMarkup getPredicateInitialized;
+  public ComponentMarkup getPredicateFromBlock;
+  public ComponentMarkup setPredicateInitialized;
+  public ComponentMarkup setPredicateOnBlock;
+  public ComponentMarkup setPredicateMissingLanguage;
+  public ComponentMarkup setPredicateUnknownLanguage;
+  public ComponentMarkup setPredicateEmpty;
+  public ComponentMarkup removePredicateInitialized;
+  public ComponentMarkup removePredicateFromBlock;
+  public ComponentMarkup predicateInteractionExpired;
+  public ComponentMarkup predicateInteractionMultiModeActionBarSignal;
+  public ComponentMarkup predicateInteractionMultiModeEntered;
+  public ComponentMarkup predicateInteractionMultiModeExited;
 
   public PlayerMessagesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(baseEnvironment, interpreterLogger);

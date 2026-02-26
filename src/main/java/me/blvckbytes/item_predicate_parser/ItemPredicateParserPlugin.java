@@ -52,7 +52,11 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       var commandUpdater = new CommandUpdater(this);
       var command = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
 
-      command.setExecutor(new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger));
+      var commandHandler = new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger);
+
+      command.setExecutor(commandHandler);
+      Bukkit.getServer().getPluginManager().registerEvents(commandHandler, this);
+      Bukkit.getScheduler().scheduleSyncRepeatingTask(this, commandHandler::tickSessions, 0L, 5L);
 
       Runnable updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);

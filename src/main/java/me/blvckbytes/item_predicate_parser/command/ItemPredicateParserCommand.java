@@ -3,6 +3,8 @@ package me.blvckbytes.item_predicate_parser.command;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.cm_mapper.ReloadPriority;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import me.blvckbytes.item_predicate_parser.NameScopedKeyValueStore;
 import me.blvckbytes.item_predicate_parser.PredicateHelper;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
@@ -58,6 +60,9 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
   private final Map<TranslationLanguage, List<TranslatedLangKeyed<VariableKey>>> variablesByLanguage;
   private final Map<UUID, PredicateInteractionSession> interactionSessionByPlayerId;
+  private final Object2LongMap<UUID> lastEventCancelTimeByPlayerId;
+
+  private int currentTime;
 
   public ItemPredicateParserCommand(
     VariablesDisplayHandler variablesDisplayHandler,
@@ -76,6 +81,9 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
     this.variablesByLanguage = new HashMap<>();
     this.interactionSessionByPlayerId = new HashMap<>();
+
+    this.lastEventCancelTimeByPlayerId = new Object2LongOpenHashMap<>();
+    this.lastEventCancelTimeByPlayerId.defaultReturnValue(-1);
 
     config.registerReloadListener(this::findVariables, ReloadPriority.LOW);
 
@@ -572,7 +580,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     return List.of();
   }
 
-  public void tickSessions() {
+  public void tick(int time) {
+    this.currentTime = time;
+
+    if (time % 5 != 0)
+      return;
+
     for (var iterator = interactionSessionByPlayerId.values().iterator(); iterator.hasNext();) {
       var session = iterator.next();
       var expirySeconds = config.rootSection.commands.itemPredicateParser.predicateInteractionExpirySeconds;
@@ -609,7 +622,9 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
-    interactionSessionByPlayerId.remove(event.getPlayer().getUniqueId());
+    var playerId = event.getPlayer().getUniqueId();
+    interactionSessionByPlayerId.remove(playerId);
+    lastEventCancelTimeByPlayerId.removeLong(playerId);
   }
 
   @EventHandler
@@ -677,7 +692,19 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
   }
 
   private boolean handleInteractionSessionAndGetIfCancel(Player player, Block target) {
-    var interactionSession = interactionSessionByPlayerId.get(player.getUniqueId());
+    var playerId = player.getUniqueId();
+
+    var lastCancelStamp = lastEventCancelTimeByPlayerId.getLong(playerId);
+
+    // Some events, like interact/block-break, may call multiple times, and if we're not in
+    // multi-use mode, the session will have been removed at this point; also, avoid spamming
+    // interactions which have only been initiated once by a single click. Some blocks like
+    // grass, mushrooms, etc. will fire multiple times (up to 3-4 ticks delayed!) - also save
+    // those from being destroyed accidentally.
+    if (lastCancelStamp >= 0 && currentTime - lastCancelStamp <= 5)
+      return true;
+
+    var interactionSession = interactionSessionByPlayerId.get(playerId);
 
     if (interactionSession == null)
       return false;
@@ -688,6 +715,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     interactionSession.interactionHandler.accept(target);
     interactionSession.touchExpiry();
 
+    lastEventCancelTimeByPlayerId.put(playerId, currentTime);
     return true;
   }
 }

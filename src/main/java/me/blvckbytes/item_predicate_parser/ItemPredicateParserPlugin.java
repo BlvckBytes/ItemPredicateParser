@@ -28,6 +28,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
   private NameScopedKeyValueStore keyValueStore;
   private WebApiServer webApiServer;
 
+  private int time;
+
   @Override
   public void onEnable() {
     var logger = getLogger();
@@ -56,7 +58,11 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
       command.setExecutor(commandHandler);
       Bukkit.getServer().getPluginManager().registerEvents(commandHandler, this);
-      Bukkit.getScheduler().scheduleSyncRepeatingTask(this, commandHandler::tickSessions, 0L, 5L);
+
+      Bukkit.getScheduler().runTaskTimer(this, () -> {
+        ++time;
+        commandHandler.tick(time);
+      }, 0, 1);
 
       Runnable updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);

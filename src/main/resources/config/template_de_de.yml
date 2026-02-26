@@ -49,45 +49,43 @@ playerMessages:
   noItemInMainHand: '{lut.prefix} <&c>Du hältst kein Item in deiner <&4>Haupthand<&c>!'
   languageSelected: '{lut.prefix} <&7>Die Sprache <&a>{language} <&7>wird von nun an für alle weiteren IPP(-verwandten) Befehle, die keine explizite Sprachauswahl fordern, benutzt.'
   missingPermissionIppCommand: '{lut.prefix} <&c>Dir fehlen die nötigen Rechte, um diesen Befehl benutzen zu können.'
-  # TODO: Translate these messages
-  accessDeniedForBlock: '{lut.prefix} <&c>You <&4>lack access <&c>to the block at <&4>{x} {y} {z}<&c>!'
-  blockDoesNotSupportPredicates: '{lut.prefix} <&c>The block at <&4>{x} {y} {z} <&c>does <&4>not support <&c>predicates!'
-  blockHasPredicateError: '{lut.prefix} <&c>The block at <&4>{x} {y} {z} <&c>has encountered a predicate-error: <&4>{predicate_error}'
-  blockHasNoPredicateSet: '{lut.prefix} <&c>The block at <&4>{x} {y} {z} <&c>has <&4>no <&c>predicate set!'
-  getPredicateInitialized: '{lut.prefix} <&7>Interact with a block to <&a>read <&7>its assigned predicate; use <&a>sneak + left-click <&7>to enter multi-mode.'
+  accessDeniedForBlock: '{lut.prefix} <&c>Dir fehlen die <&4>Zugriffsrechte <&c>für den Block bei <&4>{x} {y} {z}<&c>!'
+  blockDoesNotSupportPredicates: '{lut.prefix} <&c>Der Block bei <&4>{x} {y} {z} <&c>unterstützt <&4>keine <&c>Prädikate!'
+  blockHasPredicateError: '{lut.prefix} <&c>Der Block bei <&4>{x} {y} {z} <&c>hatte einen Prädikatsfehler: <&4>{predicate_error}'
+  blockHasNoPredicateSet: '{lut.prefix} <&c>Der Block bei <&4>{x} {y} {z} <&c>hat <&4>kein <&c>gesetztes Prädikat!'
+  getPredicateInitialized: '{lut.prefix} <&7>Interagiere mit einem Block, um das gesetzte Prädikat zu <&a>lesen<&7>; nutze <&a>Sneak + Linksklick<&7>, um in den Multi-Modus zu wechseln.'
   getPredicateFromBlock: |
-    {lut.prefix} <&7>The predicate at <&a>{x} {y} {z} <&7>is<space/>
-    <hover-text value={<&a>Click to suggest a set-command}>
+    {lut.prefix} <&7>Das Prädikat bei <&a>{x} {y} {z} <&7>lautet<space/>
+    <hover-text value={<&a>Klicke, um einen Set-Befehl vorzuschlagen}>
       <suggest-command value=`{set_command}`>
         <&a><u>{predicate}
     </hover-text>
     <&7>.
-  setPredicateInitialized: '{lut.prefix} <&7>Interact with a block to <&a>set <&7>its assigned predicate to <&a>{predicate}<&7>; use <&a>sneak + left-click <&7>to enter multi-mode.'
+  setPredicateInitialized: '{lut.prefix} <&7>Interagiere mit einem Block, um dessen Prädikat auf <&a>{predicate} <&7>zu <&a>setzen<&7>; nutze <&a>Sneak + Linksklick<&7>, um in den Multi-Modus zu wechseln.'
   setPredicateOnBlock: |
-    {lut.prefix} <&7>The predicate<space/>
-    <hover-text value={<&a>Click to suggest a set-command}>
+    {lut.prefix} <&7>Das Prädikat<space/>
+    <hover-text value={<&a>Klicke, um einen Set-Befehl vorzuschlagen}>
       <suggest-command value=`{set_command}`>
         <&a><u>{predicate}
     </hover-text>
-    <&7> has been <&a>set <&7>at <&a>{x} {y} {z}<&7>.
-  setPredicateMissingLanguage: '{lut.prefix} <&c>Please provide the desired language as the next command-parameter!'
+    <&7> wurde bei <&a>{x} {y} {z} <&7>erfolgreich <&a>gesetzt<&7>.
+  setPredicateMissingLanguage: '{lut.prefix} <&c>Bitte gib die gewünschte Sprache als nächsten Befehlsparameter an!'
   setPredicateUnknownLanguage: |
-    {lut.prefix} <&c>The input of <&4>{input} <&c>does not resemble a known language; choose one of:<space/>
+    {lut.prefix} <&c>Die Eingabe <&4>{input} <&c>stellt keine bekannte Sprache dar; wähle aus:<space/>
     <&4 *for-language="languages" *for-separator={,<space/>}>{language}
-  setPredicateEmpty: '{lut.prefix} <&c>Please provide a valid, non-empty predicate!'
-  commandPipePredicateRemoveInit: '{lut.prefix} <&7>Interagiere mit einem <&a>Kolben, einem Behälter oder einem Schild<&7>, um dessen Prädikat zu <&a>entfernen<&7>; nutze <&a>Sneak + Linksklick<&7>, um den <&a>Mehrfachmodus <&7>zu aktivieren.'
-  removePredicateInitialized: '{lut.prefix} <&7>Interact with a block to <&a>remove <&7>its assigned predicate; use <&a>sneak + left-click <&7>to enter multi-mode.'
+  setPredicateEmpty: '{lut.prefix} <&c>Bitte gib ein korrektes, nicht-leeres Prädikat an!'
+  removePredicateInitialized: '{lut.prefix} <&7>Interagiere mit einem Block, um dessen Prädikat zu <&a>entfernen<&7>; nutze <&a>Sneak + Linksklick<&7>, um in den Multi-Modus zu wechseln.'
   removePredicateFromBlock: |
-    {lut.prefix} <&7>The predicate<space/>
-    <hover-text value={<&a>Click to suggest a set-command}>
+    {lut.prefix} <&7>Das Prädikat<space/>
+    <hover-text value={<&a>Klicke, um einen Set-Befehl vorzuschlagen}>
       <suggest-command value=`{set_command}`>
         <&a><u>{predicate}
     </hover-text>
-    <&7> has been <&a>removed <&7>at <&a>{x} {y} {z}<&7>.
-  predicateInteractionExpired: '{lut.prefix} <&c>Your pending predicate-interaction expired due to <&4>{expiry_seconds}s of inactivity<&c>.'
-  predicateInteractionMultiModeActionBarSignal: '<&a><&l>multi-mode active; quit: sneak + left-click'
-  predicateInteractionMultiModeEntered: '{lut.prefix} <&7>You have <&a>entered <&7>multi-mode and may now dispatch your predicate-interaction multiple times by interacting; use <&a>sneak + left-click <&7>to exit this mode.'
-  predicateInteractionMultiModeExited: '{lut.prefix} <&7>You have <&a>exited <&7>multi-mode.'
+    <&7> wurde bei <&a>{x} {y} {z} <&7>erfolgreich <&a>entfernt<&7>.
+  predicateInteractionExpired: '{lut.prefix} <&c>Deine ausstehende Prädikatsinteraktion ist aufgrund von <&4>Inaktivität nach {expiry_seconds}s <&c>abgelaufen.'
+  predicateInteractionMultiModeActionBarSignal: '<&a><&l>Multi-Modus aktiv; verlassen: Sneak + Linksklick'
+  predicateInteractionMultiModeEntered: '{lut.prefix} <&7>Du hast den Multi-Modus <&a>betreten <&7>und kannst deine Prädikatsinteraktion nun mehrfach durch klicken ausführen; nutze <&a>Sneak + Linksklick<&7>, um den Multi-Modus zu verlassen.'
+  predicateInteractionMultiModeExited: '{lut.prefix} <&7>Du hast den Multi-Modus <&a>verlassen<&7>.'
 
 defaultSelectedLanguage: GERMAN_DE
 

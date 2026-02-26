@@ -74,7 +74,6 @@ playerMessages:
     {lut.prefix} <&c>The input of <&4>{input} <&c>does not resemble a known language; choose one of:<space/>
     <&4 *for-language="languages" *for-separator={,<space/>}>{language}
   setPredicateEmpty: '{lut.prefix} <&c>Please provide a valid, non-empty predicate!'
-  commandPipePredicateRemoveInit: '{lut.prefix} <&7>Interagiere mit einem <&a>Kolben, einem Behälter oder einem Schild<&7>, um dessen Prädikat zu <&a>entfernen<&7>; nutze <&a>Sneak + Linksklick<&7>, um den <&a>Mehrfachmodus <&7>zu aktivieren.'
   removePredicateInitialized: '{lut.prefix} <&7>Interact with a block to <&a>remove <&7>its assigned predicate; use <&a>sneak + left-click <&7>to enter multi-mode.'
   removePredicateFromBlock: |
     {lut.prefix} <&7>The predicate<space/>

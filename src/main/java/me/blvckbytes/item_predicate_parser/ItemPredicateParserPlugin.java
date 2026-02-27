@@ -11,6 +11,7 @@ import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHand
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.resolver.PluginTranslationResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +28,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
   private VariablesDisplayHandler variablesDisplayHandler;
   private NameScopedKeyValueStore keyValueStore;
   private WebApiServer webApiServer;
+  private PluginCommand mainCommand;
 
   private int time;
 
@@ -52,11 +54,11 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       Bukkit.getServer().getPluginManager().registerEvents(variablesDisplayHandler, this);
 
       var commandUpdater = new CommandUpdater(this);
-      var command = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
+      mainCommand = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
 
       var commandHandler = new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger);
 
-      command.setExecutor(commandHandler);
+      mainCommand.setExecutor(commandHandler);
       Bukkit.getServer().getPluginManager().registerEvents(commandHandler, this);
 
       Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -65,7 +67,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       }, 0, 1);
 
       Runnable updateCommands = () -> {
-        config.rootSection.commands.itemPredicateParser.apply(command, commandUpdater);
+        config.rootSection.commands.itemPredicateParser.apply(mainCommand, commandUpdater);
         commandUpdater.trySyncCommands();
       };
 
@@ -109,6 +111,10 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
   public PredicateHelper getPredicateHelper() {
     return predicateHelper;
+  }
+
+  public PluginCommand getMainCommand() {
+    return mainCommand;
   }
 
   public static @Nullable ItemPredicateParserPlugin getInstance() {

@@ -22,10 +22,11 @@ public class VersionDependentCodeFactory {
   public VersionDependentCodeFactory(DetectedServerVersion serverVersion, Logger logger) throws Throwable {
     Class<?> targetClass;
 
-    if (serverVersion.major() != 1)
-      throw new IllegalStateException("Cannot handle a major-version greater than one");
+    // Let's just fall back to the very latest API for 26.1+
+    if (serverVersion.major() > 1)
+      targetClass = Class.forName(GT_1_20_PATH.replace('/', '.'));
 
-    if (serverVersion.minor() == 20)
+    else if (serverVersion.minor() == 20)
       targetClass = Class.forName(E_1_20_PATH.replace('/', '.'));
 
     else if (serverVersion.minor() > 20)

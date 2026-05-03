@@ -7,6 +7,7 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
 
   public final LangKeyedSource source;
   public final T langKeyed;
+  public final String translation;
   public final String normalizedUnPrefixedTranslation;
   public final String normalizedPrefixedTranslation;
   public final Syllables syllables;
@@ -16,11 +17,13 @@ public class TranslatedLangKeyed<T extends LangKeyed<?>> {
   public TranslatedLangKeyed(
     LangKeyedSource source,
     T langKeyed,
+    String translation,
     String normalizedUnPrefixedTranslation,
     String normalizedPrefixedTranslation
   ) {
     this.source = source;
     this.langKeyed = langKeyed;
+    this.translation = translation;
     this.normalizedUnPrefixedTranslation = normalizedUnPrefixedTranslation;
     this.normalizedPrefixedTranslation = normalizedPrefixedTranslation;
     this.syllables = Syllables.forString(normalizedPrefixedTranslation, Syllables.DELIMITER_SEARCH_PATTERN);

@@ -21,14 +21,17 @@ import java.util.logging.Logger;
 
 public class TranslationRegistry implements SingletonTranslationRegistry {
 
+  private record LangKeyedAndTranslation(LangKeyed<?> langKeyed, String translation) {}
+
   public final TranslationLanguage language;
   public final JsonObject languageFile;
 
   private final IVersionDependentCode versionDependentCode;
   private final @Nullable TranslationResolver translationResolver;
   private final Logger logger;
+
   private TranslatedLangKeyed<?>[] entries;
-  private Map<Object, String> translationByWrapped;
+  private Map<Object, TranslatedLangKeyed<?>> entryByWrapped;
 
   public TranslationRegistry(
     TranslationLanguage language,
@@ -50,15 +53,20 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
 
   public void initialize(Iterable<LangKeyedSource> sources) {
     var unsortedEntries = new ArrayList<TranslatedLangKeyed<?>>();
-    translationByWrapped = new HashMap<>();
+    entryByWrapped = new HashMap<>();
 
     for (var source : sources)
-      createEntries(source, unsortedEntries, translationByWrapped);
+      createEntries(source, unsortedEntries);
 
     this.entries = unsortedEntries
       .stream()
       .sorted(Comparator.comparing(it -> it.normalizedPrefixedTranslation))
       .toArray(TranslatedLangKeyed[]::new);
+
+    this.entryByWrapped = new HashMap<>();
+
+    for (var entry : entries)
+      entryByWrapped.put(entry.langKeyed.getWrapped(), entry);
 
     var entryIndex = 0;
 
@@ -70,7 +78,22 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
 
   @Override
   public @Nullable String getTranslationBySingleton(Object instance) {
-    return translationByWrapped.get(instance);
+    var entry = entryByWrapped.get(instance);
+
+    if (entry == null)
+      return null;
+
+    return entry.translation;
+  }
+
+  @Override
+  public @Nullable String getNormalizedPrefixedTranslationBySingleton(Object instance) {
+    var entry = entryByWrapped.get(instance);
+
+    if (entry == null)
+      return null;
+
+    return entry.normalizedPrefixedTranslation;
   }
 
   @SuppressWarnings("unchecked")
@@ -159,12 +182,8 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
     return new SearchResult(result, wildcardMode);
   }
 
-  private void createEntries(
-    LangKeyedSource source,
-    List<TranslatedLangKeyed<?>> translatedOutput,
-    Map<Object, String> translationByWrappedOutput
-  ) {
-    var buckets = new HashMap<String, ArrayList<LangKeyed<?>>>();
+  private void createEntries(LangKeyedSource source, List<TranslatedLangKeyed<?>> translatedOutput) {
+    var buckets = new HashMap<String, ArrayList<LangKeyedAndTranslation>>();
 
     for (var langKeyed : source.items()) {
       var translationValue = getTranslationOrNull(langKeyed);
@@ -174,12 +193,10 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
         continue;
       }
 
-      translationByWrappedOutput.put(langKeyed.getWrapped(), translationValue);
-
       var normalizedTranslationValue = TranslatedLangKeyed.normalize(translationValue);
 
       var bucket = buckets.computeIfAbsent(normalizedTranslationValue, k -> new ArrayList<>());
-      bucket.add(langKeyed);
+      bucket.add(new LangKeyedAndTranslation(langKeyed, translationValue));
     }
 
     for (var bucketEntry : buckets.entrySet()) {
@@ -207,6 +224,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
           translatedOutput.set(outputIndex, new TranslatedLangKeyed<>(
             existingEntry.source,
             existingEntry.langKeyed,
+            existingEntry.translation,
             existingEntry.normalizedUnPrefixedTranslation,
             existingEntry.source.collisionPrefix() + existingEntry.normalizedPrefixedTranslation
           ));
@@ -223,7 +241,7 @@ public class TranslationRegistry implements SingletonTranslationRegistry {
         if (hadCollision)
           newItemPrefixedTranslation = source.collisionPrefix() + newItemPrefixedTranslation;
 
-        translatedOutput.add(new TranslatedLangKeyed<>(source, bucketItem, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
+        translatedOutput.add(new TranslatedLangKeyed<>(source, bucketItem.langKeyed, bucketItem.translation, bucketNormalizedUnPrefixedTranslation, newItemPrefixedTranslation));
       }
     }
   }

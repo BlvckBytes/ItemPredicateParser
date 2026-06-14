@@ -39,6 +39,18 @@ public class PlayerMessagesSection extends ConfigSection {
   public ComponentMarkup predicateInteractionMultiModeEntered;
   public ComponentMarkup predicateInteractionMultiModeExited;
 
+  public ComponentMarkup usageIppHandCommandAction;
+  public ComponentMarkup ippHandNoItemHeld;
+  public ComponentMarkup heldItemNotSupportPredicates;
+  public ComponentMarkup heldItemHasNoPredicateSet;
+  public ComponentMarkup heldItemsHaveNoPredicatesSet;
+  public ComponentMarkup removedPredicateFromHeldItem;
+  public ComponentMarkup removedPredicatesFromHeldItems;
+  public ComponentMarkup predicateSetOnHeldItem;
+  public ComponentMarkup predicateSetOnHeldItems;
+  public ComponentMarkup heldItemHasPredicateError;
+  public ComponentMarkup getPredicateFromHeldItem;
+
   public PlayerMessagesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(baseEnvironment, interpreterLogger);
   }

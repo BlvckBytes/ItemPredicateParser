@@ -1,4 +1,4 @@
-package me.blvckbytes.item_predicate_parser.config;
+package me.blvckbytes.item_predicate_parser.command.main;
 
 import at.blvckbytes.cm_mapper.mapper.MappingError;
 import at.blvckbytes.cm_mapper.section.command.CommandSection;
@@ -8,13 +8,13 @@ import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class ItemPredicateParserCommandSection extends CommandSection {
+public class IPPCommandSection extends CommandSection {
 
   public static final String INITIAL_NAME = "itempredicateparser";
 
   public int predicateInteractionExpirySeconds;
 
-  public ItemPredicateParserCommandSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
+  public IPPCommandSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(INITIAL_NAME, baseEnvironment, interpreterLogger);
   }
 

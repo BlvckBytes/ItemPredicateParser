@@ -7,7 +7,9 @@ softdepend: [EcoEnchants, ExcellentEnchants]
 folia-supported: true
 commands:
   itempredicateparser:
-    aliases: [ipp]
+    description: 'Used to interact with predicates on blocks'
+  itempredicateparserhand:
+    description: 'Used to interact with predicates on held items'
 permissions:
   itempredicateparser.command.ipp.reload:
     description: 'Invoke the reload command'

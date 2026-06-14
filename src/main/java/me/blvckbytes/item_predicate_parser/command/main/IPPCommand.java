@@ -1,4 +1,4 @@
-package me.blvckbytes.item_predicate_parser.command;
+package me.blvckbytes.item_predicate_parser.command.main;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import me.blvckbytes.item_predicate_parser.NameScopedKeyValueStore;
 import me.blvckbytes.item_predicate_parser.PredicateHelper;
+import me.blvckbytes.item_predicate_parser.command.PredicateEntry;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.overview.DisplayedVariable;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayData;
@@ -50,7 +51,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter, Listener {
+public class IPPCommand implements CommandExecutor, TabCompleter, Listener {
 
   private final VariablesDisplayHandler variablesDisplayHandler;
   private final LanguageRegistry languageRegistry;
@@ -65,7 +66,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
 
   private int currentTime;
 
-  public ItemPredicateParserCommand(
+  public IPPCommand(
     VariablesDisplayHandler variablesDisplayHandler,
     LanguageRegistry languageRegistry,
     NameScopedKeyValueStore keyValueStore,
@@ -300,12 +301,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           Bukkit.getServer().getPluginManager().callEvent(getEvent);
 
           if (!getEvent.isAcknowledged()) {
-            config.rootSection.playerMessages.blockDoesNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null));
+            config.rootSection.playerMessages.blockDoesNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null, label));
             return;
           }
 
           if (getEvent.getDeniedAccessBlock() != null) {
-            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, getEvent.getDeniedAccessBlock(), null));
+            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, getEvent.getDeniedAccessBlock(), null, label));
             return;
           }
 
@@ -321,18 +322,18 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             if (error != null) {
               config.rootSection.playerMessages.blockHasPredicateError.sendMessage(
                 player,
-                makeEnvironment(player, actualBlock, null)
+                makeEnvironment(player, actualBlock, null, label)
                   .withVariable("predicate_error", predicateHelper.createExceptionMessage(error))
               );
 
               return;
             }
 
-            config.rootSection.playerMessages.blockHasNoPredicateSet.sendMessage(player, makeEnvironment(player, actualBlock, null));
+            config.rootSection.playerMessages.blockHasNoPredicateSet.sendMessage(player, makeEnvironment(player, actualBlock, null, label));
             return;
           }
 
-          config.rootSection.playerMessages.getPredicateFromBlock.sendMessage(player, makeEnvironment(player, actualBlock, result));
+          config.rootSection.playerMessages.getPredicateFromBlock.sendMessage(player, makeEnvironment(player, actualBlock, result, label));
         }));
 
         return true;
@@ -344,71 +345,24 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           return true;
         }
 
-        int predicateArgsOffset;
-        TranslationLanguage language;
+        var predicateAndLanguage = tryParsePredicateAndLanguage(player, action.constant == CommandAction.SET_LANGUAGE, args);
 
-        if (action.constant == CommandAction.SET) {
-          language = predicateHelper.getSelectedLanguage(player);
-          predicateArgsOffset = 1;
-        }
-
-        else {
-          if (args.length < 2) {
-            config.rootSection.playerMessages.setPredicateMissingLanguage.sendMessage(player);
-            return true;
-          }
-
-          var languageSelection = TranslationLanguage.matcher.matchFirst(args[1]);
-
-          if (languageSelection == null) {
-            config.rootSection.playerMessages.setPredicateUnknownLanguage.sendMessage(
-              player,
-              new InterpretationEnvironment()
-                .withVariable("input", args[1])
-                .withVariable("languages", TranslationLanguage.matcher.createCompletions(null))
-            );
-            return true;
-          }
-
-          language = languageSelection.constant;
-          predicateArgsOffset = 2;
-        }
-
-        ItemPredicate predicate;
-
-        try {
-          var tokens = predicateHelper.parseTokens(args, predicateArgsOffset);
-          predicate = predicateHelper.parsePredicate(language, tokens);
-        } catch (ItemPredicateParseException e) {
-          config.rootSection.playerMessages.predicateParseError.sendMessage(
-            sender,
-            new InterpretationEnvironment()
-              .withVariable("exception", predicateHelper.createExceptionMessage(e))
-          );
-
+        if (predicateAndLanguage == null)
           return true;
-        }
 
-        if (predicate == null) {
-          config.rootSection.playerMessages.setPredicateEmpty.sendMessage(player);
-          return true;
-        }
-
-        var predicateAndLanguage = new PredicateAndLanguage(predicate, language);
-
-        config.rootSection.playerMessages.setPredicateInitialized.sendMessage(player, makeEnvironment(player, null, predicateAndLanguage));
+        config.rootSection.playerMessages.setPredicateInitialized.sendMessage(player, makeEnvironment(player, null, predicateAndLanguage, label));
 
         interactionSessionByPlayerId.put(player.getUniqueId(), new PredicateInteractionSession(player, block -> {
           var setEvent = new PredicateSetEvent(player, block, predicateAndLanguage);
           Bukkit.getServer().getPluginManager().callEvent(setEvent);
 
           if (!setEvent.isAcknowledged()) {
-            config.rootSection.playerMessages.blockDoesNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null));
+            config.rootSection.playerMessages.blockDoesNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null, label));
             return;
           }
 
           if (setEvent.getDeniedAccessBlock() != null) {
-            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, setEvent.getDeniedAccessBlock(), null));
+            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, setEvent.getDeniedAccessBlock(), null, label));
             return;
           }
 
@@ -417,7 +371,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           if (setEvent.getDataHoldingBlock() != null)
             actualBlock = setEvent.getDataHoldingBlock();
 
-          config.rootSection.playerMessages.setPredicateOnBlock.sendMessage(player, makeEnvironment(player, actualBlock, predicateAndLanguage));
+          config.rootSection.playerMessages.setPredicateOnBlock.sendMessage(player, makeEnvironment(player, actualBlock, predicateAndLanguage, label));
         }));
 
         return true;
@@ -436,12 +390,12 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
           Bukkit.getServer().getPluginManager().callEvent(removeEvent);
 
           if (!removeEvent.isAcknowledged()) {
-            config.rootSection.playerMessages.blockDoesNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null));
+            config.rootSection.playerMessages.heldItemNotSupportPredicates.sendMessage(player, makeEnvironment(player, block, null, label));
             return;
           }
 
           if (removeEvent.getDeniedAccessBlock() != null) {
-            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, removeEvent.getDeniedAccessBlock(), null));
+            config.rootSection.playerMessages.accessDeniedForBlock.sendMessage(player, makeEnvironment(player, removeEvent.getDeniedAccessBlock(), null, label));
             return;
           }
 
@@ -451,11 +405,11 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
             actualBlock = removeEvent.getDataHoldingBlock();
 
           if (removeEvent.getRemovedPredicate() == null) {
-            config.rootSection.playerMessages.blockHasNoPredicateSet.sendMessage(player, makeEnvironment(player, actualBlock, null));
+            config.rootSection.playerMessages.blockHasNoPredicateSet.sendMessage(player, makeEnvironment(player, actualBlock, null, label));
             return;
           }
 
-          config.rootSection.playerMessages.removePredicateFromBlock.sendMessage(player, makeEnvironment(player, actualBlock, removeEvent.getRemovedPredicate()));
+          config.rootSection.playerMessages.removePredicateFromBlock.sendMessage(player, makeEnvironment(player, actualBlock, removeEvent.getRemovedPredicate(), label));
         }));
 
         return true;
@@ -465,7 +419,7 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     }
   }
 
-  private InterpretationEnvironment makeEnvironment(Player player, @Nullable Block block, @Nullable PredicateAndLanguage predicateAndLanguage) {
+  private InterpretationEnvironment makeEnvironment(Player player, @Nullable Block block, @Nullable PredicateAndLanguage predicateAndLanguage, String label) {
     var environment = new InterpretationEnvironment();
 
     if (block != null) {
@@ -476,16 +430,11 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     }
 
     if (predicateAndLanguage != null) {
-      var setCommand = "/" + config.rootSection.commands.itemPredicateParser.getShortestNameOrAlias() + " ";
-
-      if (predicateHelper.getSelectedLanguage(player) == predicateAndLanguage.language)
-        setCommand += CommandAction.matcher.getNormalizedName(CommandAction.SET) + " " + predicateAndLanguage.getTokenPredicateString();
-      else
-        setCommand += CommandAction.matcher.getNormalizedName(CommandAction.SET_LANGUAGE) + " " + predicateAndLanguage.getLanguageNormalizedName() + " " + predicateAndLanguage.getTokenPredicateString();
+      var entry = PredicateEntry.fromPredicateAndLanguage(predicateAndLanguage, player, label, predicateHelper);
 
       environment
-        .withVariable("predicate", predicateAndLanguage.getTokenPredicateString())
-        .withVariable("set_command", setCommand);
+        .withVariable("predicate", entry.predicate())
+        .withVariable("set_command", entry.setCommand());
     }
 
     return environment;
@@ -545,44 +494,101 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
       return List.of();
     }
 
-    if (action.constant == CommandAction.SET || action.constant == CommandAction.SET_LANGUAGE || action.constant == CommandAction.TEST) {
-      int argsOffset;
-      TranslationLanguage language;
-
-      if (action.constant == CommandAction.SET_LANGUAGE) {
-        if (args.length == 2)
-          return TranslationLanguage.matcher.createCompletions(args[1]);
-
-        argsOffset = 2;
-
-        var matchedLanguage = TranslationLanguage.matcher.matchFirst(args[1]);
-
-        if (matchedLanguage == null)
-          return List.of();
-
-        language = matchedLanguage.constant;
-      }
-
-      else {
-        argsOffset = 1;
-        language = predicateHelper.getSelectedLanguage(player);
-      }
-
-      try {
-        var tokens = predicateHelper.parseTokens(args, argsOffset);
-        var completion = predicateHelper.createCompletion(language, tokens);
-
-        if (completion.expandedPreviewOrError() != null)
-          player.sendActionBar(completion.expandedPreviewOrError());
-
-        return completion.suggestions();
-      } catch (ItemPredicateParseException e) {
-        player.sendActionBar(predicateHelper.createExceptionMessage(e));
-        return List.of();
-      }
-    }
+    if (action.constant == CommandAction.SET || action.constant == CommandAction.SET_LANGUAGE || action.constant == CommandAction.TEST)
+      return completePredicateArgs(player, action.constant == CommandAction.SET_LANGUAGE, args);
 
     return List.of();
+  }
+
+  public @Nullable PredicateAndLanguage tryParsePredicateAndLanguage(Player player, boolean withLanguage, String[] args) {
+    int predicateArgsOffset;
+    TranslationLanguage language;
+
+    if (!withLanguage) {
+      language = predicateHelper.getSelectedLanguage(player);
+      predicateArgsOffset = 1;
+    }
+
+    else {
+      if (args.length < 2) {
+        config.rootSection.playerMessages.setPredicateMissingLanguage.sendMessage(player);
+        return null;
+      }
+
+      var languageSelection = TranslationLanguage.matcher.matchFirst(args[1]);
+
+      if (languageSelection == null) {
+        config.rootSection.playerMessages.setPredicateUnknownLanguage.sendMessage(
+          player,
+          new InterpretationEnvironment()
+            .withVariable("input", args[1])
+            .withVariable("languages", TranslationLanguage.matcher.createCompletions(null))
+        );
+        return null;
+      }
+
+      language = languageSelection.constant;
+      predicateArgsOffset = 2;
+    }
+
+    ItemPredicate predicate;
+
+    try {
+      var tokens = predicateHelper.parseTokens(args, predicateArgsOffset);
+      predicate = predicateHelper.parsePredicate(language, tokens);
+    } catch (ItemPredicateParseException e) {
+      config.rootSection.playerMessages.predicateParseError.sendMessage(
+        player,
+        new InterpretationEnvironment()
+          .withVariable("exception", predicateHelper.createExceptionMessage(e))
+      );
+
+      return null;
+    }
+
+    if (predicate == null) {
+      config.rootSection.playerMessages.setPredicateEmpty.sendMessage(player);
+      return null;
+    }
+
+    return new PredicateAndLanguage(predicate, language);
+  }
+
+  public List<String> completePredicateArgs(Player player, boolean withLanguage, String[] args) {
+    int argsOffset;
+    TranslationLanguage language;
+
+    if (withLanguage) {
+      if (args.length == 2)
+        return TranslationLanguage.matcher.createCompletions(args[1]);
+
+      argsOffset = 2;
+
+      var matchedLanguage = TranslationLanguage.matcher.matchFirst(args[1]);
+
+      if (matchedLanguage == null)
+        return List.of();
+
+      language = matchedLanguage.constant;
+    }
+
+    else {
+      argsOffset = 1;
+      language = predicateHelper.getSelectedLanguage(player);
+    }
+
+    try {
+      var tokens = predicateHelper.parseTokens(args, argsOffset);
+      var completion = predicateHelper.createCompletion(language, tokens);
+
+      if (completion.expandedPreviewOrError() != null)
+        player.sendActionBar(completion.expandedPreviewOrError());
+
+      return completion.suggestions();
+    } catch (ItemPredicateParseException e) {
+      player.sendActionBar(predicateHelper.createExceptionMessage(e));
+      return List.of();
+    }
   }
 
   public void tick(int time) {

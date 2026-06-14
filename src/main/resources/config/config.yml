@@ -86,15 +86,64 @@ playerMessages:
   predicateInteractionMultiModeActionBarSignal: '<&a><&l>multi-mode active; quit: sneak + left-click'
   predicateInteractionMultiModeEntered: '{lut.prefix} <&7>You have <&a>entered <&7>multi-mode and may now dispatch your predicate-interaction multiple times by interacting; use <&a>sneak + left-click <&7>to exit this mode.'
   predicateInteractionMultiModeExited: '{lut.prefix} <&7>You have <&a>exited <&7>multi-mode.'
+  usageIppHandCommandAction: '{lut.prefix} <&7>Usage: /{label} <&7>\<<&e *for-action="actions" *for-separator={<&7>,<space/>}>{action}</&e><&7>>'
+  ippHandNoItemHeld: '{lut.prefix} <&c>You''re not holding an item in your main-hand!'
+  heldItemNotSupportPredicates: '{lut.prefix} <&c>The item you''re holding in your main-hand does <&4>not support</> predicates!'
+  heldItemHasNoPredicateSet: '{lut.prefix} <&c>The item you''re holding in your main-hand has <&4>no</> predicate set!'
+  heldItemsHaveNoPredicatesSet: '{lut.prefix} <&c>The item you''re holding in your main-hand and all similar items have <&4>no</> predicates set!'
+  removedPredicateFromHeldItem: |
+    {lut.prefix} <&7>The predicate<space/>
+    <hover-text value={<&a>Click to suggest a set-command}>
+      <suggest-command value=`{set_command}`>
+        <&a><u>{predicate}
+    </hover-text>
+    <&7> has been <&a>removed <&7>from the item in your main-hand.
+  removedPredicatesFromHeldItems: |
+    {lut.prefix} <&7>The {len(removed_predicates) eq 1 then "predicate" else "predicates"}<space/>
+    <container *for-removed_predicate="removed_predicates" *for-separator={,<space/>}>
+      <hover-text value={<&a>Click to suggest a set-command}>
+        <suggest-command value=`{removed_predicate.set_command}`>
+          <&a><u>{removed_predicate.predicate}
+    </container>
+    <space/>{len(removed_predicates) eq 1 then "has" else "have"} been removed<space/>
+    from <&a>{affected_stacks}/{encountered_stacks} {encountered_stacks eq 1 then "item" else "items"}</><space/>
+    in your inventory similar to your main-hand.
+  predicateSetOnHeldItem: |
+    {lut.prefix} <&7>The predicate<space/>
+    <hover-text value={<&a>Click to suggest a set-command}>
+      <suggest-command value=`{set_command}`>
+        <&a><u>{predicate}
+    </hover-text>
+    <&7> has been <&a>set <&7>on the item in your main-hand.
+  predicateSetOnHeldItems: |
+    {lut.prefix} <&7>The predicate<space/>
+    <hover-text value={<&a>Click to suggest a set-command}>
+      <suggest-command value=`{set_command}`>
+        <&a><u>{predicate}
+    </hover-text>
+    <&7> has been <&a>set <&7>on <&a>{encountered_stacks} {encountered_stacks eq 1 then "item" else "items"}</><space/>
+    in your inventory similar to your main-hand.
+  heldItemHasPredicateError: '{lut.prefix} <&c>The item in your main-hand has encountered a predicate-error: <&4>{predicate_error}'
+  getPredicateFromHeldItem: |
+    {lut.prefix} <&7>The predicate of the item in your main-hand is<space/>
+    <hover-text value={<&a>Click to suggest a set-command}>
+      <suggest-command value=`{set_command}`>
+        <&a><u>{predicate}
+    </hover-text>
+    <&7>.
 
 defaultSelectedLanguage: ENGLISH_US
 
 commands:
-  itempredicateparser:
+  itemPredicateParser:
     predicateInteractionExpirySeconds: 15
     name: itempredicateparser
     aliases:
       - ipp
+  itemPredicateParserHand:
+    name: itempredicateparserhand
+    aliases:
+      - ipph
 
 variables:
 

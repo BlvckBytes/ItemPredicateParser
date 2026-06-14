@@ -4,9 +4,10 @@ import at.blvckbytes.cm_mapper.ConfigHandler;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import at.blvckbytes.cm_mapper.section.command.CommandUpdater;
-import me.blvckbytes.item_predicate_parser.command.CommandSendListener;
-import me.blvckbytes.item_predicate_parser.command.ItemPredicateParserCommand;
-import me.blvckbytes.item_predicate_parser.config.ItemPredicateParserCommandSection;
+import me.blvckbytes.item_predicate_parser.command.hand.IPPHandCommand;
+import me.blvckbytes.item_predicate_parser.command.hand.IPPHandCommandSection;
+import me.blvckbytes.item_predicate_parser.command.main.IPPCommand;
+import me.blvckbytes.item_predicate_parser.command.main.IPPCommandSection;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.display.overview.VariablesDisplayHandler;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
@@ -60,26 +61,34 @@ public class ItemPredicateParserPlugin extends JavaPlugin implements Listener {
       Bukkit.getServer().getPluginManager().registerEvents(variablesDisplayHandler, this);
 
       var commandUpdater = new CommandUpdater(this);
-      mainCommand = Objects.requireNonNull(getCommand(ItemPredicateParserCommandSection.INITIAL_NAME));
+      mainCommand = Objects.requireNonNull(getCommand(IPPCommandSection.INITIAL_NAME));
 
-      var commandHandler = new ItemPredicateParserCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger);
+      var mainCommandHandler = new IPPCommand(variablesDisplayHandler, languageRegistry, keyValueStore, predicateHelper, config, logger);
 
-      mainCommand.setExecutor(commandHandler);
-      Bukkit.getServer().getPluginManager().registerEvents(commandHandler, this);
+      mainCommand.setExecutor(mainCommandHandler);
+      mainCommand.setTabCompleter(mainCommandHandler);
+
+      Bukkit.getServer().getPluginManager().registerEvents(mainCommandHandler, this);
 
       Bukkit.getScheduler().runTaskTimer(this, () -> {
         ++time;
-        commandHandler.tick(time);
+        mainCommandHandler.tick(time);
       }, 0, 1);
+
+      var handCommand = Objects.requireNonNull(getCommand(IPPHandCommandSection.INITIAL_NAME));
+
+      var handCommandHandler = new IPPHandCommand(config, predicateHelper, mainCommandHandler);
+
+      handCommand.setExecutor(handCommandHandler);
+      handCommand.setTabCompleter(handCommandHandler);
 
       updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(mainCommand, commandUpdater);
+        config.rootSection.commands.itemPredicateParserHand.apply(handCommand, commandUpdater);
         commandUpdater.trySyncCommands();
       };
 
       updateCommands.run();
-
-      Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this, config), this);
 
       webApiServer = new WebApiServer(languageRegistry, config, logger);
       Bukkit.getPluginManager().registerEvents(webApiServer, this);

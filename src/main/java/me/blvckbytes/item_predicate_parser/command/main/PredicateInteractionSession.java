@@ -1,4 +1,4 @@
-package me.blvckbytes.item_predicate_parser.command;
+package me.blvckbytes.item_predicate_parser.command.main;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

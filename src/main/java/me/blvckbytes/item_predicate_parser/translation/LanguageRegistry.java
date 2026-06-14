@@ -1,7 +1,7 @@
 package me.blvckbytes.item_predicate_parser.translation;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
-import at.blvckbytes.cm_mapper.ReloadPriority;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +14,8 @@ import me.blvckbytes.item_predicate_parser.translation.resolver.TranslationResol
 import me.blvckbytes.item_predicate_parser.translation.version.IVersionDependentCode;
 import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentCodeFactory;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,14 +61,18 @@ public class LanguageRegistry implements TranslationLanguageRegistry {
 
     for (TranslationLanguage language : TranslationLanguage.values())
       initializeTranslationRegistry(language);
+  }
 
-    config.registerReloadListener(() -> {
-      // Update variables by re-making sources
-      for (var registry : translationRegistryByLanguage.values())
-        registry.initialize(makeSources(registry.language.collisionPrefixes, registry.languageFile));
+  @EventHandler(priority = EventPriority.LOW)
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper != config)
+      return;
 
-      Bukkit.getPluginManager().callEvent(new PredicateSourcesReloadEvent());
-    }, ReloadPriority.HIGH);
+    // Update variables by re-making sources
+    for (var registry : translationRegistryByLanguage.values())
+      registry.initialize(makeSources(registry.language.collisionPrefixes, registry.languageFile));
+
+    Bukkit.getPluginManager().callEvent(new PredicateSourcesReloadEvent());
   }
 
   private JsonObject accessOrDownloadLanguageFile(TranslationLanguage language, boolean overwrite) throws Exception {

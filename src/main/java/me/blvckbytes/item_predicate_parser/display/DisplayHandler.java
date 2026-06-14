@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser.display;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -38,11 +39,15 @@ public abstract class DisplayHandler<DisplayType extends Display<DisplayDataType
     this.lastMoveToOwnInventoryStampByPlayerId = new HashMap<>();
     this.config = config;
     this.plugin = plugin;
+  }
 
-    config.registerReloadListener(() -> {
-      for (var display : displayByPlayerId.values())
-        display.onConfigReload();
-    });
+  @EventHandler
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper != config)
+      return;
+
+    for (var display : displayByPlayerId.values())
+      display.onConfigReload();
   }
 
   public abstract DisplayType instantiateDisplay(Player player, DisplayDataType displayData);

@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -11,6 +12,8 @@ import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.keyed.VariableKey;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -24,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
 
-public class WebApiServer {
+public class WebApiServer implements Listener {
 
   // Do not serialize nulls and do not pretty-print - save as much bandwidth as possible.
   private static final Gson GSON_INSTANCE = new GsonBuilder().create();
@@ -48,12 +51,16 @@ public class WebApiServer {
 
     this.prebuiltResponseByLanguage = new EnumMap<>(TranslationLanguage.class);
 
-    config.registerReloadListener(() -> {
-      makeAndUpdatePrebuiltResponses();
-      restart();
-    });
+    makeAndUpdatePrebuiltResponses();
+  }
+
+  @EventHandler
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper != config)
+      return;
 
     makeAndUpdatePrebuiltResponses();
+    restart();
   }
 
   private void makeAndUpdatePrebuiltResponses() {

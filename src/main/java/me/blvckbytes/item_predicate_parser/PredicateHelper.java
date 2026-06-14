@@ -1,6 +1,7 @@
 package me.blvckbytes.item_predicate_parser;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import at.blvckbytes.component_markup.constructor.SlotType;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
@@ -18,6 +19,8 @@ import me.blvckbytes.item_predicate_parser.translation.TranslationRegistry;
 import me.blvckbytes.item_predicate_parser.translation.keyed.ConjunctionKey;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PredicateHelper {
+public class PredicateHelper implements Listener {
 
   private static final UnquotedStringToken EMPTY_STRING = new UnquotedStringToken(0, 0, null, "");
 
@@ -59,8 +62,12 @@ public class PredicateHelper {
     }
 
     updateMaxResults();
+  }
 
-    config.registerReloadListener(this::updateMaxResults);
+  @EventHandler
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper == config)
+      updateMaxResults();
   }
 
   public TranslationLanguage getSelectedLanguage(Player player) {

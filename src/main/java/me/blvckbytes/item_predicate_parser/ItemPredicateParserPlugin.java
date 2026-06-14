@@ -2,6 +2,7 @@ package me.blvckbytes.item_predicate_parser;
 
 import at.blvckbytes.cm_mapper.ConfigHandler;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import at.blvckbytes.cm_mapper.section.command.CommandUpdater;
 import me.blvckbytes.item_predicate_parser.command.CommandSendListener;
 import me.blvckbytes.item_predicate_parser.command.ItemPredicateParserCommand;
@@ -12,6 +13,8 @@ import me.blvckbytes.item_predicate_parser.translation.LanguageRegistry;
 import me.blvckbytes.item_predicate_parser.translation.resolver.PluginTranslationResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,16 +22,18 @@ import java.io.File;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public class ItemPredicateParserPlugin extends JavaPlugin {
+public class ItemPredicateParserPlugin extends JavaPlugin implements Listener {
 
   private static ItemPredicateParserPlugin instance;
 
-  private PredicateHelper predicateHelper;
-  private LanguageRegistry languageRegistry;
-  private VariablesDisplayHandler variablesDisplayHandler;
-  private NameScopedKeyValueStore keyValueStore;
-  private WebApiServer webApiServer;
-  private PluginCommand mainCommand;
+  private @Nullable PredicateHelper predicateHelper;
+  private @Nullable LanguageRegistry languageRegistry;
+  private @Nullable VariablesDisplayHandler variablesDisplayHandler;
+  private @Nullable NameScopedKeyValueStore keyValueStore;
+  private @Nullable WebApiServer webApiServer;
+  private @Nullable PluginCommand mainCommand;
+  private @Nullable ConfigKeeper<MainSection> config;
+  private @Nullable Runnable updateCommands;
 
   private int time;
 
@@ -41,7 +46,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
       configHandler.saveDefaultConfig("template_de_de.yml", true);
 
-      var config = new ConfigKeeper<>(configHandler, "config.yml", MainSection.class);
+      config = new ConfigKeeper<>(configHandler, "config.yml", MainSection.class);
 
       keyValueStore = new NameScopedKeyValueStore(getFileAndEnsureExistence("user-preferences.json"), logger);
 
@@ -49,6 +54,7 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
 
       languageRegistry = new LanguageRegistry(this, config, new PluginTranslationResolver(this));
       this.predicateHelper = new PredicateHelper(keyValueStore, languageRegistry, config);
+      Bukkit.getPluginManager().registerEvents(predicateHelper, this);
 
       variablesDisplayHandler = new VariablesDisplayHandler(config, this);
       Bukkit.getServer().getPluginManager().registerEvents(variablesDisplayHandler, this);
@@ -66,19 +72,21 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
         commandHandler.tick(time);
       }, 0, 1);
 
-      Runnable updateCommands = () -> {
+      updateCommands = () -> {
         config.rootSection.commands.itemPredicateParser.apply(mainCommand, commandUpdater);
         commandUpdater.trySyncCommands();
       };
 
       updateCommands.run();
-      config.registerReloadListener(updateCommands);
 
       Bukkit.getServer().getPluginManager().registerEvents(new CommandSendListener(this, config), this);
 
       webApiServer = new WebApiServer(languageRegistry, config, logger);
+      Bukkit.getPluginManager().registerEvents(webApiServer, this);
 
       webApiServer.restart();
+
+      Bukkit.getPluginManager().registerEvents(this, this);
 
       instance = this;
     } catch (Throwable e) {
@@ -103,6 +111,12 @@ public class ItemPredicateParserPlugin extends JavaPlugin {
       webApiServer.stop();
       webApiServer = null;
     }
+  }
+
+  @EventHandler
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper == config && updateCommands != null)
+      updateCommands.run();
   }
 
   public TranslationLanguageRegistry getTranslationLanguageRegistry() {

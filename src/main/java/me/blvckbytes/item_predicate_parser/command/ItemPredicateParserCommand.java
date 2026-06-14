@@ -1,7 +1,7 @@
 package me.blvckbytes.item_predicate_parser.command;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
-import at.blvckbytes.cm_mapper.ReloadPriority;
+import at.blvckbytes.cm_mapper.ConfigKeeperReloadEvent;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -34,6 +34,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -85,9 +86,13 @@ public class ItemPredicateParserCommand implements CommandExecutor, TabCompleter
     this.lastEventCancelTimeByPlayerId = new Object2LongOpenHashMap<>();
     this.lastEventCancelTimeByPlayerId.defaultReturnValue(-1);
 
-    config.registerReloadListener(this::findVariables, ReloadPriority.LOW);
-
     findVariables();
+  }
+
+  @EventHandler(priority = EventPriority.HIGH)
+  public void onConfigReload(ConfigKeeperReloadEvent event) {
+    if (event.configKeeper == config)
+      findVariables();
   }
 
   @Override

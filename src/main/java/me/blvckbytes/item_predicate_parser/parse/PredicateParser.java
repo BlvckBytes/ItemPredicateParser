@@ -371,6 +371,18 @@ public class PredicateParser {
           predicates.add(new HasNamePredicate(currentToken, (TranslatedLangKeyed<HasNameKey>) shortestMatch));
           continue;
         }
+        case REPAIR_COST -> {
+          tokens.remove(0);
+
+          IntegerToken amount = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(amount);
+
+          if (amount == null || amount.value() == null)
+            throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
+
+          predicates.add(new RepairCostPredicate(currentToken, (TranslatedLangKeyed<RepairCostKey>) shortestMatch, amount));
+          continue;
+        }
         default -> {}
       }
 

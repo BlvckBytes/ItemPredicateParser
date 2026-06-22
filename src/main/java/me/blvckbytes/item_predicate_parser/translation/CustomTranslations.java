@@ -12,7 +12,8 @@ public record CustomTranslations(
   String innerAll,
   String innerAllOrSelf,
   String any,
-  String hasName
+  String hasName,
+  String repairCost
 ) {
   public static CustomTranslations ENGLISH = new CustomTranslations(
     "Deterioration",
@@ -26,7 +27,8 @@ public record CustomTranslations(
     "inner-all",
     "inner-all-or-self",
     "Any",
-    "Has-Name"
+    "Has-Name",
+    "Repair-Cost"
   );
 
   public static CustomTranslations FRENCH = new CustomTranslations(
@@ -41,7 +43,8 @@ public record CustomTranslations(
     "inner-all",
     "inner-all-or-self",
     "Any",
-    "Has-Name"
+    "Has-Name",
+    "Repair-Cost"
   );
 
   public static CustomTranslations GERMAN = new CustomTranslations(
@@ -56,7 +59,8 @@ public record CustomTranslations(
     "innen-alle",
     "innen-alle-oder-selbst",
     "Etwas",
-    "Hat-Name"
+    "Hat-Name",
+    "Reparaturkosten"
   );
 
   public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
@@ -71,7 +75,8 @@ public record CustomTranslations(
     "inner-all",
     "inner-all-or-self",
     "Any",
-    "Has-Name"
+    "Has-Name",
+    "Repair-Cost"
   );
 
   public static CustomTranslations TURKISH = new CustomTranslations(
@@ -86,6 +91,7 @@ public record CustomTranslations(
     "inner-all",
     "inner-all-or-self",
     "Any",
-    "Has-Name"
+    "Has-Name",
+    "Repair-Cost"
   );
 }

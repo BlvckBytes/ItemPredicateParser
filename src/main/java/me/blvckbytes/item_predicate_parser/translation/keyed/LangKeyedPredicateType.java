@@ -12,4 +12,5 @@ public enum LangKeyedPredicateType {
   NOT_A_PREDICATE,
   ANY,
   HAS_NAME,
+  REPAIR_COST,
 }

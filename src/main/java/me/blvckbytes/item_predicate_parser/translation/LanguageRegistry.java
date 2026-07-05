@@ -16,6 +16,7 @@ import me.blvckbytes.item_predicate_parser.translation.version.VersionDependentC
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class LanguageRegistry implements TranslationLanguageRegistry {
+public class LanguageRegistry implements TranslationLanguageRegistry, Listener {
 
   private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

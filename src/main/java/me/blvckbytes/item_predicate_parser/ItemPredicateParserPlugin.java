@@ -54,6 +54,8 @@ public class ItemPredicateParserPlugin extends JavaPlugin implements Listener {
       Bukkit.getScheduler().runTaskTimerAsynchronously(this, keyValueStore::saveToDisk, 20 * 60L, 20 * 60L);
 
       languageRegistry = new LanguageRegistry(this, config, new PluginTranslationResolver(this));
+      Bukkit.getPluginManager().registerEvents(languageRegistry, this);
+
       this.predicateHelper = new PredicateHelper(keyValueStore, languageRegistry, config);
       Bukkit.getPluginManager().registerEvents(predicateHelper, this);
 

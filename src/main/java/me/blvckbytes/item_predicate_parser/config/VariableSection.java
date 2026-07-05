@@ -1,11 +1,11 @@
 package me.blvckbytes.item_predicate_parser.config;
 
+import at.blvckbytes.cm_mapper.MaterialMatcher;
 import at.blvckbytes.cm_mapper.mapper.MappingError;
 import at.blvckbytes.cm_mapper.mapper.section.CSIgnore;
 import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
-import com.cryptomorin.xseries.XMaterial;
 import me.blvckbytes.item_predicate_parser.translation.TranslationLanguage;
 import me.blvckbytes.item_predicate_parser.translation.keyed.Variable;
 import org.bukkit.Material;
@@ -39,34 +39,34 @@ public class VariableSection extends ConfigSection {
     super.afterParsing(fields);
 
     if (icon != null) {
-      var xMaterial = XMaterial.matchXMaterial(icon);
+      var material = MaterialMatcher.tryMatch(icon);
 
-      if (xMaterial.isEmpty())
+      if (material == null)
         throw new MappingError("Unknown icon-material \"" + icon + "\"");
 
-      _icon = xMaterial.get().get();
+      _icon = material;
     }
 
     if (materials != null) {
       for (var material : materials) {
-        var xMaterial = XMaterial.matchXMaterial(material);
+        var matchedMaterial = MaterialMatcher.tryMatch(material);
 
-        if (xMaterial.isEmpty())
+        if (matchedMaterial == null)
           throw new MappingError("Unknown material \"" + material + "\"");
 
-        if (!_materials.add(xMaterial.get().get()))
+        if (!_materials.add(matchedMaterial))
           throw new MappingError("Duplicate material \"" + material + "\"");
       }
     }
 
     if (blockedMaterials != null) {
       for (var blockedMaterial : blockedMaterials) {
-        var xMaterial = XMaterial.matchXMaterial(blockedMaterial);
+        var material = MaterialMatcher.tryMatch(blockedMaterial);
 
-        if (xMaterial.isEmpty())
+        if (material == null)
           throw new MappingError("Unknown blocked-material \"" + blockedMaterial + "\"");
 
-        if (!_blockedMaterials.add(xMaterial.get().get()))
+        if (!_blockedMaterials.add(material))
           throw new MappingError("Duplicate blocked-material \"" + blockedMaterial + "\"");
       }
     }

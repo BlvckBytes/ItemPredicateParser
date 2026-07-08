@@ -170,7 +170,9 @@ public class LanguageRegistry implements TranslationLanguageRegistry, Listener {
       InnerSomeOrSelfKey.INSTANCE,
       AnyKey.INSTANCE,
       HasNameKey.INSTANCE,
-      RepairCostKey.INSTANCE
+      RepairCostKey.INSTANCE,
+      EffectCountKey.INSTANCE,
+      EnchantmentCountKey.INSTANCE
     ), ""));
 
     result.add(new LangKeyedSource(config.rootSection.variables._variableKeys, ""));

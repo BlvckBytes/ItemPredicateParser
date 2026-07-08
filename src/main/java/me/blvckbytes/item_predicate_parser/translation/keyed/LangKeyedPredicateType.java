@@ -13,4 +13,6 @@ public enum LangKeyedPredicateType {
   ANY,
   HAS_NAME,
   REPAIR_COST,
+  ENCHANTMENT_COUNT,
+  EFFECT_COUNT,
 }

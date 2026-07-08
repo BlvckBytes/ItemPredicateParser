@@ -13,7 +13,9 @@ public record CustomTranslations(
   String innerAllOrSelf,
   String any,
   String hasName,
-  String repairCost
+  String repairCost,
+  String enchantmentCount,
+  String effectCount
 ) {
   public static CustomTranslations ENGLISH = new CustomTranslations(
     "Deterioration",
@@ -28,7 +30,9 @@ public record CustomTranslations(
     "inner-all-or-self",
     "Any",
     "Has-Name",
-    "Repair-Cost"
+    "Repair-Cost",
+    "Enchantment-Count",
+    "Effect-Count"
   );
 
   public static CustomTranslations FRENCH = new CustomTranslations(
@@ -44,7 +48,9 @@ public record CustomTranslations(
     "inner-all-or-self",
     "Any",
     "Has-Name",
-    "Repair-Cost"
+    "Repair-Cost",
+    "Enchantment-Count",
+    "Effect-Count"
   );
 
   public static CustomTranslations GERMAN = new CustomTranslations(
@@ -60,7 +66,9 @@ public record CustomTranslations(
     "innen-alle-oder-selbst",
     "Etwas",
     "Hat-Name",
-    "Reparaturkosten"
+    "Reparaturkosten",
+    "Verzauberungsanzahl",
+    "Effektanzahl"
   );
 
   public static CustomTranslations CHINESE_SIMPLIFIED = new CustomTranslations(
@@ -76,7 +84,9 @@ public record CustomTranslations(
     "inner-all-or-self",
     "Any",
     "Has-Name",
-    "Repair-Cost"
+    "Repair-Cost",
+    "Enchantment-Count",
+    "Effect-Count"
   );
 
   public static CustomTranslations TURKISH = new CustomTranslations(
@@ -92,6 +102,8 @@ public record CustomTranslations(
     "inner-all-or-self",
     "Any",
     "Has-Name",
-    "Repair-Cost"
+    "Repair-Cost",
+    "Enchantment-Count",
+    "Effect-Count"
   );
 }

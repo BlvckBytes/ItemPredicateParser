@@ -383,6 +383,30 @@ public class PredicateParser {
           predicates.add(new RepairCostPredicate(currentToken, (TranslatedLangKeyed<RepairCostKey>) shortestMatch, amount));
           continue;
         }
+        case EFFECT_COUNT -> {
+          tokens.remove(0);
+
+          IntegerToken amount = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(amount);
+
+          if (amount == null || amount.value() == null)
+            throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
+
+          predicates.add(new EffectCountPredicate(currentToken, (TranslatedLangKeyed<EffectCountKey>) shortestMatch, amount));
+          continue;
+        }
+        case ENCHANTMENT_COUNT -> {
+          tokens.remove(0);
+
+          IntegerToken amount = tryConsumeIntegerArgument(tokens);
+          throwOnTimeNotation(amount);
+
+          if (amount == null || amount.value() == null)
+            throw new ItemPredicateParseException(currentToken, ParseConflict.EXPECTED_FOLLOWING_INTEGER);
+
+          predicates.add(new EnchantmentCountPredicate(currentToken, (TranslatedLangKeyed<EnchantmentCountKey>) shortestMatch, amount));
+          continue;
+        }
         default -> {}
       }
 

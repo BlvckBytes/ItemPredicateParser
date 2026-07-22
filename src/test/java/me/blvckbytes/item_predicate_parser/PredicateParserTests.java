@@ -734,27 +734,78 @@ public class PredicateParserTests extends ParseTestBase {
         )
       )
     );
+  }
 
+  @Test
+  public void shouldRewriteTrailingExpressionWithFallingPrecedences() {
     makeCase(
-      new String[] { "dia", "or", "iron-ingo", "not", "bone", "not", "gunpowder" },
-      andJoin(
+      new String[] { "dia", "not", "iron-ingo", "or", "iron-door" },
+      orJoin(
         new Token[] {
-          null, null
+          unquotedStringToken(3, 0, "or")
         },
-        orJoin(
+        andJoin(
           new Token[] {
-            unquotedStringToken(1, 0, "or")
+            null
           },
           materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
-          materialPredicate(Material.IRON_INGOT, unquotedStringToken(2, 0, "iron-ingo"))
+          negate(
+            unquotedStringToken(1, 0, "not"),
+            materialPredicate(Material.IRON_INGOT, unquotedStringToken(2, 0, "iron-ingo"))
+          )
         ),
-        negate(
-          unquotedStringToken(3, 0, "not"),
-          materialPredicate(Material.BONE, unquotedStringToken(4, 0, "bone"))
-        ),
-        negate(
-          unquotedStringToken(5, 0, "not"),
-          materialPredicate(Material.GUNPOWDER, unquotedStringToken(6, 0, "gunpowder"))
+        materialPredicate(Material.IRON_DOOR, unquotedStringToken(4, 0, "iron-door"))
+      )
+    );
+  }
+
+  @Test
+  public void shouldHaveEquivalentPrecedencesForImplicitAndExplicitAnds() {
+    makeCase(
+      new String[] { "dia", "or", "iron-ingo", "not", "bone", "not", "gunpowder" },
+      orJoin(
+        new Token[] {
+          unquotedStringToken(1, 0, "or")
+        },
+        materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
+        andJoin(
+          new Token[] {
+            null, null
+          },
+          materialPredicate(Material.IRON_INGOT, unquotedStringToken(2, 0, "iron-ingo")),
+          negate(
+            unquotedStringToken(3, 0, "not"),
+            materialPredicate(Material.BONE, unquotedStringToken(4, 0, "bone"))
+          ),
+          negate(
+            unquotedStringToken(5, 0, "not"),
+            materialPredicate(Material.GUNPOWDER, unquotedStringToken(6, 0, "gunpowder"))
+          )
+        )
+      )
+    );
+
+    makeCase(
+      new String[] { "dia", "or", "iron-ingo", "and", "not", "bone", "and", "not", "gunpowder" },
+      orJoin(
+        new Token[] {
+          unquotedStringToken(1, 0, "or")
+        },
+        materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
+        andJoin(
+          new Token[] {
+            unquotedStringToken(3, 0, "and"),
+            unquotedStringToken(6, 0, "and")
+          },
+          materialPredicate(Material.IRON_INGOT, unquotedStringToken(2, 0, "iron-ingo")),
+          negate(
+            unquotedStringToken(4, 0, "not"),
+            materialPredicate(Material.BONE, unquotedStringToken(5, 0, "bone"))
+          ),
+          negate(
+            unquotedStringToken(7, 0, "not"),
+            materialPredicate(Material.GUNPOWDER, unquotedStringToken(8, 0, "gunpowder"))
+          )
         )
       )
     );

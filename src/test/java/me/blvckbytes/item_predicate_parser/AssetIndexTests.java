@@ -22,8 +22,8 @@ public class AssetIndexTests {
 
   @Test
   public void shouldDownloadFromIndex() throws Exception {
-    var assetIndex = new AssetIndex(null, logger); // MockBukkit is at 1.21.11
-    assertEquals("1.21.11", assetIndex.serverVersion.original());
+    var assetIndex = new AssetIndex(null, logger); // MockBukkit is at 26.1.2
+    assertEquals("26.1.2", assetIndex.serverVersion.original());
 
     var languageJson = assetIndex.getLanguageFile(TranslationLanguage.GERMAN_DE);
     assertEquals("Diamantspitzhacke", languageJson.get("item.minecraft.diamond_pickaxe").getAsString());

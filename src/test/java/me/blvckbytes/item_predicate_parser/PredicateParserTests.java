@@ -734,6 +734,30 @@ public class PredicateParserTests extends ParseTestBase {
         )
       )
     );
+
+    makeCase(
+      new String[] { "dia", "or", "iron-ingo", "not", "bone", "not", "gunpowder" },
+      andJoin(
+        new Token[] {
+          null, null
+        },
+        orJoin(
+          new Token[] {
+            unquotedStringToken(1, 0, "or")
+          },
+          materialPredicate(Material.DIAMOND, unquotedStringToken(0, 0, "dia")),
+          materialPredicate(Material.IRON_INGOT, unquotedStringToken(2, 0, "iron-ingo"))
+        ),
+        negate(
+          unquotedStringToken(3, 0, "not"),
+          materialPredicate(Material.BONE, unquotedStringToken(4, 0, "bone"))
+        ),
+        negate(
+          unquotedStringToken(5, 0, "not"),
+          materialPredicate(Material.GUNPOWDER, unquotedStringToken(6, 0, "gunpowder"))
+        )
+      )
+    );
   }
 
   @Test

@@ -39,8 +39,8 @@ public abstract class ParseTestBase {
     .interceptAndUseAssertEquals(Enchantment.class)
     .interceptAndUseAssertEquals(PotionEffectType.class)
     .interceptAndUseAssertEquals(LangKeyed.class)
-    .intercept(List.class, (rootActualType, pathParts, expected, actual) -> {
-      var lastPathPart = pathParts.get(pathParts.size() - 1);
+    .intercept(List.class, (_, pathParts, expected, actual) -> {
+      var lastPathPart = pathParts.getLast();
 
       if (MaterialPredicate.class != lastPathPart.getDeclaringClass())
         return false;
@@ -52,8 +52,8 @@ public abstract class ParseTestBase {
       RecursiveInterceptedEqualityChecker.containsInAnyOrder(actual, expected);
       return true;
     })
-    .intercept(Iterable.class, (rootActualType, pathParts, expected, actual) -> {
-      var lastPathPart = pathParts.get(pathParts.size() - 1);
+    .intercept(Iterable.class, (_, pathParts, _, _) -> {
+      var lastPathPart = pathParts.getLast();
 
       // There's no need to compare the items of a source, as the collision-prefix will always be unique
       return (
@@ -61,7 +61,7 @@ public abstract class ParseTestBase {
         lastPathPart.getName().equals("items")
       );
     })
-    .intercept(Syllables.class, (rootActualType, pathParts, expected, actual) -> {
+    .intercept(Syllables.class, (_, _, expected, actual) -> {
       if (expected == null || actual == null)
         return false;
 
@@ -84,7 +84,7 @@ public abstract class ParseTestBase {
   public static void setup() throws Throwable {
     MockBukkit.mock();
 
-    serverVersion = new DetectedServerVersion(1, 21, 11, "1.21.11");
+    serverVersion = new DetectedServerVersion(26, 1, 2, "26.1.2");
 
     try (var inputStream = TranslationRegistry.class.getResourceAsStream("/en_us.json")) {
       if (inputStream == null)

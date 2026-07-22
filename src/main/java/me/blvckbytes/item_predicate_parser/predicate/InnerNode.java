@@ -73,6 +73,8 @@ public abstract class InnerNode implements UnaryNode {
 
   @Override
   public void stringify(StringifyHandler handler) {
+    handler.beginNonTerminalNode(this);
+
     handler.stringify(this, output -> {
       if (handler.useTokens())
         output.appendString(token.stringify());
@@ -84,6 +86,8 @@ public abstract class InnerNode implements UnaryNode {
     });
 
     operand.stringify(handler);
+
+    handler.endNonTerminalNode(this);
   }
 
   @Override

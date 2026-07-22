@@ -14,9 +14,13 @@ public record ParenthesesNode (
 
   @Override
   public void stringify(StringifyHandler handler) {
+    handler.beginNonTerminalNode(this);
+
     handler.stringify(this, output -> output.appendString("("));
     inner.stringify(handler);
     handler.stringify(this, output -> output.appendString(")"));
+
+    handler.endNonTerminalNode(this);
   }
 
   @Override

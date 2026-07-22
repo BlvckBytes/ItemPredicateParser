@@ -21,6 +21,8 @@ public record NegationNode(
 
   @Override
   public void stringify(StringifyHandler handler) {
+    handler.beginNonTerminalNode(this);
+
     handler.stringify(this, output -> {
       if (handler.useTokens())
         output.appendString(token.stringify());
@@ -32,6 +34,8 @@ public record NegationNode(
     });
 
     operand.stringify(handler);
+
+    handler.endNonTerminalNode(this);
   }
 
   @Override

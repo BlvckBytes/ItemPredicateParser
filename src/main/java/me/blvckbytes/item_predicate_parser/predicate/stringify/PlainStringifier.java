@@ -22,6 +22,12 @@ public class PlainStringifier implements StringifyHandler, StringifyOutput {
   }
 
   @Override
+  public void beginNonTerminalNode(ItemPredicate predicate) {}
+
+  @Override
+  public void endNonTerminalNode(ItemPredicate predicate) {}
+
+  @Override
   public void stringify(ItemPredicate predicate, Consumer<StringifyOutput> stringifier) {
     stringifier.accept(this);
   }

@@ -25,6 +25,8 @@ public record DisjunctionNode(
 
   @Override
   public void stringify(StringifyHandler handler) {
+    handler.beginNonTerminalNode(this);
+
     lhs.stringify(handler);
 
     handler.stringify(this, output -> {
@@ -39,6 +41,8 @@ public record DisjunctionNode(
     });
 
     rhs.stringify(handler);
+
+    handler.endNonTerminalNode(this);
   }
 
   @Override

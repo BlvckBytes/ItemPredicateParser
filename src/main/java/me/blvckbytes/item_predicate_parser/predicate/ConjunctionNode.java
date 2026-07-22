@@ -27,6 +27,8 @@ public record ConjunctionNode(
 
   @Override
   public void stringify(StringifyHandler handler) {
+    handler.beginNonTerminalNode(this);
+
     lhs.stringify(handler);
 
     handler.stringify(this, output -> {
@@ -43,6 +45,8 @@ public record ConjunctionNode(
     });
 
     rhs.stringify(handler);
+
+    handler.endNonTerminalNode(this);
   }
 
   @Override

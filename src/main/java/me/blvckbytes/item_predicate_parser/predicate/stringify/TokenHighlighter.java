@@ -5,6 +5,7 @@ import at.blvckbytes.component_markup.constructor.SlotType;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import me.blvckbytes.item_predicate_parser.config.MainSection;
 import me.blvckbytes.item_predicate_parser.predicate.ItemPredicate;
+import me.blvckbytes.item_predicate_parser.predicate.ParenthesesNode;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +38,22 @@ public class TokenHighlighter implements StringifyHandler {
   }
 
   @Override
+  public void beginNonTerminalNode(ItemPredicate predicate) {
+    if (predicate instanceof ParenthesesNode)
+      return;
+
+    append(Component.text("("));
+  }
+
+  @Override
+  public void endNonTerminalNode(ItemPredicate predicate) {
+    if (predicate instanceof ParenthesesNode)
+      return;
+
+    append(Component.text(")"));
+  }
+
+  @Override
   public void stringify(ItemPredicate predicate, Consumer<StringifyOutput> stringifier) {
     var representation = predicate == failedPredicate
       ? config.rootSection.mismatchedPredicatePart
@@ -57,22 +74,24 @@ public class TokenHighlighter implements StringifyHandler {
       }
     });
 
-    var renderResult = representation.interpret(
+    append(representation.interpret(
       SlotType.SINGLE_LINE_CHAT,
       new InterpretationEnvironment()
         .withVariable("predicate", contents.toString())
-    ).get(0);
-
-    if (result == null) {
-      result = renderResult;
-      return;
-    }
-
-    result = result.append(renderResult);
+    ).getFirst());
   }
 
   @Override
   public boolean useTokens() {
     return true;
+  }
+
+  private void append(Component component) {
+    if (result == null) {
+      result = component;
+      return;
+    }
+
+    result = result.append(component);
   }
 }

@@ -59,17 +59,17 @@ public class PredicateParser {
     }
 
     if (!tokens.isEmpty())
-      throw new ItemPredicateParseException(tokens.remove(0), ParseConflict.EXPECTED_LEFT_HAND_SIDE);
+      throw new ItemPredicateParseException(tokens.removeFirst(), ParseConflict.EXPECTED_LEFT_HAND_SIDE);
 
     return result;
   }
 
-  private @Nullable ItemPredicate parseConjunctionNode() {
-    return parseBinaryNode(this::parseNegationNode, ConjunctionKey.class, ConjunctionNode::new);
-  }
-
   private @Nullable ItemPredicate parseDisjunctionNode() {
     return parseBinaryNode(this::parseConjunctionNode, DisjunctionKey.class, DisjunctionNode::new);
+  }
+
+  private @Nullable ItemPredicate parseConjunctionNode() {
+    return parseBinaryNode(this::parseNegationNode, ConjunctionKey.class, ConjunctionNode::new);
   }
 
   private @Nullable ItemPredicate parseBinaryNode(
@@ -83,13 +83,13 @@ public class PredicateParser {
       return null;
 
     while (!tokens.isEmpty()) {
-      var token = tokens.get(0);
+      var token = tokens.getFirst();
       var translated = resolveTranslated(token);
 
       if (translated == null || !operatorType.isInstance(translated.langKeyed))
         break;
 
-      tokens.remove(0);
+      tokens.removeFirst();
 
       var rhs = parser.get();
 
@@ -134,13 +134,13 @@ public class PredicateParser {
     if (tokens.isEmpty())
       return null;
 
-    var token = tokens.get(0);
+    var token = tokens.getFirst();
     var translated = resolveTranslated(token);
 
     if (translated == null || !operatorType.isInstance(translated.langKeyed))
       return parser.get();
 
-    tokens.remove(0);
+    tokens.removeFirst();
 
     var operand = parser.get();
 
@@ -154,7 +154,7 @@ public class PredicateParser {
     if (tokens.isEmpty())
       return null;
 
-    var token = tokens.get(0);
+    var token = tokens.getFirst();
 
     if (!(token instanceof ParenthesisToken openingToken))
       return parseItemPredicate();
@@ -162,13 +162,13 @@ public class PredicateParser {
     if (!openingToken.isOpening())
       throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_OPENING_PARENTHESIS);
 
-    tokens.remove(0);
+    tokens.removeFirst();
 
     // This check provides better user-experience, as an empty pair of parentheses would yield the following behavior:
     // The ( enters a new ParenthesesNode, which re-climbs the precedence ladder.
     // The next invocation will expect ( but gets ) and thus throws a parentheses-mismatch.
     // This way, it becomes clear that the content within the pair is what's actually missing.
-    if (!tokens.isEmpty() && tokens.get(0) instanceof ParenthesisToken parenthesisToken && !parenthesisToken.isOpening())
+    if (!tokens.isEmpty() && tokens.getFirst() instanceof ParenthesisToken parenthesisToken && !parenthesisToken.isOpening())
       throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_SEARCH_PATTERN);
 
     // Invoke the lowest precedence parser
@@ -181,7 +181,7 @@ public class PredicateParser {
     // parentheses - example: (dia-ches (unbr)). The ( of (unbr) would be left by the predicate parser,
     // and so the parentheses parser needs to pick it up and implicitly add conjunctions to inner
     while (!tokens.isEmpty()) {
-      if (!((tokens.get(0) instanceof ParenthesisToken nextToken) && nextToken.isOpening()))
+      if (!((tokens.getFirst() instanceof ParenthesisToken nextToken) && nextToken.isOpening()))
         break;
 
       inner = new ConjunctionNode(null, conjunctionTranslation, inner, parseParenthesesNode());
@@ -194,14 +194,14 @@ public class PredicateParser {
       throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
     }
 
-    token = tokens.get(0);
+    token = tokens.getFirst();
 
     if (!(token instanceof ParenthesisToken closingToken) || closingToken.isOpening()) {
       if (allowMissingClosingParentheses) {
         while (!tokens.isEmpty()) {
           // Found corresponding closing parenthesis
-          if (tokens.get(0) instanceof ParenthesisToken nextToken && !nextToken.isOpening()) {
-            tokens.remove(0);
+          if (tokens.getFirst() instanceof ParenthesisToken nextToken && !nextToken.isOpening()) {
+            tokens.removeFirst();
             break;
           }
 
@@ -217,7 +217,7 @@ public class PredicateParser {
       throw new ItemPredicateParseException(token, ParseConflict.EXPECTED_CLOSING_PARENTHESIS);
     }
 
-    tokens.remove(0);
+    tokens.removeFirst();
 
     return new ParenthesesNode(inner);
   }
@@ -226,7 +226,7 @@ public class PredicateParser {
     if (!(token instanceof UnquotedStringToken stringToken))
       return null;
 
-    return resolveCache.computeIfAbsent(token, tk -> {
+    return resolveCache.computeIfAbsent(token, _ -> {
       var searchResult = translationRegistry.search(stringToken);
 
       if (searchResult.wildcardMode() != WildcardMode.NONE)
@@ -241,11 +241,11 @@ public class PredicateParser {
     var predicates = new ArrayList<ItemPredicate>();
 
     while (!tokens.isEmpty()) {
-      var currentToken = tokens.get(0);
+      var currentToken = tokens.getFirst();
 
       if (currentToken instanceof QuotedStringToken textSearch) {
         predicates.add(new TextSearchPredicate(textSearch));
-        tokens.remove(0);
+        tokens.removeFirst();
         continue;
       }
 
@@ -259,7 +259,7 @@ public class PredicateParser {
         if (unquotedString.value().substring(1).contains("#"))
           throw new ItemPredicateParseException(currentToken, ParseConflict.LABEL_CANNOT_CONTAIN_HASHTAG);
 
-        tokens.remove(0);
+        tokens.removeFirst();
         return new LabelPredicate(unquotedString);
       }
 
@@ -280,7 +280,7 @@ public class PredicateParser {
           throw new ItemPredicateParseException(currentToken, ParseConflict.NO_SEARCH_MATCH);
 
         predicates.add(new MaterialPredicate(unquotedString, null, materials));
-        tokens.remove(0);
+        tokens.removeFirst();
         continue;
       }
 
@@ -294,11 +294,11 @@ public class PredicateParser {
       switch (shortestMatch.langKeyed.getPredicateType()) {
         case ITEM_MATERIAL -> {
           predicates.add(new MaterialPredicate(unquotedString, (TranslatedLangKeyed<LangKeyedItemMaterial>) shortestMatch, null));
-          tokens.remove(0);
+          tokens.removeFirst();
           continue;
         }
         case ENCHANTMENT -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken enchantmentLevel = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(enchantmentLevel);
@@ -307,7 +307,7 @@ public class PredicateParser {
           continue;
         }
         case POTION_EFFECT_TYPE -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken potionEffectAmplifier = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(potionEffectAmplifier);
@@ -318,12 +318,12 @@ public class PredicateParser {
           continue;
         }
         case POTION_TYPE -> {
-          tokens.remove(0);
+          tokens.removeFirst();
           predicates.add(new PotionTypePredicate(currentToken, (TranslatedLangKeyed<LangKeyedPotionType>) shortestMatch));
           continue;
         }
         case DETERIORATION -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken deteriorationPercentageMin = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(deteriorationPercentageMin);
@@ -337,7 +337,7 @@ public class PredicateParser {
           continue;
         }
         case AMOUNT -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(amount);
@@ -349,7 +349,7 @@ public class PredicateParser {
           continue;
         }
         case MUSIC_INSTRUMENT -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           if ((predicate = translationRegistry.getVersionDependentCode().makeInstrumentPredicate(currentToken, shortestMatch)) != null)
             predicates.add(predicate);
@@ -357,22 +357,22 @@ public class PredicateParser {
           continue;
         }
         case VARIABLE -> {
-          tokens.remove(0);
+          tokens.removeFirst();
           predicates.add(new VariablePredicate(currentToken, (TranslatedLangKeyed<VariableKey>) shortestMatch));
           continue;
         }
         case ANY -> {
-          tokens.remove(0);
+          tokens.removeFirst();
           predicates.add(new AnyPredicate(currentToken, (TranslatedLangKeyed<AnyKey>) shortestMatch));
           continue;
         }
         case HAS_NAME -> {
-          tokens.remove(0);
+          tokens.removeFirst();
           predicates.add(new HasNamePredicate(currentToken, (TranslatedLangKeyed<HasNameKey>) shortestMatch));
           continue;
         }
         case REPAIR_COST -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(amount);
@@ -384,7 +384,7 @@ public class PredicateParser {
           continue;
         }
         case EFFECT_COUNT -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(amount);
@@ -396,7 +396,7 @@ public class PredicateParser {
           continue;
         }
         case ENCHANTMENT_COUNT -> {
-          tokens.remove(0);
+          tokens.removeFirst();
 
           IntegerToken amount = tryConsumeIntegerArgument(tokens);
           throwOnTimeNotation(amount);
@@ -416,11 +416,11 @@ public class PredicateParser {
     if (predicates.isEmpty())
       return null;
 
-    ItemPredicate result = predicates.remove(0);
+    ItemPredicate result = predicates.removeFirst();
 
     // Consecutive predicates are implicitly joined by AND
     while (!predicates.isEmpty())
-      result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.remove(0));
+      result = new ConjunctionNode(null, conjunctionTranslation, result, predicates.removeFirst());
 
     return result;
   }
@@ -449,11 +449,11 @@ public class PredicateParser {
     IntegerToken integerToken = null;
 
     if (!tokens.isEmpty()) {
-      var nextToken = tokens.get(0);
+      var nextToken = tokens.getFirst();
 
       if (nextToken instanceof IntegerToken argument) {
         integerToken = argument;
-        tokens.remove(0);
+        tokens.removeFirst();
       }
     }
 
@@ -467,7 +467,7 @@ public class PredicateParser {
     var numberOfMatches = matches.size();
 
     if (numberOfMatches == 1)
-      return matches.get(0);
+      return matches.getFirst();
 
     var shortestMatchLength = Integer.MAX_VALUE;
     TranslatedLangKeyed<?> shortestMatch = null;

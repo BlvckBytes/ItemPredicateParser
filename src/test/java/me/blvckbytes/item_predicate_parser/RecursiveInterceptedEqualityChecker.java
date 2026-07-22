@@ -18,13 +18,11 @@ public class RecursiveInterceptedEqualityChecker {
   private final Map<Class<?>, List<Field>> nonStaticFieldsCache;
   private final Map<Class<?>, EqualityPredicate<Object>> interceptors;
   private final Set<String> expectedTypePrefixes;
-  private final Set<Class<?>> expectedTypes;
 
   public RecursiveInterceptedEqualityChecker() {
     this.nonStaticFieldsCache = new HashMap<>();
     this.interceptors = new HashMap<>();
     this.expectedTypePrefixes = new HashSet<>();
-    this.expectedTypes = new HashSet<>();
   }
 
   @SuppressWarnings("unchecked")
@@ -34,7 +32,7 @@ public class RecursiveInterceptedEqualityChecker {
   }
 
   public RecursiveInterceptedEqualityChecker interceptAndUseAssertEquals(Class<?> type) {
-    this.interceptors.put(type, ((rootActualType, pathParts, expected, actual) -> {
+    this.interceptors.put(type, ((_, _, expected, actual) -> {
       assertEquals(expected, actual);
       return true;
     }));
@@ -43,17 +41,12 @@ public class RecursiveInterceptedEqualityChecker {
   }
 
   public RecursiveInterceptedEqualityChecker interceptAndReturnTrue(Class<?> type) {
-    this.interceptors.put(type, ((rootActualType, pathParts, expected, actual) -> true));
+    this.interceptors.put(type, ((_, _, _, _) -> true));
     return this;
   }
 
   public RecursiveInterceptedEqualityChecker expectTypePrefix(String prefix) {
     this.expectedTypePrefixes.add(prefix);
-    return this;
-  }
-
-  public RecursiveInterceptedEqualityChecker expectType(Class<?> type) {
-    this.expectedTypes.add(type);
     return this;
   }
 
@@ -106,6 +99,14 @@ public class RecursiveInterceptedEqualityChecker {
       return;
     }
 
+    if (!expected.getClass().isAssignableFrom(actual.getClass())) {
+      throw new IllegalStateException(
+        "Expected " + expected.getClass() + " but got " + actual.getClass() +
+          " at path " + stringifyPath(pathParts) +
+          " for root-object of type " + rootActualType
+      );
+    }
+
     for (var field : fields) {
       try {
         var expectedValue = field.get(expected);
@@ -114,7 +115,7 @@ public class RecursiveInterceptedEqualityChecker {
         pathParts.add(field);
         compareRecursively(rootActualType, field, expectedValue, actualValue, pathParts);
 
-        if (!field.equals(pathParts.remove(pathParts.size() - 1)))
+        if (!field.equals(pathParts.removeLast()))
           throw new IllegalStateException("Expected " + field.getName() + " to be at the end of the path-part list");
       } catch (IllegalArgumentException | IllegalAccessException e) {
         throw new IllegalStateException(
@@ -210,7 +211,7 @@ public class RecursiveInterceptedEqualityChecker {
   }
 
   private List<Field> getAllNonStaticFields(@Nullable Class<?> rootActualType, Class<?> type, List<Field> pathParts) {
-    return this.nonStaticFieldsCache.computeIfAbsent(type, k -> {
+    return this.nonStaticFieldsCache.computeIfAbsent(type, _ -> {
       var result = new ArrayList<Field>();
       var currentClass = type;
 
@@ -227,8 +228,6 @@ public class RecursiveInterceptedEqualityChecker {
           } else if (isDirectlyComparable(fieldType)) {
             isHandleable = true;
           } else if (Collection.class.isAssignableFrom(fieldType) || Map.class.isAssignableFrom(fieldType)) {
-            isHandleable = true;
-          } else if (expectedTypes.contains(fieldType)) {
             isHandleable = true;
           } else {
             var fieldTypeName = fieldType.getName();

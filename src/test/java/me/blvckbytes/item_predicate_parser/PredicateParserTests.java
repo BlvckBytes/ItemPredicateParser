@@ -737,7 +737,7 @@ public class PredicateParserTests extends ParseTestBase {
   }
 
   @Test
-  public void shouldRewriteTrailingExpressionWithFallingPrecedences() {
+  public void shouldParseImplicitAndWithFollowingFallingPrecedence() {
     makeCase(
       new String[] { "dia", "not", "iron-ingo", "or", "iron-door" },
       orJoin(
@@ -807,6 +807,37 @@ public class PredicateParserTests extends ParseTestBase {
             materialPredicate(Material.GUNPOWDER, unquotedStringToken(8, 0, "gunpowder"))
           )
         )
+      )
+    );
+  }
+
+  @Test
+  public void shouldParseMultipleImplicitAndsWithFollowingFallingPrecedence() {
+    makeCase(
+      new String[] {
+        "iron-ingo or dia not chest not gold-ingo or apple"
+      },
+      orJoin(
+        new Token[] {
+          unquotedStringToken(1, 0, "or"),
+          unquotedStringToken(7, 0, "or")
+        },
+        materialPredicate(Material.IRON_INGOT, unquotedStringToken(0, 0, "iron-ingo")),
+        andJoin(
+          new Token[] {
+            null, null
+          },
+          materialPredicate(Material.DIAMOND, unquotedStringToken(2, 0, "dia")),
+          negate(
+            unquotedStringToken(3, 0, "not"),
+            materialPredicate(Material.CHEST, unquotedStringToken(4, 0, "chest"))
+          ),
+          negate(
+            unquotedStringToken(5, 0, "not"),
+            materialPredicate(Material.GOLD_INGOT, unquotedStringToken(6, 0, "gold-ingo"))
+          )
+        ),
+        materialPredicate(Material.APPLE, unquotedStringToken(8, 0, "apple"))
       )
     );
   }

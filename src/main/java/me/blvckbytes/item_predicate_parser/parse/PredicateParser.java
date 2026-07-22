@@ -54,20 +54,6 @@ public class PredicateParser {
       if (nextExpression == null)
         break;
 
-      // E.g. A or B not C -> A or (B and not C)
-      if (result instanceof DisjunctionNode disjunctionNode) {
-        var newRhs = new ConjunctionNode(null, conjunctionTranslation, disjunctionNode.getRHS(), nextExpression);
-        result = new DisjunctionNode(disjunctionNode.token(), disjunctionNode.translatedLangKeyed(), disjunctionNode.getLHS(), newRhs);
-        continue;
-      }
-
-      // E.g. A not B or C -> A and not B or C, instead of A and (not B or C)
-      if (nextExpression instanceof DisjunctionNode disjunctionNode) {
-        var newLhs = new ConjunctionNode(null, conjunctionTranslation, result, disjunctionNode.getLHS());
-        result = new DisjunctionNode(disjunctionNode.token(), disjunctionNode.translatedLangKeyed(), newLhs, disjunctionNode.getRHS());
-        continue;
-      }
-
       // Consecutive predicates are implicitly joined by AND
       result = new ConjunctionNode(null, conjunctionTranslation, result, nextExpression);
     }
@@ -100,8 +86,21 @@ public class PredicateParser {
       var token = tokens.getFirst();
       var translated = resolveTranslated(token);
 
-      if (translated == null || !operatorType.isInstance(translated.langKeyed))
+      if (translated == null)
         break;
+
+      if (!operatorType.isInstance(translated.langKeyed)) {
+        if (translated.langKeyed instanceof DisjunctionKey || translated.langKeyed instanceof ConjunctionKey)
+          break;
+
+        var rhs = parseNegationNode();
+
+        if (rhs == null)
+          return result;
+
+        result = new ConjunctionNode(null, conjunctionTranslation, result, rhs);
+        continue;
+      }
 
       tokens.removeFirst();
 
